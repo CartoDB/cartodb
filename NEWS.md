@@ -31,10 +31,17 @@ sudo make install
 - Remove Data Library gallery page (now redirected to Spatial Data Catalog) [#16133](https://github.com/CartoDB/cartodb/pull/16133)
 - Sync DO API keys betwenn onpremises & CARTO-managed clouds [#16205](https://github.com/CartoDB/cartodb/pull/16205)
 - Fix master build [#16213](https://github.com/CartoDB/cartodb/pull/16213)
+- Bootstrap new CI & improve stability of old CI [#16220](https://github.com/CartoDB/cartodb/pull/16220)
+- Fix for custom icons not working [#16233](https://github.com/CartoDB/cartodb/pull/16233)
+- Split tests load evenly in the new CI [#16227](https://github.com/CartoDB/cartodb/pull/16227)
+- Catalog fixes: show products only, fix the legend formatting [#16219](https://github.com/CartoDB/cartodb/pull/16219)
+- Migrate spec/models/carto to the new CI [#16228](https://github.com/CartoDB/cartodb/pull/16228)
 
 ### Bug fixes / enhancements
 
-- Fix for listing tilesets from a BQ dataset witho no tilesets [16201](https://github.com/CartoDB/cartodb/pull/16201)
+- Fix for listing tilesets from a BQ dataset with no tilesets [16201](https://github.com/CartoDB/cartodb/pull/16201)
+- Fix Data page not loading due to null rows [16224](https://github.com/CartoDB/cartodb/pull/16224)
+- Add unicorn config sample and output log to stdout by setting environment variable [16221](https://github.com/CartoDB/cartodb/pull/16221/files)
 - Some CI improvements [16179](https://github.com/CartoDB/cartodb/pull/16179)
 - Bump @carto/viewer to v1.0.3 [16170](https://github.com/CartoDB/cartodb/pull/16170)
 - Show a new message for create connections after first login [16159](https://github.com/CartoDB/cartodb/pull/16159)
@@ -75,6 +82,7 @@ sudo make install
 - Migrate Organization CRUD to MessageBroker [#15934](https://github.com/CartoDB/cartodb/pull/15934)
 - Update cartodb-common, which in turns updates the MessageBroker to send a `publisher_validation_token` [#16041](https://github.com/CartoDB/cartodb/pull/16041)
 - Optimize dashboard loading when the number of datasets is very large [#16014](https://github.com/CartoDB/cartodb/pull/16014)
+- Only load DO totals in dashboard when they are needed [#16161](https://github.com/CartoDB/cartodb/pull/16161)
 - 429 error when multiple datasets are requested to be deleted [#15931](https://github.com/CartoDB/cartodb/pull/15931)
 - Aggregate map_views for organization users [#16064](https://github.com/CartoDB/cartodb/pull/16064)
 - Migrate Organization CRUD actions started by CartoDB to Message Broker [#16062](https://github.com/CartoDB/cartodb/pull/16062)
@@ -95,7 +103,9 @@ sudo make install
 - Fix autoload issues in subscriber [#16171](https://github.com/CartoDB/cartodb/pull/16171)
 - Remove no longer used DO metadata DB config [#16212](https://github.com/CartoDB/cartodb/pull/16212)
 - Fix CI build by changing machine spec [#16192](https://github.com/CartoDB/cartodb/pull/16192)
+- Modify superadmin users activity endpoint to allow pagination [#16226](https://github.com/CartoDB/cartodb/pull/16226)
 - Update cartodb-common to v1.1.1, which contains serveral logging fixes [#16182](https://github.com/CartoDB/cartodb/pull/16182)
+- Read config for public statics compilation [#16234](https://github.com/CartoDB/cartodb/pull/16234)
 
 4.44.0 (2020-11-20)
 -------------------

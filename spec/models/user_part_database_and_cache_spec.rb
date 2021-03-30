@@ -276,7 +276,7 @@ describe User do
   end
 
   it "should store its metadata automatically after creation" do
-    user = FactoryGirl.create :user
+    user = create :user
     $users_metadata.HGET(user.key, 'id').should == user.id.to_s
     $users_metadata.HGET(user.key, 'database_name').should == user.database_name
     $users_metadata.HGET(user.key, 'database_password').should == user.database_password
@@ -312,7 +312,7 @@ describe User do
   end
 
   it "should store db timeout limits in redis after creation" do
-    user = FactoryGirl.create :user, user_timeout: 200002, database_timeout: 100002
+    user = create :user, user_timeout: 200002, database_timeout: 100002
     user.user_timeout.should == 200002
     user.database_timeout.should == 100002
     $users_metadata.HGET(user.timeout_key, 'db').should == '200002'
@@ -327,7 +327,7 @@ describe User do
   end
 
   it "should store render timeout limits in redis after creation" do
-    user = FactoryGirl.create :user, user_render_timeout: 200003, database_render_timeout: 100003
+    user = create :user, user_render_timeout: 200003, database_render_timeout: 100003
     user.reload
     user.user_render_timeout.should == 200003
     user.database_render_timeout.should == 100003
@@ -337,7 +337,7 @@ describe User do
   end
 
   it "should have valid non-zero db timeout limits by default" do
-    user = FactoryGirl.create :user
+    user = create :user
     user.user_timeout.should > 0
     user.database_timeout.should > 0
     $users_metadata.HGET(user.timeout_key, 'db').should == user.user_timeout.to_s
@@ -354,7 +354,7 @@ describe User do
   end
 
   it "should have zero render timeout limits by default" do
-    user = FactoryGirl.create :user
+    user = create :user
     user.user_render_timeout.should eq 0
     user.database_render_timeout.should eq 0
     $users_metadata.HGET(user.timeout_key, 'render').should eq '0'

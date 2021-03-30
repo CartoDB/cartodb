@@ -110,7 +110,7 @@ export default {
       if (this.variable && this.variable.categories && styleProps.colorStyle) {
         const categories = this.variable.categories.slice(0, 10).map(c => ({
           color: `rgb(${styleProps.colorStyle(c.category)})`,
-          name: capitalize(c.category)
+          name: this.formatValue(c.category)
         }));
         categories.push({
           name: 'Others',
@@ -261,15 +261,7 @@ export default {
         if (compare(o.object.geometry.coordinates, object.geometry.coordinates)) {
           // Display the points that are fully overlapped (same coordinates)
           let value = o.object.properties[this.variable.attribute];
-          if (value !== undefined && value !== null) {
-            if (typeof value === 'number') {
-              value = formatNumber(value);
-            } else if (typeof value === 'string') {
-              value = capitalize(value);
-            }
-          } else {
-            value = 'No data';
-          }
+          value = this.formatValue(value);
           items[value] ? items[value].count += 1 : items[value] = { index: index++, count: 1 };
         }
       }
@@ -293,6 +285,17 @@ export default {
         'border': 'solid 1px #e6e8eb'
       };
       return { html, style };
+    },
+    formatValue(value) {
+      if (value !== undefined && value !== null) {
+        if (typeof value === 'number') {
+          return formatNumber(value);
+        }
+        if (typeof value === 'string') {
+          return capitalize(value);
+        }
+      }
+      return 'No data';
     }
   }
 };

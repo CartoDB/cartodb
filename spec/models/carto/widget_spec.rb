@@ -1,10 +1,10 @@
 require 'json'
-require_relative '../../spec_helper'
+require 'spec_helper_unit'
 
 describe Carto::Widget do
   describe 'Storage' do
     it 'can be stored and retrieved keeping the data' do
-      widget = FactoryGirl.create(:widget_with_layer)
+      widget = create(:widget_with_layer)
       loaded_widget = Carto::Widget.find(widget.id)
       loaded_widget.order.should == widget.order
       loaded_widget.type.should == widget.type
@@ -16,40 +16,28 @@ describe Carto::Widget do
     end
 
     it 'is deleted if layer is deleted' do
-      widget = FactoryGirl.create(:widget_with_layer)
+      widget = create(:widget_with_layer)
       widget.layer.destroy
       Carto::Widget.where(id: widget.id).first.should be_nil
     end
 
     describe '#save' do
-      before(:each) do
-        @user = FactoryGirl.create(:carto_user)
-        @map = FactoryGirl.create(:carto_map_with_layers, user: @user)
-        @widget = FactoryGirl.create(:widget, layer: @map.data_layers.first)
-      end
-
-      after(:each) do
-        @widget.destroy
-        @map.destroy
-        @user.destroy
-      end
+      let(:user) { create(:carto_user, factory_bot_context: { only_db_setup: true }) }
+      let(:map) { create(:carto_map_with_layers, user: user) }
+      let!(:widget) { create(:widget, layer: map.data_layers.first) }
 
       it 'triggers notify_map_change on related map(s)' do
-        map = mock
-        map.stubs(:id).returns(@map.id)
-        map.expects(:notify_map_change).twice
-        Map.stubs(:where).with(id: map.id).returns([map])
-
-        @widget.title = "xxx#{@widget.title}"
-        @widget.save
+        ::Map.any_instance.expects(:notify_map_change)
+        widget.title = 'Updated title'
+        widget.save
       end
     end
   end
 
   describe 'Validations' do
     describe 'Format and validation' do
-      before(:each) do
-        @widget = FactoryGirl.build(:widget_with_layer, options: { valid: 'format' })
+      before do
+        @widget = build(:widget_with_layer, options: { valid: 'format' })
       end
 
       it 'validates correct options format' do
@@ -66,8 +54,8 @@ describe Carto::Widget do
     end
 
     describe 'Source id validation' do
-      before(:each) do
-        @widget = FactoryGirl.build(:widget_with_layer, source_id: 'foo')
+      before do
+        @widget = build(:widget_with_layer, source_id: 'foo')
       end
 
       it 'accepts source id if cames as string' do
@@ -85,24 +73,18 @@ describe Carto::Widget do
   end
 
   describe '#from_visualization_id' do
-    before(:all) do
-      @user = FactoryGirl.create(:carto_user)
-      @map = FactoryGirl.create(:carto_map_with_layers, user: @user)
-      @visualization = FactoryGirl.create(:carto_visualization, map: @map)
-    end
-
-    after(:all) do
-      @visualization.destroy
-      @map.destroy
-      @user.destroy
+    before do
+      @user = create(:carto_user, factory_bot_context: { only_db_setup: true })
+      @map = create(:carto_map_with_layers, user: @user)
+      @visualization = create(:carto_visualization, map: @map)
     end
 
     it 'retrieves all visualization widgets' do
       # Twice expectation: creation + destroy
       Map.any_instance.expects(:update_related_named_maps).times(2).returns(true)
       layer = @visualization.data_layers.first
-      widget = FactoryGirl.create(:widget, layer: layer)
-      widget2 = FactoryGirl.create(:widget_with_layer)
+      widget = create(:widget, layer: layer)
+      widget2 = create(:widget_with_layer)
 
       widgets = Carto::Widget.from_visualization_id(@visualization.id)
       widgets.length.should == 1
@@ -115,26 +97,20 @@ describe Carto::Widget do
   end
 
   context 'viewer users' do
-    before(:all) do
+    before do
       Map.any_instance.stubs(:update_related_named_maps)
-      @user = FactoryGirl.create(:carto_user)
-      @map = FactoryGirl.create(:carto_map_with_layers, user: @user)
-      @visualization = FactoryGirl.create(:carto_visualization, map: @map, user: @user)
+      @user = create(:carto_user, factory_bot_context: { only_db_setup: true })
+      @map = create(:carto_map_with_layers, user: @user)
+      @visualization = create(:carto_visualization, map: @map, user: @user)
       @layer = @visualization.data_layers.first
-      @widget = FactoryGirl.create(:widget, layer: @layer)
+      @widget = create(:widget, layer: @layer)
 
       @user.update_attribute(:viewer, true)
       @layer.user.reload
     end
 
-    after(:all) do
-      @visualization.destroy
-      @map.destroy
-      @user.destroy
-    end
-
     it "can't create a new widget" do
-      widget = FactoryGirl.build(:widget, layer: @layer)
+      widget = build(:widget, layer: @layer)
       widget.save.should be_false
       widget.errors[:layer].should eq(["Viewer users can't edit widgets"])
     end

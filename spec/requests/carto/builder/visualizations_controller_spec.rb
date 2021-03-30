@@ -13,8 +13,8 @@ describe Carto::Builder::VisualizationsController do
 
   describe '#show' do
     before(:each) do
-      @map = FactoryGirl.create(:map, user_id: @user1.id)
-      @visualization = FactoryGirl.create(:carto_visualization, user_id: @user1.id, map_id: @map.id)
+      @map = create(:map, user_id: @user1.id)
+      @visualization = create(:carto_visualization, user_id: @user1.id, map_id: @map.id)
       login(@user1)
     end
 
@@ -26,7 +26,7 @@ describe Carto::Builder::VisualizationsController do
     end
 
     it 'allows iframe for users without the allow_private_viz_iframe feature flag' do
-      ff = FactoryGirl.create(:feature_flag, name: 'allow_private_viz_iframe')
+      ff = create(:feature_flag, name: 'allow_private_viz_iframe')
       @user1.activate_feature_flag!(ff)
 
       get builder_visualization_url(id: @visualization.id)
@@ -70,7 +70,7 @@ describe Carto::Builder::VisualizationsController do
       end
 
       it 'correctly copies queries to analysis nodes' do
-        layer = FactoryGirl.build(:carto_layer)
+        layer = build(:carto_layer)
         layer.options[:query] = 'SELECT prediction FROM location'
         layer.save
         @visualization.map.layers << layer
@@ -127,8 +127,8 @@ describe Carto::Builder::VisualizationsController do
     end
 
     it 'redirects to embed for visualizations not writable by user' do
-      map = FactoryGirl.create(:map, user_id: @user1.id)
-      @other_visualization = FactoryGirl.create(:carto_visualization, map_id: map.id)
+      map = create(:map, user_id: @user1.id)
+      @other_visualization = create(:carto_visualization, map_id: map.id)
 
       get builder_visualization_url(id: @other_visualization.id)
 
@@ -188,7 +188,7 @@ describe Carto::Builder::VisualizationsController do
     end
 
     it 'displays analysesData' do
-      analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user1.id)
+      analysis = create(:source_analysis, visualization_id: @visualization.id, user_id: @user1.id)
 
       get builder_visualization_url(id: @visualization.id)
 

@@ -11,7 +11,7 @@ describe Carto::Kuviz::VisualizationsController do
 
   describe '#show' do
     before(:each) do
-      @kuviz = FactoryGirl.create(:kuviz_visualization)
+      @kuviz = create(:kuviz_visualization)
       @kuviz.save
       @asset = Carto::Asset.for_visualization(visualization: @kuviz,
                                               resource: StringIO.new('<html><body>test</body></html>'))
@@ -48,7 +48,7 @@ describe Carto::Kuviz::VisualizationsController do
       end
 
       it 'does not require password when it is shared' do
-        user2 = FactoryGirl.create(:carto_user)
+        user2 = create(:carto_user)
         @kuviz.permission.acl = [
           {
             type: Carto::Permission::TYPE_USER,
@@ -67,7 +67,7 @@ describe Carto::Kuviz::VisualizationsController do
       end
 
       it 'requires password for a user when it is not shared' do
-        user2 = FactoryGirl.create(:carto_user)
+        user2 = create(:carto_user)
         logout
         login(user2)
 
@@ -90,7 +90,7 @@ describe Carto::Kuviz::VisualizationsController do
 
   describe '#show_protected' do
     before(:each) do
-      @kuviz = FactoryGirl.create(:kuviz_protected_visualization)
+      @kuviz = create(:kuviz_protected_visualization)
       @kuviz.save
       @asset = Carto::Asset.for_visualization(visualization: @kuviz,
                                               resource: StringIO.new('<html><body>test</body></html>'))

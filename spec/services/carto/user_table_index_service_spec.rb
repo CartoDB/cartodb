@@ -6,16 +6,16 @@ describe Carto::UserTableIndexService do
 
   before(:all) do
     bypass_named_maps
-    @user = FactoryGirl.create(:carto_user)
+    @user = create(:carto_user)
     @map1, @table1, @table_visualization1, @visualization1 = create_full_visualization(@user)
     @map2, @table2, @table_visualization2, @visualization2 = create_full_visualization(@user)
 
-    @map12 = FactoryGirl.create(:carto_map, user_id: @user.id)
-    FactoryGirl.create(:carto_tiled_layer, maps: [@map12])
-    FactoryGirl.create(:carto_layer_with_sql, maps: [@map12], table_name: @table1.name)
-    FactoryGirl.create(:carto_layer_with_sql, maps: [@map12], table_name: @table2.name)
+    @map12 = create(:carto_map, user_id: @user.id)
+    create(:carto_tiled_layer, maps: [@map12])
+    create(:carto_layer_with_sql, maps: [@map12], table_name: @table1.name)
+    create(:carto_layer_with_sql, maps: [@map12], table_name: @table2.name)
     @map12.reload
-    @visualization12 = FactoryGirl.create(:carto_visualization, user: @user, map: @map12)
+    @visualization12 = create(:carto_visualization, user: @user, map: @map12)
 
     # Register table dependencies
     [@map1, @map2, @map12].each do |map|
@@ -25,19 +25,19 @@ describe Carto::UserTableIndexService do
     end
 
     # Create analyses
-    @analysis1 = FactoryGirl.create(:source_analysis,
+    @analysis1 = create(:source_analysis,
                                     visualization: @visualization1,
                                     user: @user,
                                     source_table: @table1.name)
-    @analysis2 = FactoryGirl.create(:analysis_with_source,
+    @analysis2 = create(:analysis_with_source,
                                     visualization: @visualization2,
                                     user: @user,
                                     source_table: @table2.name)
-    @analysis12_1 = FactoryGirl.create(:source_analysis,
+    @analysis12_1 = create(:source_analysis,
                                        visualization: @visualization12,
                                        user: @user,
                                        source_table: @table1.name)
-    @analysis12_2 = FactoryGirl.create(:source_analysis,
+    @analysis12_2 = create(:source_analysis,
                                        visualization: @visualization12,
                                        user: @user,
                                        source_table: @table2.name)
@@ -304,6 +304,6 @@ describe Carto::UserTableIndexService do
       l.user_tables.any? { |t| t.name == source_node.options[:table_name] }
     end
 
-    FactoryGirl.create(:widget, layer: layer, source_id: widget_node.id, column_name: column, type: type)
+    create(:widget, layer: layer, source_id: widget_node.id, column_name: column, type: type)
   end
 end

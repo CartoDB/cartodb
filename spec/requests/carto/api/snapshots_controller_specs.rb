@@ -8,10 +8,10 @@ describe Carto::Api::SnapshotsController do
 
   before(:all) do
     bypass_named_maps
-    @user = FactoryGirl.create(:carto_user)
-    @intruder = FactoryGirl.create(:carto_user)
-    @visualization = FactoryGirl.create(:carto_visualization, user: @user)
-    @other_visualization = FactoryGirl.create(:carto_visualization, user: @user)
+    @user = create(:carto_user)
+    @intruder = create(:carto_user)
+    @visualization = create(:carto_visualization, user: @user)
+    @other_visualization = create(:carto_visualization, user: @user)
   end
 
   after(:all) do
@@ -37,7 +37,7 @@ describe Carto::Api::SnapshotsController do
                                 state: fake_state)
       end
 
-      @buddy = FactoryGirl.create(:carto_user)
+      @buddy = create(:carto_user)
       5.times do
         Carto::Snapshot.create!(user_id: @buddy.id,
                                 visualization_id: @visualization.id,

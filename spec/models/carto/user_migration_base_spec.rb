@@ -1,6 +1,4 @@
-require_relative '../../spec_helper_min'
-require_relative '../../../app/models/carto/user_migration_import'
-require_relative '../../../app/models/carto/user_migration_export'
+require 'spec_helper_unit'
 require_relative '../../support/factories/tables'
 require_relative '../../factories/organizations_contexts'
 require_relative './helpers/user_migration_helper'
@@ -29,8 +27,10 @@ describe 'UserMigration' do
   include UserMigrationHelper
   include CartoDB::DataMover::Utils
 
+  let(:organization) { create(:organization_with_users) }
+
   describe 'database version' do
-    before(:each) do
+    before do
       @conn_mock = Object.new
       @conn_mock.stubs(:query).returns(['version' => 'PostgreSQL 9.5.2 on x86_64-pc-linux-gnu...'])
     end
@@ -156,19 +156,18 @@ describe 'UserMigration' do
     end
 
     describe 'with orgs' do
-      include_context 'organization with users helper'
       it 'exports and imports org with users with viz' do
         CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-        export = create(:user_migration_export, organization_id: @carto_organization.id, export_data: false)
+        export = create(:user_migration_export, organization_id: organization.id, export_data: false)
         export.run_export
 
         export.log.collect_entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
         expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
 
-        database_host = @carto_organization.owner.database_host
+        database_host = organization.owner.database_host
 
-        @carto_organization.users.each { |u| remove_user(u) }
-        @carto_organization.delete
+        organization.users.each { |u| remove_user(u) }
+        organization.delete
 
         import = Carto::UserMigrationImport.create(
           exported_file: export.exported_file,
@@ -185,26 +184,26 @@ describe 'UserMigration' do
         import.log.collect_entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
         expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
 
-        @carto_organization.users.each do |u|
+        organization.users.each do |u|
           Carto::GhostTablesManager.new(u.id).fetch_user_tables_synced_with_db?.should eq true
         end
       end
 
       it 'does not drop database if visualizations import fails' do
         CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-        export = create(:user_migration_export, organization_id: @carto_organization.id, export_data: false)
+        export = create(:user_migration_export, organization_id: organization.id, export_data: false)
         export.run_export
 
         export.log.collect_entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
         expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
 
-        database_host = @carto_organization.owner.database_host
+        database_host = organization.owner.database_host
 
-        db_host = @carto_organization.owner.database_host
-        db_name = @carto_organization.database_name
+        db_host = organization.owner.database_host
+        db_name = organization.database_name
 
-        @carto_organization.users.each { |u| remove_user(u) }
-        @carto_organization.delete
+        organization.users.each { |u| remove_user(u) }
+        organization.delete
 
         import = Carto::UserMigrationImport.create(
           exported_file: export.exported_file,
@@ -352,7 +351,7 @@ describe 'UserMigration' do
     it 'exports users with datasets without a physical table if metadata export is requested (see #13721)' do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
-      user = FactoryGirl.build(:valid_user).save
+      user = build(:valid_user).save
       carto_user = Carto::User.find(user.id)
 
       @map, @table, @table_visualization, @visualization = create_full_visualization(carto_user)
@@ -379,7 +378,7 @@ describe 'UserMigration' do
     it 'does export users with a canonical viz without user table if metadata export is requested (see #12588)' do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
-      user = FactoryGirl.build(:valid_user).save
+      user = build(:valid_user).save
       carto_user = Carto::User.find(user.id)
 
       @map, @table, @table_visualization, @visualization = create_full_visualization(carto_user)
@@ -420,10 +419,8 @@ describe 'UserMigration' do
     end
 
     context "for organizations" do
-      include_context "organization with users helper"
-
-      let(:user) { @carto_organization.owner }
-      let(:export) { create(:user_migration_export, organization_id: @carto_organization.id) }
+      let(:user) { organization.owner }
+      let(:export) { create(:user_migration_export, organization_id: organization.id) }
 
       it "fails" do
         expect(export.state).to eq(Carto::UserMigrationImport::STATE_FAILURE)

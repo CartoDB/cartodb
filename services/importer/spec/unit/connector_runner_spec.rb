@@ -16,7 +16,7 @@ describe CartoDB::Importer2::ConnectorRunner do
     @user = create_user
     @user.save
     @pg_options = @user.db_service.db_configuration_for
-    @feature_flag = FactoryGirl.create(:feature_flag, name: 'carto-connectors', restricted: true)
+    @feature_flag = create(:feature_flag, name: 'carto-connectors', restricted: true)
     @fake_log = CartoDB::Importer2::Doubles::Log.new(@user)
     @providers = %w(dummy)
     @fake_log.clear

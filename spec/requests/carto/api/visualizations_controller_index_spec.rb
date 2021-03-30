@@ -33,7 +33,7 @@ describe Carto::Api::VisualizationsController do
     end
 
     before(:each) do
-      @user = FactoryGirl.create(:valid_user)
+      @user = create(:valid_user)
       login(@user)
     end
 
@@ -127,7 +127,7 @@ describe Carto::Api::VisualizationsController do
 
       context 'with faster dependencies' do
         before(:all) do
-          @feature_flag = FactoryGirl.create(:feature_flag, name: 'faster-dependencies', restricted: true)
+          @feature_flag = create(:feature_flag, name: 'faster-dependencies', restricted: true)
         end
 
         after(:all) do
@@ -149,7 +149,7 @@ describe Carto::Api::VisualizationsController do
         end
 
         it 'does not return the dependent visualizations if with_dependent_visualizations = 0' do
-          with_feature_flag(@user, 'faster-dependencies', true) do          
+          with_feature_flag(@user, 'faster-dependencies', true) do
             get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table',
                                                 with_dependent_visualizations: 0), {}, @headers
           end
@@ -215,8 +215,8 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'orders descending by default' do
-        visualization_a = FactoryGirl.create(:carto_visualization, name: 'Visualization A', user_id: @user.id).store
-        visualization_b = FactoryGirl.create(:carto_visualization, name: 'Visualization B', user_id: @user.id).store
+        visualization_a = create(:carto_visualization, name: 'Visualization A', user_id: @user.id).store
+        visualization_b = create(:carto_visualization, name: 'Visualization B', user_id: @user.id).store
 
         get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'name'), {}, @headers
 
@@ -229,8 +229,8 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'orders by name' do
-        visualization_a = FactoryGirl.create(:carto_visualization, name: 'Visualization A', user_id: @user.id).store
-        visualization_b = FactoryGirl.create(:carto_visualization, name: 'Visualization B', user_id: @user.id).store
+        visualization_a = create(:carto_visualization, name: 'Visualization A', user_id: @user.id).store
+        visualization_b = create(:carto_visualization, name: 'Visualization B', user_id: @user.id).store
 
         get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'name',
                                             order_direction: 'asc'), {}, @headers
@@ -244,8 +244,8 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'orders by favorited' do
-        visualization_a = FactoryGirl.create(:carto_visualization, user_id: @user.id).store
-        visualization_b = FactoryGirl.create(:carto_visualization, user_id: @user.id).store
+        visualization_a = create(:carto_visualization, user_id: @user.id).store
+        visualization_b = create(:carto_visualization, user_id: @user.id).store
         visualization_a.add_like_from(@user)
 
         get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', with_dependent_visualizations: 10,
@@ -300,11 +300,11 @@ describe Carto::Api::VisualizationsController do
       end
 
       xit 'orders by estimated row count' do
-        visualization_a = FactoryGirl.create(:carto_visualization, user_id: @user.id)
-        table = FactoryGirl.create(:table, user_id: @user.id)
+        visualization_a = create(:carto_visualization, user_id: @user.id)
+        table = create(:table, user_id: @user.id)
         table.insert_row!(name: 'name1')
         table.update_table_pg_stats
-        visualization_b = FactoryGirl.create(:carto_visualization, user_id: @user.id, map_id: table.map_id)
+        visualization_b = create(:carto_visualization, user_id: @user.id, map_id: table.map_id)
 
         get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'estimated_row_count',
                                             order_direction: 'desc'), {}, @headers
@@ -320,8 +320,8 @@ describe Carto::Api::VisualizationsController do
       it 'orders by privacy' do
         link_privacy = Carto::Visualization::PRIVACY_LINK
         public_privacy = Carto::Visualization::PRIVACY_PUBLIC
-        visualization_a = FactoryGirl.create(:carto_visualization, user_id: @user.id, privacy: link_privacy).store
-        visualization_b = FactoryGirl.create(:carto_visualization, user_id: @user.id, privacy: public_privacy).store
+        visualization_a = create(:carto_visualization, user_id: @user.id, privacy: link_privacy).store
+        visualization_b = create(:carto_visualization, user_id: @user.id, privacy: public_privacy).store
 
         get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'privacy',
                                             order_direction: 'desc'), {}, @headers
@@ -337,10 +337,10 @@ describe Carto::Api::VisualizationsController do
       it 'orders by dependent visualizations' do
         table_a = create_random_table(@user)
         visualization_a = table_a.table_visualization
-        dependent_visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id)
-        dependent_visualization.map = FactoryGirl.create(:carto_map, user_id: @user.id)
+        dependent_visualization = create(:carto_visualization, user_id: @user.id)
+        dependent_visualization.map = create(:carto_map, user_id: @user.id)
         dependent_visualization.save!
-        layer = FactoryGirl.build(:carto_layer)
+        layer = build(:carto_layer)
         layer.options[:table_name] = table_a.name
         layer.save!
         dependent_visualization.layers << layer
@@ -361,8 +361,8 @@ describe Carto::Api::VisualizationsController do
 
       context 'by search rank' do
         before(:each) do
-          @visualization_a = FactoryGirl.create(:carto_visualization, name: 'Best rank', user_id: @user.id).store
-          @visualization_b = FactoryGirl.create(:carto_visualization, name: 'Another rank, but not the best',
+          @visualization_a = create(:carto_visualization, name: 'Best rank', user_id: @user.id).store
+          @visualization_b = create(:carto_visualization, name: 'Another rank, but not the best',
                                                                       user_id: @user.id).store
         end
 
@@ -506,7 +506,7 @@ describe Carto::Api::VisualizationsController do
     include_context 'organization with users helper'
 
     before(:all) do
-      @user = FactoryGirl.create(:valid_user)
+      @user = create(:valid_user)
     end
 
     after(:all) do
@@ -554,7 +554,7 @@ describe Carto::Api::VisualizationsController do
     end
 
     it 'generates the URL for tables shared by another user with hyphens in their username' do
-      user_with_hyphen = FactoryGirl.create(:user, username: 'fulano-de-tal', organization: @organization)
+      user_with_hyphen = create(:user, username: 'fulano-de-tal', organization: @organization)
       table = create_random_table(user_with_hyphen, 'tabluca', UserTable::PRIVACY_PRIVATE)
       shared_table = table.table_visualization
       share_visualization(shared_table, @org_user_1)

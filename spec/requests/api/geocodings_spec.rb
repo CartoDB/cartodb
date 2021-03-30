@@ -1,19 +1,12 @@
-require 'spec_helper'
+require 'spec_helper_unit'
 
 describe "Geocodings API" do
-  before(:all) do
-    @user = FactoryGirl.create(:valid_user, table_quota: 50)
+  before do
+    bypass_named_maps
+    @user = create(:valid_user, table_quota: 50)
 
     delete_user_data @user
     host! "#{@user.username}.localhost.lan"
-  end
-
-  after(:all) do
-    @user.destroy
-  end
-
-  before(:each) do
-    bypass_named_maps
   end
 
   let(:params) { { :api_key => @user.api_key } }
@@ -149,7 +142,7 @@ describe "Geocodings API" do
 
   describe 'PUT /api/v1/geocodings/:id' do
     it 'fails gracefully on job cancel failure' do
-      geocoding = FactoryGirl.create(:geocoding, table_id: Carto::UUIDHelper.random_uuid, formatter: 'b', user: @user)
+      geocoding = create(:geocoding, table_id: Carto::UUIDHelper.random_uuid, formatter: 'b', user: @user)
       Geocoding.any_instance.stubs(:cancel).raises('wadus')
 
       put_json api_v1_geocodings_update_url(params.merge(id: geocoding.id)), { state: 'cancelled' } do |response|

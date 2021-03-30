@@ -7,7 +7,7 @@ module Carto
     include MapcappedVisualizationUpdater
 
     before(:all) do
-      @user = FactoryGirl.create(:carto_user)
+      @user = create(:carto_user)
       @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
     end
 

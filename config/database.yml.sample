@@ -52,4 +52,3 @@ test:
   prepared_statements: false
   variables:
     statement_timeout: 10000
-

@@ -26,7 +26,7 @@ describe Carto::Api::AssetsController do
         response.body[:assets].size.should == 0
       end
 
-      3.times { FactoryGirl.create(:asset, user_id: @user.id) }
+      3.times { create(:asset, user_id: @user.id) }
 
       get_json(api_v1_users_assets_index_url(user_id: @user), params) do |response|
         response.status.should be_success

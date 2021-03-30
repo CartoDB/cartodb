@@ -86,8 +86,8 @@ describe Carto::Api::UserPresenter do
     create_table( { user_id: user.id, name: 'table1' } )
     create_table( { user_id: user.id, name: 'table2', privacy: Carto::UserTable::PRIVACY_PUBLIC } )
 
-    feature_flag1 = FactoryGirl.create(:feature_flag, id: 1, name: 'ff1')
-    feature_flag2 = FactoryGirl.create(:feature_flag, id: 2, name: 'ff2')
+    feature_flag1 = create(:feature_flag, id: 1, name: 'ff1')
+    feature_flag2 = create(:feature_flag, id: 2, name: 'ff2')
     user.update_feature_flags([ feature_flag1.id.to_s, feature_flag2.id.to_s ])
     user.save.reload
 

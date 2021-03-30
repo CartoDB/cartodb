@@ -374,7 +374,7 @@ describe Admin::OrganizationsController do
     describe '#notifications' do
       it 'displays last notification' do
         body = 'Free meal today'
-        FactoryGirl.create(:notification, organization: @carto_organization, body: body)
+        create(:notification, organization: @carto_organization, body: body)
         get organization_notifications_admin_url(user_domain: @admin_user.username)
         response.status.should eq 200
         response.body.should include(body)

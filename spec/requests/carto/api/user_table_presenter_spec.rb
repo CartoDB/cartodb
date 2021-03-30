@@ -6,8 +6,8 @@ describe Carto::Api::UserTablePresenter do
   describe '#poro' do
     context 'when accessible_dependent_derived_maps is enabled' do
       before(:all) do
-        table = FactoryGirl.create(:carto_user_table, user_id: @user.id)
-        visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id)
+        table = create(:carto_user_table, user_id: @user.id)
+        visualization = create(:carto_visualization, user_id: @user.id)
         dependencies = [visualization] * 5
         table.stubs(:accessible_dependent_derived_maps).returns(dependencies)
         presenter = Carto::Api::UserTablePresenter.new(table, @user)

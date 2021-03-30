@@ -93,7 +93,7 @@ namespace :carto do
           end
         end
 
-        puts "Finished. Total: #{total}. Errors: #{errors}"
+        puts "Finished. Total: #{total}. Errors: #{errors}" unless Rails.env.test?
       end
     end
   end

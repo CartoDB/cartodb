@@ -26,8 +26,8 @@ describe Carto::Api::StatesController do
   end
 
   before(:all) do
-    @user = FactoryGirl.create(:carto_user)
-    @intruder = FactoryGirl.create(:carto_user)
+    @user = create(:carto_user)
+    @intruder = create(:carto_user)
 
     @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
   end

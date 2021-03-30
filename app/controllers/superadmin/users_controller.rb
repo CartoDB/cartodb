@@ -38,6 +38,10 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       end) and return
     elsif params[:account_type].present? && params[:state].present?
       users = ::User.where(account_type: params[:account_type], state: params[:state])
+      if params[:page].present?
+        page, per_page = page_per_page_params
+        users = users.limit(per_page).offset((page - 1) * per_page)
+      end
       respond_with(:superadmin, users.map(&:activity))
     else
       users = ::User.all

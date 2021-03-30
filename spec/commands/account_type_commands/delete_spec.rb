@@ -1,8 +1,6 @@
-require 'spec_helper'
+require 'spec_helper_unit'
 
 describe AccountTypeCommands::Delete do
-  include_context 'with DatabaseCleaner'
-
   let(:command) { described_class.new(params, logger: logger) }
   let(:params) { { price_plan: { account_type: account_type_literal } } }
   let(:account_type_literal) { 'FREE' }

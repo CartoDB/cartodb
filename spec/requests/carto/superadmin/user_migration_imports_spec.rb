@@ -23,8 +23,8 @@ describe Carto::Superadmin::UserMigrationImportsController do
 
   describe '#create' do
     before(:all) do
-      @user = FactoryGirl.create(:carto_user)
-      @organization = FactoryGirl.create(:organization)
+      @user = create(:carto_user)
+      @organization = create(:organization)
     end
 
     after(:all) do
@@ -100,7 +100,7 @@ describe Carto::Superadmin::UserMigrationImportsController do
 
   describe '#show' do
     before(:all) do
-      @user = FactoryGirl.create(:carto_user)
+      @user = create(:carto_user)
       @import = Carto::UserMigrationImport.create(
         exported_file: 'some_url',
         database_host: 'some_ip',

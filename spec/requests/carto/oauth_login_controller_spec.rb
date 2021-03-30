@@ -2,7 +2,7 @@ require 'spec_helper_min'
 
 describe Carto::OauthLoginController do
   before(:all) do
-    @organization = FactoryGirl.create(:organization_google_whitelist_empty)
+    @organization = create(:organization_google_whitelist_empty)
   end
 
   after(:all) do

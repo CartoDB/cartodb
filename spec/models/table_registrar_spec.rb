@@ -18,9 +18,9 @@ describe CartoDB::TableRegistrar do
 
     before(:each) do
       bypass_named_maps
-      @data_import = FactoryGirl.create(:data_import, user_id: @user.id)
+      @data_import = create(:data_import, user_id: @user.id)
 
-      @external_data_import = FactoryGirl.create(:external_data_import_with_external_source,
+      @external_data_import = create(:external_data_import_with_external_source,
                                                  data_import_id: @data_import.id)
       @external_data_import.external_source.visualization.description = description
       @external_data_import.external_source.visualization.tags = tags

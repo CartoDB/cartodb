@@ -10,22 +10,22 @@ describe Carto::Api::UsersController do
 
   before(:all) do
     @headers = { 'CONTENT_TYPE' => 'application/json' }
-    FactoryGirl.create(:notification, organization: @carto_organization)
+    create(:notification, organization: @carto_organization)
   end
 
   before(:each) do
     ::User.any_instance.stubs(:create_in_central).returns(true)
     ::User.any_instance.stubs(:update_in_central).returns(true)
-    FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner, privacy: Carto::Visualization::PRIVACY_PUBLIC)
-    FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner,
+    create(:carto_visualization, user: @carto_org_user_owner, privacy: Carto::Visualization::PRIVACY_PUBLIC)
+    create(:carto_visualization, user: @carto_org_user_owner,
                                              privacy: Carto::Visualization::PRIVACY_PRIVATE)
-    FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner, privacy: Carto::Visualization::PRIVACY_LINK)
-    FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner, privacy: Carto::Visualization::PRIVACY_LINK)
-    FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner,
+    create(:carto_visualization, user: @carto_org_user_owner, privacy: Carto::Visualization::PRIVACY_LINK)
+    create(:carto_visualization, user: @carto_org_user_owner, privacy: Carto::Visualization::PRIVACY_LINK)
+    create(:carto_visualization, user: @carto_org_user_owner,
                                              privacy: Carto::Visualization::PRIVACY_PROTECTED, password: 'a')
-    FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner,
+    create(:carto_visualization, user: @carto_org_user_owner,
                                              privacy: Carto::Visualization::PRIVACY_PROTECTED, password: 'a')
-    FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner,
+    create(:carto_visualization, user: @carto_org_user_owner,
                                              privacy: Carto::Visualization::PRIVACY_PROTECTED, password: 'a')
   end
 
@@ -169,7 +169,7 @@ describe Carto::Api::UsersController do
   describe 'update_me' do
     context 'account updates' do
       before(:each) do
-        @user = FactoryGirl.create(:user, password: 'foobarbaz', password_confirmation: 'foobarbaz')
+        @user = create(:user, password: 'foobarbaz', password_confirmation: 'foobarbaz')
       end
 
       after(:each) do
@@ -300,7 +300,7 @@ describe Carto::Api::UsersController do
         end
 
         it 'removes the multifactor authentications' do
-          FactoryGirl.create(:totp, user_id: @user.id)
+          create(:totp, user_id: @user.id)
           payload = { user: { password_confirmation: 'foobarbaz', mfa: false } }
 
           @user.reload.user_multifactor_auths.should_not be_empty
@@ -337,7 +337,7 @@ describe Carto::Api::UsersController do
 
     context 'profile updates' do
       before(:each) do
-        @user = FactoryGirl.create(:user, password: 'foobarbaz', password_confirmation: 'foobarbaz')
+        @user = create(:user, password: 'foobarbaz', password_confirmation: 'foobarbaz')
       end
 
       after(:each) do
@@ -468,7 +468,7 @@ describe Carto::Api::UsersController do
 
   describe 'delete_me' do
     before(:each) do
-      @user = FactoryGirl.create(:user, password: 'foobarbaz', password_confirmation: 'foobarbaz')
+      @user = create(:user, password: 'foobarbaz', password_confirmation: 'foobarbaz')
       User.any_instance.stubs(:delete_in_central)
     end
 

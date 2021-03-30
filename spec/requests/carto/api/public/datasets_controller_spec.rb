@@ -12,9 +12,9 @@ describe Carto::Api::Public::DatasetsController do
     before(:each) do
       @params = { api_key: @user1.api_key, page: 1, per_page: 10 }
 
-      FactoryGirl.create(:table, user_id: @user1.id, name: 'table-a')
-      FactoryGirl.create(:table, user_id: @user1.id, name: 'table-b')
-      FactoryGirl.create(:table, user_id: @user1.id, name: 'table-c')
+      create(:table, user_id: @user1.id, name: 'table-a')
+      create(:table, user_id: @user1.id, name: 'table-b')
+      create(:table, user_id: @user1.id, name: 'table-c')
 
       host! "#{@user1.username}.localhost.lan"
     end
@@ -80,7 +80,7 @@ describe Carto::Api::Public::DatasetsController do
         host! "#{@org_user_2.username}.localhost.lan"
         @table_name = 'shared_table'
         @params = { api_key: @org_user_2.api_key, page: 1, per_page: 10 }
-        @shared_table = FactoryGirl.create(:table, user_id: @org_user_1.id, name: @table_name )
+        @shared_table = create(:table, user_id: @org_user_1.id, name: @table_name )
       end
 
       it 'includes shared datasets read only' do
@@ -115,7 +115,7 @@ describe Carto::Api::Public::DatasetsController do
     end
 
     it 'returns 200 with an empty array if the current user does not have datasets' do
-      @user3 = FactoryGirl.create(:valid_user)
+      @user3 = create(:valid_user)
       host! "#{@user3.username}.localhost.lan"
 
       get_json api_v4_datasets_url(api_key: @user3.api_key) do |response|
@@ -134,7 +134,7 @@ describe Carto::Api::Public::DatasetsController do
       end
 
       it 'returns 403 when using a regular API key without datasets:metadata scope' do
-        api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+        api_key = create(:api_key_apis, user_id: @user1.id)
 
         get_json api_v4_datasets_url(@params.merge(api_key: api_key.token)) do |response|
           expect(response.status).to eq(403)
@@ -142,7 +142,7 @@ describe Carto::Api::Public::DatasetsController do
       end
 
       it 'returns 200 when using a API key with datasets:metadata scope' do
-        api_key = FactoryGirl.create(:oauth_api_key_datasets_metadata_grant, user_id: @user1.id)
+        api_key = create(:oauth_api_key_datasets_metadata_grant, user_id: @user1.id)
 
         get_json api_v4_datasets_url(@params.merge(api_key: api_key.token)) do |response|
           expect(response.status).to eq(200)

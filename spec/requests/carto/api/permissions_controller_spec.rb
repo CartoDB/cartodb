@@ -29,7 +29,7 @@ describe Carto::Api::PermissionsController do
       'CONTENT_TYPE' => 'application/json'
     }
     host! "#{@user.username}.localhost.lan"
-    @visualization = FactoryGirl.create(:carto_visualization, user: Carto::User.find(@user.id))
+    @visualization = create(:carto_visualization, user: Carto::User.find(@user.id))
     @entity_id = @visualization.id
   end
 
@@ -129,8 +129,8 @@ describe 'group permission support' do
   include_context 'organization with users helper'
 
   before(:all) do
-    @group = FactoryGirl.create(:carto_group, organization_id: @organization.id)
-    @group_2 = FactoryGirl.create(:random_group, organization_id: @organization.id)
+    @group = create(:carto_group, organization_id: @organization.id)
+    @group_2 = create(:random_group, organization_id: @organization.id)
 
     @headers = {
       'CONTENT_TYPE'  => 'application/json',
@@ -144,7 +144,7 @@ describe 'group permission support' do
   end
 
   it 'adds group read permission' do
-    visualization = FactoryGirl.create(:carto_visualization, user: Carto::User.find(@org_user_1.id))
+    visualization = create(:carto_visualization, user: Carto::User.find(@org_user_1.id))
     entity_id = visualization.id
 
     entity_type = Carto::Permission::ENTITY_TYPE_VISUALIZATION
@@ -190,7 +190,7 @@ describe 'group permission support' do
   end
 
   it 'creates a shared entity per shared group' do
-    visualization = FactoryGirl.create(:carto_visualization, user: Carto::User.find(@org_user_1.id))
+    visualization = create(:carto_visualization, user: Carto::User.find(@org_user_1.id))
     entity_id = visualization.id
 
     permission = visualization.permission

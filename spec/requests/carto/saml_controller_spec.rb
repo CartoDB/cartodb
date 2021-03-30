@@ -2,7 +2,7 @@ require 'spec_helper_min'
 
 describe Carto::SamlController do
   before(:all) do
-    @organization = FactoryGirl.create(:saml_organization)
+    @organization = create(:saml_organization)
   end
 
   after(:all) do

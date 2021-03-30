@@ -1,9 +1,9 @@
-require 'spec_helper'
+require 'spec_helper_unit'
 
 describe "Assets API" do
 
   before(:each) do
-    @user = FactoryGirl.create(:valid_user)
+    @user = create(:valid_user)
 
     delete_user_data @user
     host! "#{@user.username}.localhost.lan"
@@ -79,7 +79,7 @@ describe "Assets API" do
   end
 
   it "finds image file extension" do
-    asset = FactoryGirl.create(:asset, user_id: @user.id)
+    asset = create(:asset, user_id: @user.id)
 
     Asset::VALID_EXTENSIONS.each do |extension|
       asset_name = "cartofante" + extension
@@ -89,7 +89,7 @@ describe "Assets API" do
   end
 
   it "detects incorrect image file extension" do
-    asset = FactoryGirl.create(:asset, user_id: @user.id)
+    asset = create(:asset, user_id: @user.id)
     asset.stubs(:asset_file).returns("cartofante.gifv")
     asset.asset_file_extension.should == nil
   end
@@ -97,7 +97,7 @@ describe "Assets API" do
   it "deletes an asset" do
     Asset.any_instance.stubs('use_s3?').returns(false)
 
-    FactoryGirl.create(:asset, user_id: @user.id)
+    create(:asset, user_id: @user.id)
     @user.reload
     delete_json(api_v1_users_assets_destroy_url(user_id: @user.id, id: @user.assets.first.id), params) do |response|
       response.body.should == {}

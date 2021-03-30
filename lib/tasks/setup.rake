@@ -132,7 +132,11 @@ DESC
     end
 
     desc "make public and tile users"
-    task :create_publicuser => :environment do
+    task create_publicuser: :environment do
+      # Avoid deadlocks when trying to create the same user several times during parallel tests
+      # Don't use ParallelTests::first_process? to avoid requiring the gem in non-test environments
+      next if ENV['TEST_ENV_NUMBER'].to_i.positive?
+
       [CartoDB::PUBLIC_DB_USER, CartoDB::TILE_DB_USER].each do |u|
         puts "Creating user #{u}"
         ::SequelRails.connection.run("DO $$

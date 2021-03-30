@@ -44,7 +44,7 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'marks visualizations as using vizjson2' do
-        visualization = FactoryGirl.create(:carto_visualization)
+        visualization = create(:carto_visualization)
         Carto::Api::VisualizationsController.any_instance.stubs(:generate_vizjson2).returns({})
         get(
           api_v2_visualizations_vizjson_url(user_domain: visualization.user.username, id: visualization.id),
@@ -55,7 +55,7 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'marks visualizations as using vizjson2 with invalid referer' do
-        visualization = FactoryGirl.create(:carto_visualization)
+        visualization = create(:carto_visualization)
         Carto::Api::VisualizationsController.any_instance.stubs(:generate_vizjson2).returns({})
         get(
           api_v2_visualizations_vizjson_url(user_domain: visualization.user.username, id: visualization.id),
@@ -66,14 +66,14 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'marks visualizations as using vizjson2 without referer' do
-        visualization = FactoryGirl.create(:carto_visualization)
+        visualization = create(:carto_visualization)
         Carto::Api::VisualizationsController.any_instance.stubs(:generate_vizjson2).returns({})
         get api_v2_visualizations_vizjson_url(user_domain: visualization.user.username, id: visualization.id)
         visualization.uses_vizjson2?.should be_true
       end
 
       it 'does not mark visualizations as using vizjson2 with carto referer' do
-        visualization = FactoryGirl.create(:carto_visualization)
+        visualization = create(:carto_visualization)
         Carto::Api::VisualizationsController.any_instance.stubs(:generate_vizjson2).returns({})
         get(
           api_v2_visualizations_vizjson_url(user_domain: visualization.user.username, id: visualization.id),
@@ -110,7 +110,7 @@ describe Carto::Api::VisualizationsController do
     before(:all) do
       Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
-      @user_1 = FactoryGirl.create(:valid_user, private_tables_enabled: false)
+      @user_1 = create(:valid_user, private_tables_enabled: false)
       @table1 = create_random_table(@user_1)
 
       @headers = { 'CONTENT_TYPE' => 'application/json' }
@@ -248,7 +248,7 @@ describe Carto::Api::VisualizationsController do
     before(:all) do
       Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
-      @user_1 = FactoryGirl.create(:valid_user)
+      @user_1 = create(:valid_user)
     end
 
     before(:each) do
@@ -294,11 +294,16 @@ describe Carto::Api::VisualizationsController do
         'total_likes' => 0,
         'total_user_entries' => 0,
         'total_shared' => 0,
-        'total_locked' => 0,
-        'total_subscriptions' => 0,
-        'total_samples' => 0
+        'total_locked' => 0
       }
       response_body.should == expected_response
+    end
+
+    it 'returns DO information if "load_do_totals" flag is set' do
+      get base_url, { load_do_totals: true }, @headers
+      body = JSON.parse(last_response.body)
+      body.should include('total_subscriptions' => 0)
+      body.should include('total_samples' => 0)
     end
 
     it 'returns 400 if wrong page parameter is passed' do
@@ -342,19 +347,19 @@ describe Carto::Api::VisualizationsController do
     end
 
     it 'returns locked count' do
-      FactoryGirl.build(:derived_visualization, user_id: @user_1.id, locked: false).store
-      FactoryGirl.build(:derived_visualization, user_id: @user_1.id, locked: true).store
-      user2 = FactoryGirl.create(:valid_user)
-      FactoryGirl.build(:derived_visualization, user_id: user2.id, locked: true).store
+      build(:derived_visualization, user_id: @user_1.id, locked: false).store
+      build(:derived_visualization, user_id: @user_1.id, locked: true).store
+      user2 = create(:valid_user)
+      build(:derived_visualization, user_id: user2.id, locked: true).store
 
       response_body(type: CartoDB::Visualization::Member::TYPE_DERIVED)['total_locked'].should == 1
     end
 
     it 'does a partial match search' do
-      FactoryGirl.build(:derived_visualization, user_id: @user_1.id, name: 'foo').store
-      FactoryGirl.build(:derived_visualization, user_id: @user_1.id, name: 'bar').store
-      FactoryGirl.build(:derived_visualization, user_id: @user_1.id, name: 'foo_patata_bar').store
-      FactoryGirl.build(:derived_visualization, user_id: @user_1.id, name: 'foo_patata_baz').store
+      build(:derived_visualization, user_id: @user_1.id, name: 'foo').store
+      build(:derived_visualization, user_id: @user_1.id, name: 'bar').store
+      build(:derived_visualization, user_id: @user_1.id, name: 'foo_patata_bar').store
+      build(:derived_visualization, user_id: @user_1.id, name: 'foo_patata_baz').store
 
       body = response_body(q: 'patata', type: CartoDB::Visualization::Member::TYPE_DERIVED)
       body['total_entries'].should == 2
@@ -366,7 +371,7 @@ describe Carto::Api::VisualizationsController do
     end
 
     it 'allows to search datasets including dependent visualizations' do
-      FactoryGirl.create(:table_visualization, user_id: @user_1.id, name: 'foo')
+      create(:table_visualization, user_id: @user_1.id, name: 'foo')
 
       body = response_body(q: 'foo', type: CartoDB::Visualization::Member::TYPE_CANONICAL,
                            with_dependent_visualizations: 10)
@@ -377,7 +382,7 @@ describe Carto::Api::VisualizationsController do
     end
 
     it 'exludes any kind of permissions with show_permission=false' do
-      FactoryGirl.create(:carto_user_table_with_canonical, user_id: @user_1.id)
+      create(:carto_user_table_with_canonical, user_id: @user_1.id)
 
       body = response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL, show_permission: false)
 
@@ -391,7 +396,7 @@ describe Carto::Api::VisualizationsController do
       VIZS_N = 20
 
       before(:all) do
-        @visualizations = (1..VIZS_N).map { FactoryGirl.create(:carto_user_table_with_canonical, user_id: @user_1.id) }
+        @visualizations = (1..VIZS_N).map { create(:carto_user_table_with_canonical, user_id: @user_1.id) }
       end
 
       LIST_NAMES_PARAMS = {

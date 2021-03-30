@@ -31,9 +31,9 @@ describe Carto::Api::VisualizationsController do
 
       Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
-      @user_1 = FactoryGirl.create(:valid_user)
+      @user_1 = create(:valid_user)
       @carto_user1 = Carto::User.find(@user_1.id)
-      @user_2 = FactoryGirl.create(:valid_user, private_maps_enabled: true)
+      @user_2 = create(:valid_user, private_maps_enabled: true)
       @carto_user2 = Carto::User.find(@user_2.id)
       @api_key = @user_1.api_key
     end
@@ -287,7 +287,7 @@ describe Carto::Api::VisualizationsController do
       include_context 'organization with users helper'
       describe 'GET list_watching' do
         it 'returns the users currently on the watching list' do
-          vis = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1)
+          vis = create(:carto_visualization, user: @carto_org_user_1)
           user_domain = @carto_org_user_1.username
 
           get api_v1_visualizations_notify_watching_url(user_domain: user_domain, id: vis.id, api_key: @carto_org_user_1.api_key)
@@ -303,7 +303,7 @@ describe Carto::Api::VisualizationsController do
         end
 
         it 'returns 403 if user does not have read permissions on the visualization' do
-          private_vis = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1, privacy: Carto::Visualization::PRIVACY_PRIVATE)
+          private_vis = create(:carto_visualization, user: @carto_org_user_1, privacy: Carto::Visualization::PRIVACY_PRIVATE)
 
           get api_v1_visualizations_notify_watching_url(user_domain: @carto_org_user_2.username, id: private_vis.id, api_key: @carto_org_user_2.api_key)
           expect(last_response.status).to eq(403)
@@ -1299,14 +1299,14 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'returns 404 for not-accesible visualizations' do
-        other_visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_2)
+        other_visualization = create(:carto_visualization, user: @carto_org_user_2)
         delete_json(destroy_url(@carto_org_user_1, other_visualization.id)) do |response|
           expect(response.status).to eq 404
         end
       end
 
       it 'returns 403 for not-owned visualizations' do
-        other_visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_2)
+        other_visualization = create(:carto_visualization, user: @carto_org_user_2)
         share_visualization_with_user(other_visualization, @carto_org_user_1)
         delete_json(destroy_url(@carto_org_user_1, other_visualization.id)) do |response|
           expect(response.status).to eq 403
@@ -1314,7 +1314,7 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'returns 403 for viewer users' do
-        visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1)
+        visualization = create(:carto_visualization, user: @carto_org_user_1)
         @carto_org_user_1.update_attribute(:viewer, true)
         delete_json(destroy_url(@carto_org_user_1, visualization.id)) do |response|
           expect(response.status).to eq 403
@@ -1323,14 +1323,14 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'destroys a visualization by id' do
-        visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1)
+        visualization = create(:carto_visualization, user: @carto_org_user_1)
         delete_json(destroy_url(@carto_org_user_1, visualization.id)) do |response|
           expect(response.status).to eq 204
         end
       end
 
       it 'destroys a visualization by name' do
-        visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1)
+        visualization = create(:carto_visualization, user: @carto_org_user_1)
         delete_json(destroy_url(@carto_org_user_1, visualization.name)) do |response|
           expect(response.status).to eq 204
         end
@@ -1350,7 +1350,7 @@ describe Carto::Api::VisualizationsController do
 
       it 'destroys a visualization and affected layers (partially dependent)' do
         _, _, table_visualization, visualization = create_full_visualization(@carto_org_user_1)
-        visualization.layers << FactoryGirl.create(:carto_layer)
+        visualization.layers << create(:carto_layer)
         visualization.data_layers.count.should eq 2
 
         expect_visualization_to_be_destroyed(table_visualization) do
@@ -1378,7 +1378,7 @@ describe Carto::Api::VisualizationsController do
         @carto_user1.private_maps_enabled = true
         @carto_user1.public_map_quota = nil
         @carto_user1.save
-        visualization = FactoryGirl.create(:carto_visualization, user: @carto_user1,
+        visualization = create(:carto_visualization, user: @carto_user1,
                                                                  privacy: Carto::Visualization::PRIVACY_PRIVATE)
 
         request_params = { user_domain: @carto_user1.username, api_key: @carto_user1.api_key, id: visualization.id }
@@ -1394,7 +1394,7 @@ describe Carto::Api::VisualizationsController do
         @carto_user1.private_maps_enabled = true
         @carto_user1.public_map_quota = 0
         @carto_user1.save
-        visualization = FactoryGirl.create(:carto_visualization, user: @carto_user1,
+        visualization = create(:carto_visualization, user: @carto_user1,
                                                                  privacy: Carto::Visualization::PRIVACY_PRIVATE)
 
         request_params = { user_domain: @carto_user1.username, api_key: @carto_user1.api_key, id: visualization.id }
@@ -1410,7 +1410,7 @@ describe Carto::Api::VisualizationsController do
         @carto_user1.public_dataset_quota = nil
         @carto_user1.private_tables_enabled = true
         @carto_user1.save
-        user_table = FactoryGirl.create(:carto_user_table, :full, user: @carto_user1,
+        user_table = create(:carto_user_table, :full, user: @carto_user1,
                                         privacy: Carto::Visualization::PRIVACY_PRIVATE)
         visualization = user_table.visualization
 
@@ -1427,7 +1427,7 @@ describe Carto::Api::VisualizationsController do
         @carto_user1.public_dataset_quota = 0
         @carto_user1.private_tables_enabled = true
         @carto_user1.save
-        user_table = FactoryGirl.create(:carto_user_table, :full, user: @carto_user1,
+        user_table = create(:carto_user_table, :full, user: @carto_user1,
                                         privacy: Carto::Visualization::PRIVACY_PRIVATE)
         visualization = user_table.visualization
 
@@ -1444,7 +1444,7 @@ describe Carto::Api::VisualizationsController do
         @carto_user1.private_maps_enabled = true
         @carto_user1.private_map_quota = nil
         @carto_user1.save
-        visualization = FactoryGirl.create(:carto_visualization, user: @carto_user1,
+        visualization = create(:carto_visualization, user: @carto_user1,
                                                                  privacy: Carto::Visualization::PRIVACY_PUBLIC)
 
         request_params = { user_domain: @carto_user1.username, api_key: @carto_user1.api_key, id: visualization.id }
@@ -1460,7 +1460,7 @@ describe Carto::Api::VisualizationsController do
         @carto_user1.private_maps_enabled = true
         @carto_user1.private_map_quota = 0
         @carto_user1.save
-        visualization = FactoryGirl.create(:carto_visualization, user: @carto_user1,
+        visualization = create(:carto_visualization, user: @carto_user1,
                                                                  privacy: Carto::Visualization::PRIVACY_PUBLIC)
 
         request_params = { user_domain: @carto_user1.username, api_key: @carto_user1.api_key, id: visualization.id }
@@ -1477,11 +1477,11 @@ describe Carto::Api::VisualizationsController do
         @carto_user1.private_tables_enabled = true
         @carto_user1.public_map_quota = 0
         @carto_user1.save
-        user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @carto_user1.id)
-        map = FactoryGirl.create(:carto_map)
+        user_table = create(:carto_user_table, :with_db_table, user_id: @carto_user1.id)
+        map = create(:carto_map)
         user_table.map = map
         user_table.save!
-        visualization = FactoryGirl.create(:carto_visualization,
+        visualization = create(:carto_visualization,
                                            type: Carto::Visualization::TYPE_CANONICAL,
                                            map: map,
                                            user: @carto_user1,

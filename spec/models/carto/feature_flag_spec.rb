@@ -1,4 +1,4 @@
-require_relative '../../spec_helper_min'
+require 'spec_helper_unit'
 
 describe Carto::FeatureFlag do
 

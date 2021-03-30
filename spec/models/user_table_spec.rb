@@ -2,11 +2,13 @@ require_relative '../spec_helper'
 require 'models/user_table_shared_examples'
 
 describe UserTable do
-  before(:all) do
+  let(:user) { create(:valid_user) }
+
+  before do
     bypass_named_maps
 
-    @user = create_user(email: 'admin@cartotest.com', username: 'admin', password: '000123456')
-    @carto_user = Carto::User.find(@user.id)
+    @user = user
+    @carto_user = user.carto_user
 
     @user_table = ::UserTable.new
 
@@ -16,11 +18,6 @@ describe UserTable do
 
     # The dependent visualization models are in the Table class for the Sequel model
     @dependent_test_object = @user_table.service
-  end
-
-  after(:all) do
-    @user_table.destroy
-    @user.destroy
   end
 
   it_behaves_like 'user table models' do
@@ -45,11 +42,6 @@ describe UserTable do
   end
 
   context 'viewer users' do
-    after(:each) do
-      @user.viewer = false
-      @user.save
-    end
-
     it "can't create new user tables" do
       bypass_named_maps
       @user.viewer = true

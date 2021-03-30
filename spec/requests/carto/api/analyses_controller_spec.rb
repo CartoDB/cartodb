@@ -9,11 +9,11 @@ describe Carto::Api::AnalysesController do
 
   before(:all) do
     create(:feature_flag, name: 'editor-3', restricted: false)
-    @user = FactoryGirl.create(:carto_user, builder_enabled: true)
-    @user2 = FactoryGirl.create(:carto_user, builder_enabled: true)
+    @user = create(:carto_user, builder_enabled: true)
+    @user2 = create(:carto_user, builder_enabled: true)
     @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
     bypass_named_maps
-    @analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
+    @analysis = create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
   end
 
   after(:all) do
@@ -80,7 +80,7 @@ describe Carto::Api::AnalysesController do
 
     it 'returns existing analysis by json first id with uuid ids' do
       bypass_named_maps
-      analysis2 = FactoryGirl.create(
+      analysis2 = create(
         :source_analysis,
         visualization_id: @visualization.id,
         user_id: @user.id,
@@ -343,7 +343,7 @@ describe Carto::Api::AnalysesController do
 
     it 'registers table dependencies when destroying existing analysis' do
       bypass_named_maps
-      analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
+      analysis = create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
       Carto::Layer.any_instance.expects(:register_table_dependencies).times(@visualization.data_layers.count)
       delete_json viz_analysis_url(@user, @visualization, analysis) do |response|
         response.status.should eq 200
@@ -360,7 +360,7 @@ describe Carto::Api::AnalysesController do
 
   describe '#LayerNodeStyle cache' do
     before(:all) do
-      @styled_analysis = FactoryGirl.create(:analysis_point_in_polygon, visualization_id: @visualization.id, user_id: @user.id)
+      @styled_analysis = create(:analysis_point_in_polygon, visualization_id: @visualization.id, user_id: @user.id)
       @layer_id = @visualization.data_layers.first.id
     end
 

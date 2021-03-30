@@ -110,7 +110,7 @@ describe Carto::Api::LayersController do
       end
 
       it 'updates one layer' do
-        map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
+        map = create(:carto_map_with_layers, user_id: @user1.id)
         @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1, map: map)
         @layer = map.layers.first
 
@@ -130,7 +130,7 @@ describe Carto::Api::LayersController do
       end
 
       it 'register table dependencies when updating layers' do
-        map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
+        map = create(:carto_map_with_layers, user_id: @user1.id)
         @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1, map: map)
         @layer = map.layers.first
 
@@ -146,7 +146,7 @@ describe Carto::Api::LayersController do
       end
 
       it 'updates several layers at once' do
-        map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
+        map = create(:carto_map_with_layers, user_id: @user1.id)
         @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1, map: map)
         @layer = map.layers.first
         @layer2 = map.layers[1]
@@ -174,7 +174,7 @@ describe Carto::Api::LayersController do
       end
 
       it 'does not update table_name or users_name options' do
-        map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
+        map = create(:carto_map_with_layers, user_id: @user1.id)
         @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1, map: map)
         @layer = map.data_layers.first
         original_options = @layer.options.dup
@@ -191,7 +191,7 @@ describe Carto::Api::LayersController do
       end
 
       it 'does not remove table_name or users_name options' do
-        map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
+        map = create(:carto_map_with_layers, user_id: @user1.id)
         @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1, map: map)
         @layer = map.data_layers.first
         original_options = @layer.options.dup
@@ -208,7 +208,7 @@ describe Carto::Api::LayersController do
       end
 
       it 'destroys layers' do
-        map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
+        map = create(:carto_map_with_layers, user_id: @user1.id)
         @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1, map: map)
         @layer = map.layers.first
 
@@ -547,7 +547,7 @@ describe Carto::Api::LayersController do
 
       @headers = { 'CONTENT_TYPE' => 'application/json' }
 
-      @user = FactoryGirl.create(:valid_user)
+      @user = create(:valid_user)
     end
 
     after(:each) do

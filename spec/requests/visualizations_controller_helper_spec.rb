@@ -10,7 +10,7 @@ describe VisualizationsControllerHelper do
     @organization = create_organization_with_users
     @org_user = Carto::User.find(@organization.users.first.id)
     @org_user_shared = Carto::User.find(@organization.users.last.id)
-    @free_user = FactoryGirl.create(:carto_user)
+    @free_user = create(:carto_user)
 
     @free_map, @free_table, @free_table_visualization, @free_visualization = create_full_visualization(@free_user)
     @org_map, @org_table, @org_table_visualization, @org_visualization = create_full_visualization(@org_user)

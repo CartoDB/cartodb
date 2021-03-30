@@ -27,7 +27,7 @@ describe CartoDB::HiresGeocoder do
         'token' => '',
         'mailto' => ''
       })
-    @geocoding_model = FactoryGirl.create(:geocoding, kind: 'high-resolution', formatter: '{street}')
+    @geocoding_model = create(:geocoding, kind: 'high-resolution', formatter: '{street}')
     @geocoder = CartoDB::HiresGeocoder.new(@input_csv_file, @working_dir, @log, @geocoding_model)
   end
 

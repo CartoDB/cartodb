@@ -1,15 +1,15 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :asset do
     to_create(&:save)
 
-    public_url 'https://manolo.es/es/co/bar.png'
+    public_url { 'https://manolo.es/es/co/bar.png' }
   end
 
-  factory :carto_asset, class: Carto::Asset do
-    public_url 'https://manolo.es/es/co/bar.png'
+  factory :carto_asset, class: 'Carto::Asset' do
+    public_url { 'https://manolo.es/es/co/bar.png' }
   end
 
-  factory :organization_asset, class: Carto::Asset do
+  factory :organization_asset, class: 'Carto::Asset' do
     storage_info do
       {
         type: 'local',
@@ -18,6 +18,6 @@ FactoryGirl.define do
       }
     end
 
-    public_url 'https://manolo.es/es/co/bar.png'
+    public_url { 'https://manolo.es/es/co/bar.png' }
   end
 end

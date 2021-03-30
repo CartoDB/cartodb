@@ -55,6 +55,14 @@ steps:
   - name: 'ssh'
     path: /root/.ssh
 
+# Checkout db-connectors
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'sh'
+  args: ['-c', 'git clone git@github.com:CartoDB/db-connectors --depth 1 private_gears/db-connectors']
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
 # Copy files to the right directories to run the tests
 - name: ubuntu
   entrypoint: /bin/bash
@@ -75,7 +83,7 @@ steps:
     - -cx
     - |
       docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}
-      if [ $? -ne 0 ] 
+      if [ $? -ne 0 ]
       then
           docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:latest
           docker tag gcr.io/cartodb-on-gcp-main-artifacts/builder:latest gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}
@@ -103,7 +111,7 @@ steps:
       docker cp builder_1:/cartodb/parallel_tests_logs test_logs_${BUILD_ID}/parallel_tests_logs
       docker cp builder_1:/cartodb/serial_tests_logs test_logs_${BUILD_ID}/serial_tests_logs || true
       docker cp builder_1:/cartodb/tests_exit_status tests_exit_status
-      echo "Logs will be available during 1 day at gs://cartodb-ci-tmp-logs/${BUILD_ID}/"
+      echo "Logs will be available during 14 days at gs://cartodb-ci-tmp-logs/${BUILD_ID}/"
 
 # Upload logs to gcs
 - name: gcr.io/cloud-builders/gsutil
@@ -125,7 +133,7 @@ steps:
       fi
 
 
-substitutions: 
+substitutions:
     _BRANCH_TAG: ${BRANCH_NAME//\//-}
 options:
     machineType: 'N1_HIGHCPU_32'

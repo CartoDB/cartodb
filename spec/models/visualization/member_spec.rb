@@ -1,5 +1,4 @@
 require_relative '../../spec_helper'
-require_relative '../visualization_shared_examples'
 require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../app/models/visualization/member'
 require_relative '../../../app/models/visualization/collection'
@@ -19,7 +18,7 @@ describe Visualization::Member do
 
     Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
-    @user = FactoryGirl.create(:valid_user)
+    @user = create(:valid_user)
   end
 
   after(:all) do
@@ -46,9 +45,37 @@ describe Visualization::Member do
     Visualization::Relator.any_instance.stubs(:support_tables).returns(support_tables_mock)
   end
 
-  it_behaves_like 'visualization models' do
-    def build_visualization(attrs = {})
-      Visualization::Member.new(attrs)
+  describe '#password' do
+    it 'checks that when using password protected type, encrypted password is generated and stored correctly' do
+      password_value = '000123456'
+      password_second_value = '456789'
+
+      visualization = Visualization::Member.new(type: Visualization::Member::TYPE_DERIVED)
+      visualization.privacy = Visualization::Member::PRIVACY_PROTECTED
+
+      visualization.password = password_value
+      visualization.has_password?.should be_true
+      visualization.password_valid?(password_value).should be_true
+
+      # Shouldn't remove the password, and be equal
+      visualization.password = ''
+      visualization.has_password?.should be_true
+      visualization.password_valid?(password_value).should be_true
+      visualization.password = nil
+      visualization.has_password?.should be_true
+      visualization.password_valid?(password_value).should be_true
+
+      # Modify the password
+      visualization.password = password_second_value
+      visualization.has_password?.should be_true
+      visualization.password_valid?(password_second_value).should be_true
+      visualization.password_valid?(password_value).should be_false
+
+      # Test removing the password, should work
+      # :remove_password doesn't need to be public, so in the new model it's kept private. :send is needed here, then.
+      visualization.send(:remove_password)
+      visualization.has_password?.should be_false
+      visualization.password_valid?(password_value).should be_false
     end
   end
 
@@ -221,8 +248,8 @@ describe Visualization::Member do
       include Carto::Factories::Visualizations
 
       before(:all) do
-        @user = FactoryGirl.create(:carto_user)
-        @other_table = FactoryGirl.create(:carto_user_table, user: @user)
+        @user = create(:carto_user)
+        @other_table = create(:carto_user_table, user: @user)
       end
 
       before(:each) do
@@ -247,7 +274,7 @@ describe Visualization::Member do
 
       it 'destroys maps with join analyses if they are dependent' do
         # First layer uses tables @table, Second layer uses tables @table and @other_table. Map is dependent on @table
-        layer = FactoryGirl.build(:carto_layer, kind: 'carto', maps: [@map])
+        layer = build(:carto_layer, kind: 'carto', maps: [@map])
         layer.options[:query] = "SELECT * FROM #{@other_table.name}"
         layer.save
         layer.user_tables << @table << @other_table
@@ -260,7 +287,7 @@ describe Visualization::Member do
 
       it 'unlinks only dependent data layers' do
         layer_to_be_deleted = @visualization.data_layers.first
-        layer = FactoryGirl.build(:carto_layer, kind: 'carto', maps: [@map])
+        layer = build(:carto_layer, kind: 'carto', maps: [@map])
         layer.options[:query] = "SELECT * FROM #{@other_table.name}"
         layer.save
         layer.user_tables << @other_table
@@ -279,7 +306,7 @@ describe Visualization::Member do
         layer_to_be_deleted.save
         layer_to_be_deleted.user_tables << @table
 
-        layer = FactoryGirl.build(:carto_layer, kind: 'carto', maps: [@map])
+        layer = build(:carto_layer, kind: 'carto', maps: [@map])
         layer.options[:source] = 'b0'
         layer.save
         layer.user_tables << @other_table

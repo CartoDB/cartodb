@@ -8,7 +8,6 @@ module CartoDB
   class Hubspot
 
     include Singleton
-    include ::LoggerHelper
 
     attr_reader :event_ids, :form_ids, :token
 
@@ -60,7 +59,7 @@ module CartoDB
       response = get_events("/v1/event/?_a=#{@token}&_n=#{event_id}&email=#{payload[:email]}")
 
       unless (!response.nil? && response.code == 200)
-        log_error(message: 'Hubspot error tracking event', payload: payload, event: { id: event_id })
+        Rails.logger.error(message: 'Hubspot error tracking event', payload: payload, event: { id: event_id })
       end
 
       self
@@ -91,7 +90,7 @@ module CartoDB
 
       response
     rescue StandardError => e
-      log_error(exception: e, request: { url: url, body: content }, error_detail: response)
+      Rails.logger.error(exception: e, request: { url: url, body: content }, error_detail: response.inspect)
       nil
     end
 

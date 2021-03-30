@@ -1,4 +1,4 @@
-require_relative '../../spec_helper'
+require 'spec_helper_unit'
 
 describe Carto::Log do
   describe '#basic' do

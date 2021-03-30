@@ -1,5 +1,5 @@
 require 'mocha'
-require_relative './simplecov_helper'
+require 'mocha/api'
 require 'helpers/spec_helper_helpers'
 require 'helpers/named_maps_helper'
 require 'helpers/unique_names_helper'
@@ -7,7 +7,6 @@ require 'database_cleaner/active_record'
 require 'support/database_cleaner'
 require 'support/message_broker_stubs'
 require 'support/shared_entities_spec_helper'
-require 'spec_helper_common'
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 raise %(Cannot run tests in an env other than 'test', RAILS_ENV=#{Rails.env}) unless Rails.env.test?
@@ -19,6 +18,7 @@ require File.expand_path('../../config/environment', __FILE__)
 ActiveRecord.send(:remove_const, :TestFixtures) if ActiveRecord.const_defined?(:TestFixtures)
 
 require 'rspec/rails'
+require 'spec_helper_common'
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
@@ -37,7 +37,7 @@ RSpec.configure do |config|
   config.include HelperMethods
   config.include NamedMapsHelper
   config.include Capybara::DSL
-  config.include FactoryGirl::Syntax::Methods
+  config.include FactoryBot::Syntax::Methods
   config.include SharedEntitiesSpecHelper
   config.mock_with :mocha
 
@@ -52,22 +52,13 @@ RSpec.configure do |config|
   end
 
   config.before(:all) do
-    unless ENV['PARALLEL']
-      clean_redis_databases
-      clean_metadata_database
-      close_pool_connections
-      drop_leaked_test_user_databases
-    end
-
+    purgue_databases
+    clean_redis_databases unless ENV['PARALLEL']
     CartoDB::UserModule::DBService.any_instance.stubs(:create_ghost_tables_event_trigger)
   end
 
   config.after(:all) do
-    unless ENV['PARALLEL'] || ENV['BUILD_ID']
-      close_pool_connections
-      drop_leaked_test_user_databases
-      delete_database_test_users
-    end
+    purgue_databases
   end
 
   unless ENV['PARALLEL'] || ENV['BUILD_ID']

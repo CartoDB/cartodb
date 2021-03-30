@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :feature_flag, class: 'Carto::FeatureFlag' do
     sequence(:id)
     sequence(:name) { |n| "feature-flag-name-#{n}" }

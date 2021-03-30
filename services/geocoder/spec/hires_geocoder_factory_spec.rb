@@ -13,7 +13,7 @@ describe CartoDB::HiresGeocoderFactory do
     @log = mock
     @log.stubs(:append)
     @log.stubs(:append_and_store)
-    @geocoding_model = FactoryGirl.create(:geocoding, kind: 'high-resolution', formatter: '{street}')
+    @geocoding_model = create(:geocoding, kind: 'high-resolution', formatter: '{street}')
   end
 
   describe '#get' do

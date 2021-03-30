@@ -7,9 +7,9 @@ shared_context 'users helper' do
   end
 
   before(:all) do
-    @user1 = FactoryGirl.create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
+    @user1 = create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
     @carto_user1 = Carto::User.find(@user1.id)
-    @user2 = FactoryGirl.create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
+    @user2 = create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
     @carto_user2 = Carto::User.find(@user2.id)
   end
 
@@ -30,7 +30,7 @@ shared_context 'user helper' do
   include CartoDB::Factories
 
   before(:all) do
-    @user = FactoryGirl.create(:valid_user)
+    @user = create(:valid_user)
     @carto_user = Carto::User.find(@user.id)
   end
 

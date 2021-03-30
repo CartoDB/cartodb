@@ -2,8 +2,8 @@ require 'spec_helper_min'
 
 describe 'Carto::OverquotaUsersService' do
   before(:all) do
-    @user = FactoryGirl.create(:carto_user, account_type: 'NOT_FREE')
-    @user2 = FactoryGirl.create(:carto_user, account_type: 'FREE')
+    @user = create(:carto_user, account_type: 'NOT_FREE')
+    @user2 = create(:carto_user, account_type: 'FREE')
   end
 
   after(:all) do

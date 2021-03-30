@@ -16,25 +16,25 @@ module AnalysisFactoryHelper
   end
 end
 
-FactoryGirl.define do
-  factory :source_analysis, class: Carto::Analysis do
-    ignore do
-      source_table 'subway_stops'
-      query nil
+FactoryBot.define do
+  factory :source_analysis, class: 'Carto::Analysis' do
+    transient do
+      source_table { 'subway_stops' }
+      query { nil }
     end
 
     analysis_definition { AnalysisFactoryHelper.source_analysis_for_table(source_table, query) }
 
-    factory :analysis, class: Carto::Analysis do
+    factory :analysis, class: 'Carto::Analysis' do
       created_at { Time.now }
       updated_at { Time.now }
     end
   end
 
-  factory :analysis_with_source, class: Carto::Analysis do
-    ignore do
-      source_table 'subway_stops'
-      query nil
+  factory :analysis_with_source, class: 'Carto::Analysis' do
+    transient do
+      source_table { 'subway_stops' }
+      query { nil }
     end
 
     analysis_definition do
@@ -48,12 +48,12 @@ FactoryGirl.define do
     end
   end
 
-  factory :analysis_point_in_polygon, class: Carto::Analysis do
-    ignore do
-      source_table 'subway_stops'
-      source_query nil
-      target_table 'districts'
-      target_query nil
+  factory :analysis_point_in_polygon, class: 'Carto::Analysis' do
+    transient do
+      source_table { 'subway_stops' }
+      source_query { nil }
+      target_table { 'districts' }
+      target_query { nil }
     end
 
     analysis_definition do

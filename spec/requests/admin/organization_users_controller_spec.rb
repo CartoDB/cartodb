@@ -327,7 +327,7 @@ describe Admin::OrganizationUsersController do
       end
 
       it 'returns 302 for admin users trying to destroy a non-admin' do
-        doomed_user = FactoryGirl.create(:valid_user, organization: @organization)
+        doomed_user = create(:valid_user, organization: @organization)
         login_as(@admin, scope: @admin.username)
 
         delete delete_organization_user_url(user_domain: @admin.username, id: doomed_user.username),
@@ -336,7 +336,7 @@ describe Admin::OrganizationUsersController do
       end
 
       it 'returns error if wrong password_confirmation' do
-        doomed_user = FactoryGirl.create(:valid_user, organization: @organization)
+        doomed_user = create(:valid_user, organization: @organization)
         login_as(@admin, scope: @admin.username)
 
         delete delete_organization_user_url(user_domain: @admin.username, id: doomed_user.username),
@@ -347,7 +347,7 @@ describe Admin::OrganizationUsersController do
       end
 
       it 'returns 302 for owner' do
-        doomed_user = FactoryGirl.create(:valid_user, organization: @organization, org_admin: true)
+        doomed_user = create(:valid_user, organization: @organization, org_admin: true)
         login_as(@owner, scope: @owner.username)
 
         delete delete_organization_user_url(
@@ -418,7 +418,7 @@ describe Admin::OrganizationUsersController do
 
     describe 'existing user operations' do
       before(:each) do
-        @existing_user = FactoryGirl.create(:carto_user, organization: @carto_organization, password: 'abcdefgh')
+        @existing_user = create(:carto_user, organization: @carto_organization, password: 'abcdefgh')
       end
 
       describe '#update' do
@@ -487,7 +487,7 @@ describe Admin::OrganizationUsersController do
         end
 
         it 'removes the multifactor authentications' do
-          FactoryGirl.create(:totp, user: @existing_user)
+          create(:totp, user: @existing_user)
           @existing_user.reload.user_multifactor_auths.should_not be_empty
 
           put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
@@ -662,7 +662,7 @@ describe Admin::OrganizationUsersController do
         it 'owner cannot enable soft limits if she/he has not' do
           old_limits = update_soft_limits(@org_user_owner, false)
           check_soft_limits(@carto_org_user_owner, false)
-          @existing_user = FactoryGirl.create(:carto_user,
+          @existing_user = create(:carto_user,
                                               soft_limits_params(false).merge(organization: @carto_organization))
 
           put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
@@ -677,7 +677,7 @@ describe Admin::OrganizationUsersController do
 
         it 'owner can enable soft limits if she/he has' do
           old_limits = update_soft_limits(@org_user_owner, true)
-          @existing_user = FactoryGirl.create(:carto_user,
+          @existing_user = create(:carto_user,
                                               soft_limits_params(false).merge(organization: @carto_organization))
 
           put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
@@ -692,7 +692,7 @@ describe Admin::OrganizationUsersController do
 
         it 'owner can disable soft limits if she/he has' do
           old_limits = update_soft_limits(@org_user_owner, true)
-          @existing_user = FactoryGirl.create(:carto_user,
+          @existing_user = create(:carto_user,
                                               soft_limits_params(true).merge(organization: @carto_organization))
           put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
               user: soft_limits_params("0"),

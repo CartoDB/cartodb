@@ -60,9 +60,6 @@ export default {
     },
     beta: {
       type: Boolean
-    },
-    disabled: {
-      type: Boolean
     }
   },
   data: () => {

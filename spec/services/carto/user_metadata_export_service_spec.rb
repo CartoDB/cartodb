@@ -11,47 +11,51 @@ describe Carto::UserMetadataExportService do
   include AccountTypesHelper
   include Carto::Factories::Visualizations
 
-  before(:all) do
+  before do
+    Cartodb::Central.any_instance.stubs(:update_user).returns(true)
     bypass_named_maps
     @feature_flag = create(:feature_flag)
-    @connector_provider = FactoryGirl.create(:connector_provider)
-    user = FactoryGirl.create(:carto_user)
-    @oauth_app = FactoryGirl.create(:oauth_app, user: user)
+    @connector_provider = create(:connector_provider)
+    user = create(:carto_user)
+    @oauth_app = create(:oauth_app, user: user)
   end
 
-  after(:all) do
-    @feature_flag.destroy
-    @connector_provider.destroy
-  end
-
-  before(:each) do
-    Cartodb::Central.any_instance.stubs(:update_user).returns(true)
+  after do
+    Carto::FeatureFlagsUser.delete_all
+    Carto::FeatureFlag.delete_all
+    Carto::OauthToken.delete_all
+    Carto::OauthApp.delete_all
+    Carto::User.delete_all
+    Carto::SearchTweet.delete_all
+    Carto::AccountType.delete_all
+    Carto::RateLimit.delete_all
+    Carto::ClientApplication.delete_all
   end
 
   def create_user_with_basemaps_assets_visualizations
     create_account_type_fg('FREE')
-    @user = FactoryGirl.create(:carto_user)
+    @user = create(:carto_user)
     @user.static_notifications = Carto::UserNotification.new(notifications: full_export[:user][:notifications])
     @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
 
-    @tiled_layer = FactoryGirl.create(:carto_tiled_layer)
+    @tiled_layer = create(:carto_tiled_layer)
     @user.layers << @tiled_layer
 
-    @asset = FactoryGirl.create(:carto_asset, user: @user)
+    @asset = create(:carto_asset, user: @user)
 
     @user.activate_feature_flag!(@feature_flag)
 
     CartoDB::GeocoderUsageMetrics.new(@user.username).incr(:geocoder_here, :success_responses)
 
     @user.oauths.add('gdrive', 'wadus')
-    FactoryGirl.create(:connector_configuration, connector_provider: @connector_provider, user: @user)
+    create(:connector_configuration, connector_provider: @connector_provider, user: @user)
 
     # Convert @table_visualization into a common data imported table
-    sync = FactoryGirl.create(:carto_synchronization, user: @user)
+    sync = create(:carto_synchronization, user: @user)
     @table_visualization.update_attributes!(synchronization: sync)
-    @table.data_import = FactoryGirl.create(:data_import, user: @user, synchronization_id: sync.id, table_id: @table.id)
+    @table.data_import = create(:data_import, user: @user, synchronization_id: sync.id, table_id: @table.id)
     @table.save!
-    edi = FactoryGirl.create(:external_data_import_with_external_source,
+    edi = create(:external_data_import_with_external_source,
                              data_import: @table.data_import, synchronization: sync)
     @remote_visualization = edi.external_source.visualization
     @remote_visualization.update_attributes!(user: @user)
@@ -60,16 +64,16 @@ describe Carto::UserMetadataExportService do
     @map2, @table2, @table_visualization2, @visualization2 = create_full_visualization(
       @user, visualization_attributes: { name: 'waduswadus22' }
     )
-    @table2.data_import = FactoryGirl.create(:data_import, user: @user, table_id: @table2.id)
+    @table2.data_import = create(:data_import, user: @user, table_id: @table2.id)
     @table2.save!
-    @st1 = FactoryGirl.create(:search_tweet, user_id: @user.id, data_import_id: @table2.data_import.id)
-    @st2 = FactoryGirl.create(
-      :search_tweet, user_id: @user.id, data_import_id: FactoryGirl.create(:data_import).id
+    @st1 = create(:search_tweet, user_id: @user.id, data_import_id: @table2.data_import.id)
+    @st2 = create(
+      :search_tweet, user_id: @user.id, data_import_id: create(:data_import).id
     )
 
     # Rate limits
     sequel_user = ::User[@user.id]
-    sequel_user.rate_limit_id = FactoryGirl.create(:rate_limits).id
+    sequel_user.rate_limit_id = create(:rate_limits).id
     sequel_user.save
     @user.reload
 
@@ -93,11 +97,11 @@ describe Carto::UserMetadataExportService do
 
     Carto::UserMultifactorAuth.create!(user_id: @user.id, type: 'totp', last_login: Time.zone.now)
 
-    oauth_app_user = FactoryGirl.create(:oauth_app_users, oauth_app: @oauth_app, user: @user)
-    FactoryGirl.create(:oauth_authorization_codes, oauth_app_user: oauth_app_user)
-    api_key = FactoryGirl.create(:oauth_api_key, user: @user)
-    FactoryGirl.create(:oauth_access_tokens, oauth_app_user: oauth_app_user, api_key: api_key)
-    FactoryGirl.create(:oauth_refresh_tokens, oauth_app_user: oauth_app_user, scopes: ['offline'])
+    oauth_app_user = create(:oauth_app_users, oauth_app: @oauth_app, user: @user)
+    create(:oauth_authorization_codes, oauth_app_user: oauth_app_user)
+    api_key = create(:oauth_api_key, user: @user)
+    create(:oauth_access_tokens, oauth_app_user: oauth_app_user, api_key: api_key)
+    create(:oauth_refresh_tokens, oauth_app_user: oauth_app_user, scopes: ['offline'])
 
     @user.reload
   end
@@ -141,13 +145,9 @@ describe Carto::UserMetadataExportService do
   let(:service) { Carto::UserMetadataExportService.new }
 
   describe '#export' do
-    before(:all) do
+    before do
       Cartodb::Central.any_instance.stubs(:update_user).returns(true)
       create_user_with_basemaps_assets_visualizations
-    end
-
-    after(:all) do
-      destroy_user
     end
 
     it 'exports' do
@@ -167,26 +167,6 @@ describe Carto::UserMetadataExportService do
   end
 
   describe '#user import' do
-    after :each do
-      if @search_tweets
-        @search_tweets.each do |st|
-          st.data_import.try(:destroy)
-          st.destroy
-        end
-      end
-
-      @user.oauth_app_users.each do |oau|
-        unless oau.oauth_access_tokens.blank?
-          oau.oauth_access_tokens.each do |oat|
-            oat.api_key.skip_role_setup = true
-            oat.api_key.skip_cdb_conf_info = true
-          end
-        end
-      end
-
-      @user.destroy if @user
-    end
-
     def test_import_user_from_export(export)
       @user = service.build_user_from_hash_export(export)
       create_account_type_fg('FREE')
@@ -316,10 +296,6 @@ describe Carto::UserMetadataExportService do
   end
 
   describe '#user export + import' do
-    after :each do
-      destroy_user
-    end
-
     it 'export + import latest' do
       create_user_with_basemaps_assets_visualizations
       export_import(@user)
@@ -327,10 +303,6 @@ describe Carto::UserMetadataExportService do
   end
 
   describe '#full export + import (user and visualizations)' do
-    after :each do
-      destroy_user(@imported_user)
-    end
-
     it 'export + import user with rate limit and visualizations' do
       Dir.mktmpdir do |path|
         create_user_with_basemaps_assets_visualizations

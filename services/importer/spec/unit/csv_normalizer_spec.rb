@@ -11,7 +11,7 @@ describe CartoDB::Importer2::CsvNormalizer do
   BUG_COLUMNS_WRONG_SPLIT_FIXTURE_FILE = "#{File.dirname(__FILE__)}/bug_columns_wrong_split.csv"
 
   before(:all) do
-    @user = FactoryGirl.create(:user)
+    @user = create(:user)
   end
 
   after(:all) do
@@ -168,9 +168,9 @@ describe CartoDB::Importer2::CsvNormalizer do
 
     filepath = get_temp_csv_fullpath
 
-    File.open(filepath, 'wb') do |f2|  
+    File.open(filepath, 'wb') do |f2|
       f2.puts invalid_content
-    end  
+    end
 
     return filepath
   end

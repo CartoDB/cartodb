@@ -7,7 +7,7 @@ describe CartoDB::Importer2::MailNotifier do
   START_TIME = 0
 
   before(:each) do
-    @data_import = FactoryGirl.build(:data_import)
+    @data_import = build(:data_import)
     @resque = mock
     @result = mock
     results = [@result]

@@ -43,7 +43,7 @@ describe Carto::Api::MultifactorAuthenticationController do
       login(@organization.owner)
       @organization.owner.reload
 
-      FactoryGirl.create(:totp, user_id: @org_user_1.id)
+      create(:totp, user_id: @org_user_1.id)
         get api_v2_organization_users_mfa_show_url(
           id_or_name: @organization.name,
           u_username: @org_user_1.username,
@@ -107,7 +107,7 @@ describe Carto::Api::MultifactorAuthenticationController do
       login(@organization.owner)
       @organization.owner.reload
 
-      FactoryGirl.create(:totp, user_id: @org_user_1.id)
+      create(:totp, user_id: @org_user_1.id)
       post api_v2_organization_users_mfa_create_url(
         id_or_name: @organization.name,
         u_username: @org_user_1.username,
@@ -145,7 +145,7 @@ describe Carto::Api::MultifactorAuthenticationController do
     it 'deletes MFA' do
       login(@organization.owner)
       @organization.owner.reload
-      FactoryGirl.create(:totp, user_id: @org_user_1.id)
+      create(:totp, user_id: @org_user_1.id)
 
       expect {
         delete api_v2_organization_users_mfa_delete_url(

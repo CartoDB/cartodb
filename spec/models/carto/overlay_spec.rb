@@ -1,20 +1,15 @@
-require_relative '../../spec_helper_min'
+require 'spec_helper_unit'
 
 describe Carto::Overlay do
 
   include Carto::Factories::Visualizations
 
-  before(:all) do
-    @user = FactoryGirl.create(:carto_user)
-    @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
+  let(:user) { create(:carto_user, factory_bot_context: { only_db_setup: true }) }
+
+  before do
+    _, _, _, @visualization = create_full_visualization(user)
     # For this tests we want no visualization overlay
     @visualization.overlays.each(&:destroy)
-  end
-
-  after(:all) do
-    destroy_full_visualization(@map, @table, @table_visualization, @visualization)
-    # This avoids connection leaking.
-    ::User[@user.id].destroy
   end
 
   describe '#create' do
@@ -114,17 +109,12 @@ describe Carto::Overlay do
   end
 
   context 'viewer users' do
-    before(:each) do
+    before do
+      _, _, _, @visualization = create_full_visualization(user)
       user = @visualization.user
       user.viewer = true
       user.save
       @visualization.reload
-    end
-
-    after(:each) do
-      user = @visualization.user
-      user.viewer = false
-      user.save
     end
 
     it "can't create a new overlay" do

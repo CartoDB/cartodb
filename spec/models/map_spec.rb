@@ -8,7 +8,7 @@ describe Map do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     bypass_named_maps
 
-    @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
+    @user = create(:valid_user, private_tables_enabled: true)
     @table = create_table(user_id: @user.id)
   end
 
@@ -45,7 +45,7 @@ describe Map do
 
     describe '#validations' do
       before(:all) do
-        @map_user = FactoryGirl.create(:carto_user)
+        @map_user = create(:carto_user)
         @map = Carto::Map.create(user_id: @map_user.id)
       end
 

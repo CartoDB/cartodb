@@ -7,34 +7,45 @@ describe Carto::StorageOptions::Local do
   def host!(_) end
 
   shared_examples_for 'upload' do
+    let(:prefix) { unique_name('prefix') }
+    let(:storage) { described_class.new(prefix) }
+    let(:file) { Tempfile.new('test') }
+    let(:result) { storage.upload('123', file) }
+    let(:path) { result[0] }
+    let(:url) { result[1] }
+
+    # rubocop:disable RSpec/BeforeAfterAll
     before(:all) do
-      @prefix = unique_name('prefix')
-      @storage = Carto::StorageOptions::Local.new(@prefix)
-      @storage.stubs(:public_uploaded_assets_path).returns(upload_path)
-
-      @file = Tempfile.new('test')
-      @file.write('wadus')
-      @file.close
-
-      @path, @url = @storage.upload('123', @file)
+      storage.stubs(:public_uploaded_assets_path).returns(upload_path)
+      file.write('wadus')
+      file.close
     end
 
+    after(:all) do
+      file.unlink
+    end
+    # rubocop:enable RSpec/BeforeAfterAll
+
     it 'uploads a file' do
-      File.exists?(@path).should be_true
-      open(@path).read.should eq 'wadus'
+      File.exist?(path).should be_true
+      File.open(path).read.should eq 'wadus'
     end
 
     it 'deletes source file' do
-      File.exists?(@file.path).should be_false
+      File.exist?(file.path).should be_false
     end
 
     it 'url starts with domain/uploads/' do
-      @url.should start_with "/uploads/#{@prefix}/123/"
+      url.should start_with "/uploads/#{prefix}/123/"
     end
 
     it 'url should not contain filesystem paths' do
-      @url.should_not include '/tmp'
-      @url.should_not include '/carto_uploads'
+      url.should_not include '/tmp'
+      url.should_not include '/carto_uploads'
+    end
+
+    it 'target file should have 0644 perms for nginx to serve them' do
+      (File.stat(path).mode & 0o777).should eq 0o644
     end
   end
 
@@ -53,7 +64,7 @@ describe Carto::StorageOptions::Local do
   end
 
   describe 'domainful' do
-    before(:each) do
+    before do
       stub_domainful('org')
     end
 
@@ -61,7 +72,7 @@ describe Carto::StorageOptions::Local do
   end
 
   describe 'subdomainless' do
-    before(:each) do
+    before do
       stub_subdomainless
     end
 

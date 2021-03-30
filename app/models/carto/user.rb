@@ -85,6 +85,7 @@ class Carto::User < ActiveRecord::Base
   )
 
   attr_reader :password
+  attr_accessor :factory_bot_context
 
   # TODO: From sequel, can be removed once finished
   alias_method :maps_dataset, :maps
@@ -95,7 +96,9 @@ class Carto::User < ActiveRecord::Base
   def carto_user; self end
 
   def sequel_user
-    persisted? ? ::User[id] : ::User.new(attributes)
+    user_object = persisted? ? ::User[id] : ::User.new(attributes)
+    user_object.factory_bot_context = factory_bot_context if user_object
+    user_object
   end
 
   before_create :set_database_host

@@ -157,7 +157,7 @@ describe User do
 
     it 'deletes api keys' do
       user = create_user(email: 'ddr@example.com', username: 'ddr', password: 'admin123')
-      api_key = FactoryGirl.create(:api_key_apis, user_id: user.id)
+      api_key = create(:api_key_apis, user_id: user.id)
 
       user.destroy
       expect(Carto::ApiKey.exists?(api_key.id)).to be_false
@@ -206,7 +206,7 @@ describe User do
 
         it 'deletes api keys and associated roles' do
           user = TestUserFactory.new.create_test_user(unique_name('user'), @organization)
-          api_key = FactoryGirl.create(:api_key_apis, user_id: user.id)
+          api_key = create(:api_key_apis, user_id: user.id)
 
           user.destroy
           expect(Carto::ApiKey.exists?(api_key.id)).to be_false
@@ -260,7 +260,7 @@ describe User do
           owner_oauth_app = create_user(email: 'owner@example.com', username: 'oauthappowner', password: @user_password)
           user = create_user(email: 'oauth@example.com', username: 'oauthapp', password: @user_password)
 
-          oauth_app = FactoryGirl.create(:oauth_app, user_id: owner_oauth_app.id)
+          oauth_app = create(:oauth_app, user_id: owner_oauth_app.id)
           oauth_app_user = oauth_app.oauth_app_users.create!(user_id: user.id)
           oac = oauth_app_user.oauth_authorization_codes.create!(scopes: ['offline'])
           access_token, refresh_token = oac.exchange!
@@ -295,13 +295,13 @@ describe User do
 
   describe '#destroy' do
     def create_full_data
-      carto_user = FactoryGirl.create(:carto_user)
+      carto_user = create(:carto_user)
       user = ::User[carto_user.id]
       table = create_table(user_id: carto_user.id, name: 'My first table', privacy: UserTable::PRIVACY_PUBLIC)
       canonical_visualization = table.table_visualization
 
-      map = FactoryGirl.create(:carto_map_with_layers, user_id: carto_user.id)
-      carto_visualization = FactoryGirl.create(:carto_visualization, user: carto_user, map: map)
+      map = create(:carto_map_with_layers, user_id: carto_user.id)
+      carto_visualization = create(:carto_visualization, user: carto_user, map: map)
       visualization = CartoDB::Visualization::Member.new(id: carto_visualization.id).fetch
 
       # Force ORM to cache layers (to check if they are deleted later)

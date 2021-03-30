@@ -1,9 +1,9 @@
-require_relative '../../spec_helper_min'
+require 'spec_helper_unit'
 
 describe Carto::UserDBService do
   include Carto::Factories::Visualizations
 
-  let(:user) { create(:valid_user).carto_user }
+  let(:user) { create(:carto_user, factory_bot_context: { only_db_setup: true }) }
   let(:db_service) { user.db_service }
 
   describe '#public_user_roles' do
@@ -16,8 +16,9 @@ describe Carto::UserDBService do
     end
 
     context 'with organization users' do
-      let(:organization) { create(:organization_with_users) }
-      let(:user) { organization.users.first.carto_user }
+      let(:organization_owner) { create(:carto_user, factory_bot_context: { only_db_setup: true }) }
+      let(:organization) { create(:organization, :with_owner, owner: organization_owner) }
+      let(:user) { organization.owner }
 
       it 'returns public user and org public user for org users' do
         expect(public_user_roles).to eq [CartoDB::PUBLIC_DB_USER, "cartodb_publicuser_#{user.id}"]

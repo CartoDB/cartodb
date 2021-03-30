@@ -1,7 +1,4 @@
-require_relative '../../spec_helper_min'
-require_relative '../../../app/models/carto/user_migration_import'
-require_relative '../../../app/models/carto/user_migration_export'
-require_relative '../../factories/organizations_contexts'
+require 'spec_helper_unit'
 require_relative './helpers/user_migration_helper'
 require './spec/support/factories/tables'
 require './spec/support/factories/organizations'
@@ -18,7 +15,7 @@ describe 'UserMigration' do
   it_should_behave_like 'migrating metadata', false
 
   describe 'failing user imports should rollback' do
-    before :each do
+    before do
       @user = create_user_with_visualizations
       @carto_user = Carto::User.find(@user.id)
       @user_attributes = @carto_user.attributes
@@ -29,10 +26,6 @@ describe 'UserMigration' do
       )
       @export.run_export
       destroy_user
-    end
-
-    after :each do
-      @carto_user.destroy
     end
 
     it 'import failing in import_metadata should rollback' do

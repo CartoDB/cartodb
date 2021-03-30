@@ -1,4 +1,3 @@
-require_relative '../../simplecov_helper'
 require_relative '../../../app/models/table/column_typecaster'
 
 describe CartoDB::ColumnTypecaster do

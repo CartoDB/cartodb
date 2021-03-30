@@ -816,7 +816,7 @@ describe Carto::Api::OrganizationUsersController do
     it 'should delete users as admin' do
       login(@org_user_2)
 
-      victim = FactoryGirl.create(:valid_user, organization: @organization)
+      victim = create(:valid_user, organization: @organization)
       delete api_v2_organization_users_delete_url(id_or_name: @organization.name,
                                                   u_username: victim.username)
 
@@ -828,7 +828,7 @@ describe Carto::Api::OrganizationUsersController do
     it 'should not delete other admins as admin' do
       login(@org_user_2)
 
-      victim = FactoryGirl.create(:valid_user, organization: @organization, org_admin: true)
+      victim = create(:valid_user, organization: @organization, org_admin: true)
       delete api_v2_organization_users_delete_url(id_or_name: @organization.name,
                                                   u_username: victim.username)
 
@@ -933,7 +933,7 @@ describe Carto::Api::OrganizationUsersController do
 
     it 'returns 401 when session is not valid' do
       organization = create_organization_with_owner
-      user = FactoryGirl.create(:valid_user, organization: organization, org_admin: true)
+      user = create(:valid_user, organization: organization, org_admin: true)
 
       login_response = post_session(user: user, password: 'kkkkkkkkk', organization: organization)
       set_cookies_for_next_request(login_response)

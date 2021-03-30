@@ -1,4 +1,4 @@
-require_relative '../../spec_helper'
+require 'spec_helper_unit'
 require_relative '../organization_shared_examples'
 require 'helpers/storage_helper'
 

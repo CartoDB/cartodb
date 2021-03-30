@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'spec_helper_unit'
 require './spec/factories/visualization_creation_helpers'
 
 describe OrganizationCommands::Delete do

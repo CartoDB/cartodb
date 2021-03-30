@@ -21,7 +21,7 @@ describe Carto::Api::LayerPresenter do
     end
 
     def build_layer_with_wizard_properties(properties)
-      FactoryGirl.build(:carto_layer, options: { 'wizard_properties' => properties })
+      build(:carto_layer, options: { 'wizard_properties' => properties })
     end
 
     it "doesn't autogenerate `style_properties` if `wizard_properties` isn't present but it's not requested" do
@@ -286,7 +286,7 @@ describe Carto::Api::LayerPresenter do
           }
         end
         before(:each) do
-          layer = FactoryGirl.build(:carto_layer, options: cluster_options)
+          layer = build(:carto_layer, options: cluster_options)
           @options = presenter_with_style_properties(layer).to_poro['options']
           @properties = @options['style_properties']['properties']
         end
@@ -302,7 +302,7 @@ describe Carto::Api::LayerPresenter do
 
         it 'ignores property' do
           cluster_options['wizard_properties']['properties']['property'] = 'wadus_property'
-          layer = FactoryGirl.build(:carto_layer, options: cluster_options)
+          layer = build(:carto_layer, options: cluster_options)
           options = presenter_with_style_properties(layer).to_poro['options']
           properties = options['style_properties']['properties']
           JSON.dump(properties).should_not include 'wadus_property'
@@ -886,7 +886,7 @@ describe Carto::Api::LayerPresenter do
 
       before(:each) do
         options = { 'query_wrapper' => query_wrapper, 'wizard_properties' => density_wizard_properties }
-        layer = FactoryGirl.build(:carto_layer, options: options)
+        layer = build(:carto_layer, options: options)
         @options = presenter_with_style_properties(layer).to_poro['options']
 
         @style = @options['style_properties']

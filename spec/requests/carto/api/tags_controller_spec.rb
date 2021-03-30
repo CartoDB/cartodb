@@ -13,7 +13,7 @@ describe Carto::Api::TagsController do
 
   describe 'index' do
     before(:each) do
-      FactoryGirl.create(:derived_visualization, user_id: @user1.id, tags: ["owned-tag"])
+      create(:derived_visualization, user_id: @user1.id, tags: ["owned-tag"])
 
       table = create_random_table(@user2)
       shared_visualization = table.table_visualization
@@ -67,7 +67,7 @@ describe Carto::Api::TagsController do
     end
 
     it 'returns a 200 response with filtered tags' do
-      FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["otra"])
+      create(:table_visualization, user_id: @user1.id, tags: ["otra"])
       expected_tags = [{ tag: "otra", maps: 0, datasets: 1 }]
       search_params = @params.merge(q: "otra")
 

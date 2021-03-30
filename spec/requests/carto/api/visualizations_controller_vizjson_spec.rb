@@ -30,9 +30,9 @@ describe Carto::Api::VisualizationsController do
 
     Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
-    @user_1 = FactoryGirl.create(:valid_user)
+    @user_1 = create(:valid_user)
     @carto_user1 = Carto::User.find(@user_1.id)
-    @user_2 = FactoryGirl.create(:valid_user, private_maps_enabled: true)
+    @user_2 = create(:valid_user, private_maps_enabled: true)
     @carto_user2 = Carto::User.find(@user_2.id)
     @api_key = @user_1.api_key
   end
@@ -88,7 +88,7 @@ describe Carto::Api::VisualizationsController do
           bypass_named_maps
 
           @map = Map.create(user_id: @user.id)
-          @visualization = FactoryGirl.create(:derived_visualization,
+          @visualization = create(:derived_visualization,
                                               map_id: @map.id,
                                               user_id: @user.id,
                                               privacy: Visualization::Member::PRIVACY_PRIVATE)
@@ -488,7 +488,7 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'sets password protection' do
-        visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id)
+        visualization = create(:carto_visualization, user_id: @user.id)
         visualization.password_protected?.should be_false
 
         payload = {
@@ -558,11 +558,11 @@ describe Carto::Api::VisualizationsController do
     end
 
     let(:infowindow) do
-      FactoryGirl.build_stubbed(:carto_layer_with_infowindow).infowindow
+      build_stubbed(:carto_layer_with_infowindow).infowindow
     end
 
     let(:tooltip) do
-      FactoryGirl.build_stubbed(:carto_layer_with_tooltip).tooltip
+      build_stubbed(:carto_layer_with_tooltip).tooltip
     end
 
     before(:each) do
@@ -773,9 +773,9 @@ describe Carto::Api::VisualizationsController do
 
     it 'returns visualization widgets' do
       layer = @visualization.layers.first
-      widget = FactoryGirl.create(:widget, layer: layer)
+      widget = create(:widget, layer: layer)
 
-      widget2 = FactoryGirl.create(:widget_with_layer, type: 'fake')
+      widget2 = create(:widget_with_layer, type: 'fake')
 
       get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
         response.status.should == 200

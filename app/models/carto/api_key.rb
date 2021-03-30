@@ -9,6 +9,9 @@ module Carto
   class ApiKey < ActiveRecord::Base
 
     include Carto::AuthTokenGenerator
+    include ::MessageBrokerHelper
+
+    REDIS_KEY_PREFIX = 'api_keys:'.freeze
 
     TYPE_REGULAR = 'regular'.freeze
     TYPE_MASTER = 'master'.freeze
@@ -65,15 +68,19 @@ module Carto
     validate :valid_default_public_key, if: :default_public?
 
     after_create :setup_db_role, if: ->(k) { k.needs_setup? && !k.skip_role_setup }
+    after_create :create_remote_do_api_key, if: ->(api_key) { api_key.master? }
+
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
     after_save { invalidate_cache if token_changed? }
     after_save :add_to_redis, if: :valid_user?
     after_save :save_cdb_conf_info, unless: :skip_cdb_conf_info?
+    after_save :regenerate_remote_do_api_key, if: ->(k) { k.master? && k.token_changed? }
 
     after_destroy :reassign_owner, :drop_db_role, if: ->(k) { k.needs_setup? && !k.skip_role_setup }
     after_destroy :remove_from_redis
     after_destroy :invalidate_cache
     after_destroy :remove_cdb_conf_info, unless: :skip_cdb_conf_info?
+    after_destroy :destroy_remote_do_api_key, if: ->(api_key) { api_key.master? }
 
     scope :master, -> { where(type: TYPE_MASTER) }
     scope :default_public, -> { where(type: TYPE_DEFAULT_PUBLIC) }
@@ -147,6 +154,35 @@ module Carto
         user_id: api_key_hash[:user_id],
         skip_role_setup: true,
         skip_cdb_conf_info: true
+      )
+    end
+
+    def create_remote_do_api_key
+      cartodb_central_topic.publish(
+        :create_remote_do_api_key,
+        { type: type, token: token, user_id: user_id, username: user.username }
+      )
+    end
+
+    def regenerate_remote_do_api_key
+      original_token, saved_token = token_change
+
+      # Order of execution is not guaranteed, but since the token is different there's no danger
+      # of race conditions
+      cartodb_central_topic.publish(
+        :destroy_remote_do_api_key,
+        { token: original_token, user_id: user_id, username: user.username }
+      )
+      cartodb_central_topic.publish(
+        :create_remote_do_api_key,
+        { type: type, token: saved_token, user_id: user_id, username: user.username }
+      )
+    end
+
+    def destroy_remote_do_api_key
+      cartodb_central_topic.publish(
+        :destroy_remote_do_api_key,
+        { token: token, user_id: user_id, username: user.username }
       )
     end
 
@@ -378,8 +414,6 @@ module Carto
     private
 
     PASSWORD_LENGTH = 40
-
-    REDIS_KEY_PREFIX = 'api_keys:'.freeze
 
     def raise_unprocessable_entity_error(error)
       raise Carto::UnprocesableEntityError.new(/PG::Error: ERROR:  (.+)/ =~ error.message && $1 || 'Unexpected error')

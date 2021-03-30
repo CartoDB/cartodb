@@ -2,7 +2,7 @@ require_relative '../spec_helper'
 
 describe CartoDB::TablePrivacyManager do
   before(:all) do
-    @user = FactoryGirl.create(:valid_user, quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
+    @user = create(:valid_user, quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
   end
 
   before(:each) do

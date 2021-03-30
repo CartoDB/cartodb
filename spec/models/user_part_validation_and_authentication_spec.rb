@@ -219,26 +219,26 @@ describe User do
 
   describe '#needs_password_confirmation?' do
     it 'is true for a normal user' do
-      user = FactoryGirl.build(:carto_user, :google_sign_in => nil)
+      user = build(:carto_user, :google_sign_in => nil)
       user.needs_password_confirmation?.should == true
 
-      user = FactoryGirl.build(:user, :google_sign_in => false)
+      user = build(:user, :google_sign_in => false)
       user.needs_password_confirmation?.should == true
     end
 
     it 'is false for users that signed in with Google' do
-      user = FactoryGirl.build(:user, :google_sign_in => true)
+      user = build(:user, :google_sign_in => true)
       user.needs_password_confirmation?.should == false
     end
 
     it 'is true for users that signed in with Google but changed the password' do
-      user = FactoryGirl.build(:user, :google_sign_in => true, :last_password_change_date => Time.now)
+      user = build(:user, :google_sign_in => true, :last_password_change_date => Time.now)
       user.needs_password_confirmation?.should == true
     end
 
     it 'is false for users that were created with http authentication' do
-      user = FactoryGirl.build(:valid_user, last_password_change_date: nil)
-      Carto::UserCreation.stubs(:http_authentication).returns(stub(find_by_user_id: FactoryGirl.build(:user_creation)))
+      user = build(:valid_user, last_password_change_date: nil)
+      Carto::UserCreation.stubs(:http_authentication).returns(stub(find_by_user_id: build(:user_creation)))
       user.needs_password_confirmation?.should == false
     end
   end
@@ -357,7 +357,7 @@ describe User do
 
   describe 'api keys' do
     before(:all) do
-      @auth_api_user = FactoryGirl.create(:valid_user)
+      @auth_api_user = create(:valid_user)
     end
 
     after(:all) do
@@ -455,18 +455,18 @@ describe User do
     describe '#has_feature_flag?' do
       before :all do
         @account_type_org = create_account_type_fg('ORGANIZATION USER')
-        @organization = FactoryGirl.create(:organization)
+        @organization = create(:organization)
 
-        @owner = FactoryGirl.create(:user, account_type: @account_type_org)
+        @owner = create(:user, account_type: @account_type_org)
         uo = CartoDB::UserOrganization.new(@organization.id, @owner.id)
         uo.promote_user_to_admin
         @organization.reload
-        @user_org = FactoryGirl.build(:user, account_type: 'FREE')
+        @user_org = build(:user, account_type: 'FREE')
         @user_org.organization = @organization
         @user_org.enabled = true
         @user_org.save
 
-        @user_regu = FactoryGirl.create(:valid_user)
+        @user_regu = create(:valid_user)
 
         @ff_owner = create(:feature_flag, name: 'drop', restricted: true)
         @ff_user = create(:feature_flag, name: 'drop-user', restricted: true)

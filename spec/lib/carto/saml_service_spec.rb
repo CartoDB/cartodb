@@ -8,10 +8,10 @@ describe Carto::SamlService do
 
   describe 'configuration support' do
     it 'is disabled if there is no configuration or it is empty' do
-      org = FactoryGirl.build(:organization, auth_saml_configuration: nil)
+      org = build(:organization, auth_saml_configuration: nil)
       Carto::SamlService.new(org).enabled?.should be_false
 
-      org = FactoryGirl.build(:organization, auth_saml_configuration: {})
+      org = build(:organization, auth_saml_configuration: {})
       Carto::SamlService.new(org).enabled?.should be_false
     end
 

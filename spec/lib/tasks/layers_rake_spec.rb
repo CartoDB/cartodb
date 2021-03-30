@@ -1,32 +1,18 @@
-require 'spec_helper_min'
-require 'rake'
+require 'spec_helper_unit'
 require 'factories/carto_visualizations'
 
 describe 'layers.rake' do
   include Carto::Factories::Visualizations
 
-  before(:all) do
-    Rake.application.rake_require "tasks/layers"
-    Rake::Task.define_task(:environment)
-  end
-
   describe '#sync_basemaps_from_app_config' do
-    before(:all) do
-      @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
-    end
-
-    before(:each) do
+    before do
+      Rake.application.rake_require 'tasks/layers'
+      Rake::Task.define_task(:environment)
+      @user = create(:carto_user, private_maps_enabled: true)
       @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
     end
 
-    after(:each) do
-      Rake::Task['carto:db:sync_basemaps_from_app_config'].reenable
-      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
-    end
-
-    after(:all) do
-      ::User[@user.id].destroy
-    end
+    after { Rake::Task['carto:db:sync_basemaps_from_app_config'].reenable }
 
     it 'updates single layers' do
       class_name = @visualization.user_layers.sort_by(&:order).first.options['className']
@@ -75,13 +61,8 @@ describe 'layers.rake' do
     end
 
     describe 'for viewer users' do
-      before(:each) do
+      before do
         @user.viewer = true
-        @user.save
-      end
-
-      after(:each) do
-        @user.viewer = false
         @user.save
       end
 

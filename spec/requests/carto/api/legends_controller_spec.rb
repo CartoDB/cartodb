@@ -95,8 +95,8 @@ module Carto
       let(:fake_uuid) { 'aaaaaaaa-0000-bbbb-1111-cccccccccccc' }
 
       before(:all) do
-        @user = FactoryGirl.create(:carto_user)
-        @intruder = FactoryGirl.create(:carto_user)
+        @user = create(:carto_user)
+        @intruder = create(:carto_user)
         @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
         @layer = @visualization.data_layers.first
       end

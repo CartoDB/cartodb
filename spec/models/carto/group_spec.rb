@@ -1,5 +1,4 @@
-require_relative '../../spec_helper'
-require_relative '../../../app/models/carto/group'
+require 'spec_helper_unit'
 
 describe Carto::Group do
 
@@ -29,22 +28,16 @@ describe Carto::Group do
   end
 
   describe 'organization behaviour' do
-    include_context 'organization with users helper'
     include Carto::Factories::Visualizations
 
-    before(:all) do
-      @group = FactoryGirl.create(:random_group, organization_id: @organization.id)
-    end
-
-    after(:all) do
-      @group.destroy
-    end
+    let(:organization) { create(:organization) }
+    let(:group) { create(:random_group, organization_id: organization.id) }
 
     it 'generates auth_tokens and save them for future accesses' do
-      token = @group.get_auth_token
+      token = group.get_auth_token
       token.should be
-      @group.reload
-      @group.get_auth_token.should eq token
+      group.reload
+      group.get_auth_token.should eq token
     end
   end
 end

@@ -1,5 +1,7 @@
 module CartodbCentralSynchronizable
 
+  include ::MessageBrokerHelper
+
   def user?
     is_a?(::User) || is_a?(Carto::User)
   end
@@ -59,12 +61,10 @@ module CartodbCentralSynchronizable
         cartodb_central_client.update_user(username, allowed_attributes_to_central(:update))
       end
     elsif organization?
-      Carto::Common::MessageBroker.new(logger: Rails.logger)
-                                  .get_topic(:cartodb_central)
-                                  .publish(
-                                    :update_organization,
-                                    { organization: allowed_attributes_to_central(:update) }
-                                  )
+      cartodb_central_topic.publish(
+        :update_organization,
+        { organization: allowed_attributes_to_central(:update) }
+      )
     end
 
     true

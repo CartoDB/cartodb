@@ -1,4 +1,4 @@
-require_relative '../../../spec_helper'
+require 'spec_helper_unit'
 require_relative 'imports_controller_shared_examples'
 require_relative '../../../../app/controllers/api/json/imports_controller'
 

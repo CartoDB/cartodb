@@ -8,7 +8,7 @@ describe Carto::Api::VizJSON3Presenter do
   include_context 'visualization creation helpers'
 
   before(:all) do
-    @user1 = FactoryGirl.create(:carto_user, private_tables_enabled: true)
+    @user1 = create(:carto_user, private_tables_enabled: true)
   end
 
   after(:all) do
@@ -138,7 +138,7 @@ describe Carto::Api::VizJSON3Presenter do
     end
 
     it 'includes analyses information without including sources parameters' do
-      analysis = FactoryGirl.create(:analysis_with_source, visualization: @visualization, user: @user1)
+      analysis = create(:analysis_with_source, visualization: @visualization, user: @user1)
       analysis.analysis_definition[:params].should_not be_nil
       @visualization.reload
       v3_presenter = Carto::Api::VizJSON3Presenter.new(@visualization, nil)
@@ -245,7 +245,7 @@ describe Carto::Api::VizJSON3Presenter do
       @data_layer.options[:attribution] = 'CARTO attribution'
       @data_layer.save
 
-      @torque_layer = FactoryGirl.create(:carto_layer, kind: 'torque', maps: [@map])
+      @torque_layer = create(:carto_layer, kind: 'torque', maps: [@map])
       @torque_layer.options[:table_name] = 'wadus'
       @torque_layer.save
 

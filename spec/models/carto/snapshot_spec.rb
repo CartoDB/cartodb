@@ -1,15 +1,10 @@
-require 'spec_helper_min'
+require 'spec_helper_unit'
 
 describe Carto::Snapshot do
-  before(:all) do
+  before do
     bypass_named_maps
-    @user = FactoryGirl.create(:carto_user)
-    @visualization = FactoryGirl.create(:carto_visualization, user: @user)
-  end
-
-  after(:all) do
-    @visualization.destroy
-    @user.destroy
+    @user = create(:carto_user)
+    @visualization = create(:carto_visualization, user: @user)
   end
 
   describe('#validation') do

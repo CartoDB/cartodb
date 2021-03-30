@@ -77,7 +77,7 @@ describe Carto::Api::DatabaseGroupsController do
     end
 
     it '#update_permission returns 404 for visualizations' do
-      v = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1)
+      v = create(:carto_visualization, user: @carto_org_user_1)
 
       group = @organization.groups.first
       permission = { 'access' => 'r' }

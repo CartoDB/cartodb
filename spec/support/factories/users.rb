@@ -202,9 +202,9 @@ module CartoDB
       user.maps_dataset.destroy
       user.layers_dataset.destroy
       user.assets_dataset.destroy
+      user.delete_external_data_imports
       user.data_imports_dataset.destroy
       user.geocodings_dataset.destroy
-      user.delete_external_data_imports
       user.delete_external_sources
       CartoDB::Visualization::Collection.new.fetch(user_id: user.id).each do |v|
         # INFO: no need for explicit children deletion, parent will delete it

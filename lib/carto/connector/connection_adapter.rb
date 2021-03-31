@@ -46,8 +46,8 @@ module Carto
     end
 
     def complete?
-      # By default a valid connection should be complete and usable
-      @connection.valid?
+      # By default, a saved connection should be complete and usable
+      !@connection.new_record?
     end
 
     def prevalidate

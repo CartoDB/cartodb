@@ -2,7 +2,7 @@ require_relative '../../spec_helper_min'
 
 describe CartoDB::Visualization::CommonDataService do
   before(:all) do
-    @user = FactoryGirl.create(:valid_user)
+    @user = create(:valid_user)
   end
 
   after(:all) do
@@ -161,9 +161,9 @@ describe CartoDB::Visualization::CommonDataService do
 
   describe 'destroying common data remote visualizations' do
     it 'delete remote visualizations that have been imported but keep the import' do
-      viz = FactoryGirl.create(:carto_table_visualization, user_id: @user.id)
-      data_import = FactoryGirl.create(:data_import, user_id: @user.id, visualization_id: viz.id)
-      external_data_import = FactoryGirl.create(:external_data_import_with_external_source, data_import: data_import)
+      viz = create(:carto_table_visualization, user_id: @user.id)
+      data_import = create(:data_import, user_id: @user.id, visualization_id: viz.id)
+      external_data_import = create(:external_data_import_with_external_source, data_import: data_import)
       visualization = external_data_import.external_source.visualization
 
       service.send(:delete_remote_visualization, visualization).should be_true
@@ -177,10 +177,10 @@ describe CartoDB::Visualization::CommonDataService do
     end
 
     it 'delete remote visualizations that have been synced and the sync but keep the import' do
-      viz = FactoryGirl.create(:carto_table_visualization, user_id: @user.id)
-      data_import = FactoryGirl.create(:data_import, user_id: @user.id, visualization_id: viz.id)
-      sync = FactoryGirl.create(:carto_synchronization, user_id: @user.id, visualization_id: viz.id)
-      external_data_import = FactoryGirl.create(:external_data_import_with_external_source,
+      viz = create(:carto_table_visualization, user_id: @user.id)
+      data_import = create(:data_import, user_id: @user.id, visualization_id: viz.id)
+      sync = create(:carto_synchronization, user_id: @user.id, visualization_id: viz.id)
+      external_data_import = create(:external_data_import_with_external_source,
                                                 data_import: data_import,
                                                 synchronization: sync)
       visualization = external_data_import.external_source.visualization

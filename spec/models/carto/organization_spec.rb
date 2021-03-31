@@ -1,4 +1,4 @@
-require_relative '../../spec_helper'
+require 'spec_helper_unit'
 require_relative '../organization_shared_examples'
 require 'helpers/storage_helper'
 
@@ -57,19 +57,13 @@ describe Carto::Organization do
     let(:organization) { create(:organization_with_users) }
     let(:delta) { 0 }
     let(:geocoding_calls) { 0 }
-    let(:obs_snapshot_calls) { 0 }
     let(:here_isolines_calls) { 0 }
-    let(:obs_general_calls) { 0 }
     let(:mapzen_routing_calls) { 0 }
 
     before do
       organization.stubs(:map_views_quota).returns(100)
       organization.stubs(:get_geocoding_calls).returns(geocoding_calls)
       organization.stubs(:geocoding_quota).returns(100)
-      organization.stubs(:get_obs_snapshot_calls).returns(obs_snapshot_calls)
-      organization.stubs(:obs_snapshot_quota).returns(100)
-      organization.stubs(:obs_general_quota).returns(100)
-      organization.stubs(:get_obs_general_calls).returns(obs_general_calls)
       organization.stubs(:mapzen_routing_quota).returns(100)
       organization.stubs(:get_mapzen_routing_calls).returns(mapzen_routing_calls)
       organization.stubs(:here_isolines_quota).returns(100)
@@ -84,18 +78,6 @@ describe Carto::Organization do
 
     context 'when over here isolines quota' do
       let(:here_isolines_calls) { 101 }
-
-      it { should be_true }
-    end
-
-    context 'when over data observatory snapshot quota' do
-      let(:obs_snapshot_calls) { 101 }
-
-      it { should be_true }
-    end
-
-    context 'when over their data observatory general quota' do
-      let(:obs_general_calls) { 101 }
 
       it { should be_true }
     end
@@ -117,18 +99,6 @@ describe Carto::Organization do
 
       context 'with here isolines quota quota near limit' do
         let(:here_isolines_calls) { 81 }
-
-        it { should be_true }
-      end
-
-      context 'with data observatory snapshot quota quota near limit' do
-        let(:obs_snapshot_calls) { 81 }
-
-        it { should be_true }
-      end
-
-      context 'with data observatory general quota quota near limit' do
-        let(:obs_general_calls) { 81 }
 
         it { should be_true }
       end

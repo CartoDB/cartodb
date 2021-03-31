@@ -12,7 +12,7 @@ describe Carto::Api::TagsController do
 
   describe 'index' do
     before(:each) do
-      @mapaza = FactoryGirl.create(:carto_visualization, type: Carto::Visualization::TYPE_DERIVED,
+      @mapaza = create(:carto_visualization, type: Carto::Visualization::TYPE_DERIVED,
                                                          user: @carto_user1, name: "mapaza",
                                                          tags: ["owned-tag", "map"])
 

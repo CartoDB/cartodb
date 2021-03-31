@@ -1,5 +1,4 @@
-require 'spec_helper_min'
-require 'rake'
+require 'spec_helper_unit'
 require 'factories/carto_visualizations'
 
 describe 'cartodb:fix_unique_legends' do
@@ -10,7 +9,7 @@ describe 'cartodb:fix_unique_legends' do
     Rake::Task.define_task(:environment)
     Rake.application['cartodb:fix_unique_legends'].reenable
 
-    user = FactoryGirl.create(:carto_user)
+    user = create(:carto_user)
     _, _, _, visualization = create_full_visualization(user)
     @layer = visualization.layers.find(&:data_layer?)
     @legend = Carto::Legend.create!(layer: @layer,

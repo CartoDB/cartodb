@@ -1,4 +1,4 @@
-require 'spec_helper_min'
+require 'spec_helper_unit'
 
 describe Carto::UserMultifactorAuth do
 
@@ -6,18 +6,11 @@ describe Carto::UserMultifactorAuth do
     ROTP::TOTP.new(mfa.shared_secret).now
   end
 
-  before :all do
+  before do
     @valid_type = 'totp'
-    @carto_user = FactoryGirl.create(:carto_user)
-  end
-
-  before :each do
+    @carto_user = create(:carto_user)
     Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(false)
     @carto_user.reload.user_multifactor_auths.each(&:destroy!)
-  end
-
-  after :all do
-    @carto_user.destroy!
   end
 
   describe '#create' do
@@ -140,12 +133,8 @@ describe Carto::UserMultifactorAuth do
   end
 
   describe '#provisioning_uri' do
-    before :each do
-      @multifactor_auth = FactoryGirl.create(:totp, :active, user: @carto_user)
-    end
-
-    after :each do
-      @multifactor_auth.destroy!
+    before do
+      @multifactor_auth = create(:totp, :active, user: @carto_user)
     end
 
     it 'provides a provisioning_uri' do

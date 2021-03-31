@@ -30,7 +30,7 @@ describe 'Warden' do
     end
 
     before :all do
-      @user_api_keys = FactoryGirl.create(:valid_user)
+      @user_api_keys = create(:valid_user)
       @master_api_key = Carto::ApiKey.where(user_id: @user_api_keys.id).master.first
     end
 
@@ -73,7 +73,7 @@ describe 'Warden' do
     include HelperMethods
 
     before(:all) do
-      @user = FactoryGirl.create(:valid_user)
+      @user = create(:valid_user)
       @user.password = @user.password_confirmation = '000qwaszx'
       @user.save
     end
@@ -300,7 +300,7 @@ describe 'Warden' do
   describe 'with Sequel user' do
     it_behaves_like 'login locked' do
       before(:all) do
-        @user = FactoryGirl.create(:user, password: '000qwaszx', password_confirmation: '000qwaszx')
+        @user = create(:user, password: '000qwaszx', password_confirmation: '000qwaszx')
       end
 
       after(:all) do
@@ -312,7 +312,7 @@ describe 'Warden' do
   describe 'with AR user' do
     it_behaves_like 'login locked' do
       before(:all) do
-        @user = FactoryGirl.create(:carto_user, password: '000qwaszx', password_confirmation: '000qwaszx')
+        @user = create(:carto_user, password: '000qwaszx', password_confirmation: '000qwaszx')
       end
 
       after(:all) do
@@ -323,7 +323,7 @@ describe 'Warden' do
 
   describe 'session' do
     before(:all) do
-      @user = FactoryGirl.create(:valid_user)
+      @user = create(:valid_user)
     end
 
     after(:all) do

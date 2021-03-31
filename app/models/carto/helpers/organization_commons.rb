@@ -25,8 +25,6 @@ module Carto
         'id', id,
         'geocoding_quota', geocoding_quota,
         'here_isolines_quota', here_isolines_quota,
-        'obs_snapshot_quota', obs_snapshot_quota,
-        'obs_general_quota', obs_general_quota,
         'mapzen_routing_quota', mapzen_routing_quota,
         'google_maps_client_id', google_maps_key,
         'google_maps_api_key', google_maps_private_key,

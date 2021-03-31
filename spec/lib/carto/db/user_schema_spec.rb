@@ -5,7 +5,7 @@ module Carto
   module Db
     describe UserSchema do
       before(:all) do
-        @user = ::User[FactoryGirl.create(:carto_user).id]
+        @user = ::User[create(:carto_user).id]
 
         @user_schema = Carto::Db::UserSchema.new(@user)
       end

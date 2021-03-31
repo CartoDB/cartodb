@@ -24,6 +24,43 @@ ensure
   restore_connector_providers(original_providers)
 end
 
+def purgue_databases
+  User.each do |user|
+    begin
+      # puts "Closing DB connections: #{user.database_name}"
+      user.db_service.reset_pooled_connections
+    rescue Sequel::DatabaseConnectionError, Sequel::DatabaseError
+      nil
+    end
+
+    begin
+      # puts "Removing DB: #{user.database_name}"
+      user.db_service.drop_database_and_user
+    rescue Sequel::DatabaseConnectionError, Sequel::DatabaseError
+      nil
+    end
+  end
+
+  Carto::FeatureFlagsUser.delete_all
+  Carto::FeatureFlag.delete_all
+  Carto::OauthToken.delete_all
+  Carto::OauthAppUser.delete_all
+  Carto::OauthApp.delete_all
+  Carto::Map.delete_all
+  Carto::ExternalDataImport.delete_all
+  Carto::ExternalSource.delete_all
+  Carto::Synchronization.delete_all
+  Carto::Visualization.delete_all
+  Carto::UserTable.delete_all
+  Carto::User.delete_all
+  Carto::SearchTweet.delete_all
+  Carto::AccountType.delete_all
+  Carto::RateLimit.delete_all
+  Carto::ClientApplication.delete_all
+  Carto::Asset.delete_all
+  Carto::Organization.delete_all
+end
+
 ##
 # This is a really NASTY HACK for stubbing these methods in the specs.
 # Regular stubs are being impossible to setup because we need the stub to be executed before any user creation.

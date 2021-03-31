@@ -24,7 +24,7 @@ describe Carto::Superadmin::UsersController do
 
   describe '#usage' do
     before(:all) do
-      @user = FactoryGirl.create(:carto_user)
+      @user = create(:carto_user)
     end
 
     after(:all) do
@@ -179,24 +179,6 @@ describe Carto::Superadmin::UsersController do
       before(:all) do
         @class = CartoDB::IsolinesUsageMetrics
         @service = :tomtom_isolines
-      end
-
-      it_behaves_like 'dataservices usage metrics'
-    end
-
-    describe 'obs_general' do
-      before(:all) do
-        @class = CartoDB::ObservatoryGeneralUsageMetrics
-        @service = :obs_general
-      end
-
-      it_behaves_like 'dataservices usage metrics'
-    end
-
-    describe 'obs_snapshot' do
-      before(:all) do
-        @class = CartoDB::ObservatorySnapshotUsageMetrics
-        @service = :obs_snapshot
       end
 
       it_behaves_like 'dataservices usage metrics'

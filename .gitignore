@@ -88,3 +88,9 @@ database.yml
 build_resources/
 .dockerignore
 fake.log*
+# Files generated when running old CI in local
+parallel_tests/
+config/database_****.yml
+parallel_tests_logs
+tests_exit_status
+serial_tests_logs

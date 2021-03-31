@@ -68,7 +68,7 @@ describe User do
     before { ['FREE', 'ORGANIZATION USER'].each { |account_type| create_account_type_fg(account_type) } }
 
     it 'does create rate limits' do
-      @user_no_ff = FactoryGirl.create(:valid_user, rate_limit_id: rate_limits.id)
+      @user_no_ff = create(:valid_user, rate_limit_id: rate_limits.id)
       map_prefix = "limits:rate:store:#{@user_no_ff.username}:maps:"
       sql_prefix = "limits:rate:store:#{@user_no_ff.username}:sql:"
       $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 1
@@ -93,7 +93,7 @@ describe User do
     end
 
     it 'destroy rate limits' do
-      user2 = FactoryGirl.create(:valid_user, rate_limit_id: rate_limits_pro.id)
+      user2 = create(:valid_user, rate_limit_id: rate_limits_pro.id)
 
       expect_rate_limits_pro_saved_to_redis(user2.username)
 
@@ -107,7 +107,7 @@ describe User do
     end
 
     it 'updates rate limits when user has no rate limits' do
-      user = FactoryGirl.create(:valid_user)
+      user = create(:valid_user)
       user.update_rate_limits(rate_limits.api_attributes)
 
       user.reload
@@ -118,7 +118,7 @@ describe User do
     end
 
     it 'does nothing when user has no rate limits' do
-      user = FactoryGirl.create(:valid_user)
+      user = create(:valid_user)
       user.update_rate_limits(nil)
 
       user.reload
@@ -128,8 +128,8 @@ describe User do
     end
 
     it 'updates rate limits when user has rate limits' do
-      rate_limits_custom2 = FactoryGirl.create(:rate_limits_custom2)
-      user = FactoryGirl.create(:valid_user, rate_limit_id: rate_limits_custom2.id)
+      rate_limits_custom2 = create(:rate_limits_custom2)
+      user = create(:valid_user, rate_limit_id: rate_limits_custom2.id)
       user.update_rate_limits(rate_limits.api_attributes)
       user.reload
       user.rate_limit.should_not be_nil
@@ -141,8 +141,8 @@ describe User do
     end
 
     it 'set rate limits to nil when user has rate limits' do
-      rate_limits_custom2 = FactoryGirl.create(:rate_limits_custom2)
-      user = FactoryGirl.create(:valid_user, rate_limit_id: rate_limits_custom2.id)
+      rate_limits_custom2 = create(:rate_limits_custom2)
+      user = create(:valid_user, rate_limit_id: rate_limits_custom2.id)
 
       user.update_rate_limits(nil)
 
@@ -216,66 +216,6 @@ describe User do
 
     it "should return 0 when no here isolines actions" do
       @user.get_here_isolines_calls(from: Time.now - 15.days, to: Time.now - 10.days).should eq 0
-    end
-  end
-
-  describe '#get_obs_snapshot_calls' do
-    before do
-      delete_user_data @user
-      @mock_redis = MockRedis.new
-      @usage_metrics = CartoDB::ObservatorySnapshotUsageMetrics.new(@user.username, nil, @mock_redis)
-      CartoDB::ObservatorySnapshotUsageMetrics.stubs(:new).returns(@usage_metrics)
-      @user.stubs(:last_billing_cycle).returns(Date.today)
-      @user.period_end_date = (DateTime.current + 1) << 1
-      @user.save.reload
-    end
-
-    it "should return the sum of data observatory snapshot rows for the current billing period" do
-      @usage_metrics.incr(:obs_snapshot, :success_responses, 10, DateTime.current)
-      @usage_metrics.incr(:obs_snapshot, :success_responses, 100, (DateTime.current - 2))
-      @user.get_obs_snapshot_calls.should eq 10
-    end
-
-    it "should return the sum of data observatory snapshot rows for the specified period" do
-      @usage_metrics.incr(:obs_snapshot, :success_responses, 10, DateTime.current)
-      @usage_metrics.incr(:obs_snapshot, :success_responses, 100, (DateTime.current - 2))
-      @usage_metrics.incr(:obs_snapshot, :success_responses, 100, (DateTime.current - 7))
-      @user.get_obs_snapshot_calls(from: Time.now - 5.days).should eq 110
-      @user.get_obs_snapshot_calls(from: Time.now - 5.days, to: Time.now - 2.days).should eq 100
-    end
-
-    it "should return 0 when no here isolines actions" do
-      @user.get_obs_snapshot_calls(from: Time.now - 15.days, to: Time.now - 10.days).should eq 0
-    end
-  end
-
-  describe '#get_obs_general_calls' do
-    before do
-      delete_user_data @user
-      @mock_redis = MockRedis.new
-      @usage_metrics = CartoDB::ObservatoryGeneralUsageMetrics.new(@user.username, nil, @mock_redis)
-      CartoDB::ObservatoryGeneralUsageMetrics.stubs(:new).returns(@usage_metrics)
-      @user.stubs(:last_billing_cycle).returns(Date.today)
-      @user.period_end_date = (DateTime.current + 1) << 1
-      @user.save.reload
-    end
-
-    it "should return the sum of data observatory general rows for the current billing period" do
-      @usage_metrics.incr(:obs_general, :success_responses, 10, DateTime.current)
-      @usage_metrics.incr(:obs_general, :success_responses, 100, (DateTime.current - 2))
-      @user.get_obs_general_calls.should eq 10
-    end
-
-    it "should return the sum of data observatory general rows for the specified period" do
-      @usage_metrics.incr(:obs_general, :success_responses, 10, DateTime.current)
-      @usage_metrics.incr(:obs_general, :success_responses, 100, (DateTime.current - 2))
-      @usage_metrics.incr(:obs_general, :success_responses, 100, (DateTime.current - 7))
-      @user.get_obs_general_calls(from: Time.now - 5.days).should eq 110
-      @user.get_obs_general_calls(from: Time.now - 5.days, to: Time.now - 2.days).should eq 100
-    end
-
-    it "should return 0 when no data observatory general actions" do
-      @user.get_obs_general_calls(from: Time.now - 15.days, to: Time.now - 10.days).should eq 0
     end
   end
 
@@ -378,80 +318,5 @@ describe User do
       @user_account.hard_here_isolines_limit.should be_false
     end
 
-  end
-
-  describe '#hard_obs_snapshot_limit?' do
-
-    before(:each) do
-      @user_account = create_user
-    end
-
-    it 'returns true with every plan unless it has been manually set to false' do
-      @user_account[:soft_obs_snapshot_limit].should be_nil
-      @user_account.stubs(:account_type).returns('AMBASSADOR')
-      @user_account.soft_obs_snapshot_limit?.should be_false
-      @user_account.soft_obs_snapshot_limit.should be_false
-      @user_account.hard_obs_snapshot_limit?.should be_true
-      @user_account.hard_obs_snapshot_limit.should be_true
-
-      @user_account.stubs(:account_type).returns('FREE')
-      @user_account.soft_obs_snapshot_limit?.should be_false
-      @user_account.soft_obs_snapshot_limit.should be_false
-      @user_account.hard_obs_snapshot_limit?.should be_true
-      @user_account.hard_obs_snapshot_limit.should be_true
-
-      @user_account.hard_obs_snapshot_limit = false
-      @user_account[:soft_obs_snapshot_limit].should_not be_nil
-
-      @user_account.stubs(:account_type).returns('AMBASSADOR')
-      @user_account.soft_obs_snapshot_limit?.should be_true
-      @user_account.soft_obs_snapshot_limit.should be_true
-      @user_account.hard_obs_snapshot_limit?.should be_false
-      @user_account.hard_obs_snapshot_limit.should be_false
-
-      @user_account.stubs(:account_type).returns('FREE')
-      @user_account.soft_obs_snapshot_limit?.should be_true
-      @user_account.soft_obs_snapshot_limit.should be_true
-      @user_account.hard_obs_snapshot_limit?.should be_false
-      @user_account.hard_obs_snapshot_limit.should be_false
-    end
-
-  end
-
-  describe '#hard_obs_general_limit?' do
-
-    before(:each) do
-      @user_account = create_user
-    end
-
-    it 'returns true with every plan unless it has been manually set to false' do
-      @user_account[:soft_obs_general_limit].should be_nil
-      @user_account.stubs(:account_type).returns('AMBASSADOR')
-      @user_account.soft_obs_general_limit?.should be_false
-      @user_account.soft_obs_general_limit.should be_false
-      @user_account.hard_obs_general_limit?.should be_true
-      @user_account.hard_obs_general_limit.should be_true
-
-      @user_account.stubs(:account_type).returns('FREE')
-      @user_account.soft_obs_general_limit?.should be_false
-      @user_account.soft_obs_general_limit.should be_false
-      @user_account.hard_obs_general_limit?.should be_true
-      @user_account.hard_obs_general_limit.should be_true
-
-      @user_account.hard_obs_general_limit = false
-      @user_account[:soft_obs_general_limit].should_not be_nil
-
-      @user_account.stubs(:account_type).returns('AMBASSADOR')
-      @user_account.soft_obs_general_limit?.should be_true
-      @user_account.soft_obs_general_limit.should be_true
-      @user_account.hard_obs_general_limit?.should be_false
-      @user_account.hard_obs_general_limit.should be_false
-
-      @user_account.stubs(:account_type).returns('FREE')
-      @user_account.soft_obs_general_limit?.should be_true
-      @user_account.soft_obs_general_limit.should be_true
-      @user_account.hard_obs_general_limit?.should be_false
-      @user_account.hard_obs_general_limit.should be_false
-    end
   end
 end

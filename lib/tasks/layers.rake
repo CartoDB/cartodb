@@ -79,7 +79,7 @@ namespace :carto do
         end
       end
 
-      puts "Finished. Total: #{total}. Errors: #{errors}"
+      puts "Finished. Total: #{total}. Errors: #{errors}" unless Rails.env.test?
     end
 
     desc "Nokia -> HERE layer update (platform #2815)"
@@ -121,7 +121,7 @@ namespace :carto do
         end
       end
 
-      puts "Finished. Total: #{total}. Errors: #{errors}"
+      puts "Finished. Total: #{total}. Errors: #{errors}" unless Rails.env.test?
     end
 
     module LayersRake
@@ -198,7 +198,7 @@ namespace :carto do
         end
       end
 
-      puts "Finished. Total: #{total}. Updated: #{updated}. Errors: #{errors}"
+      puts "Finished. Total: #{total}. Updated: #{updated}. Errors: #{errors}" unless Rails.env.test?
     end
   end
 end

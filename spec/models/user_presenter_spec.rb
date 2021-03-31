@@ -86,8 +86,8 @@ describe Carto::Api::UserPresenter do
     create_table( { user_id: user.id, name: 'table1' } )
     create_table( { user_id: user.id, name: 'table2', privacy: Carto::UserTable::PRIVACY_PUBLIC } )
 
-    feature_flag1 = FactoryGirl.create(:feature_flag, id: 1, name: 'ff1')
-    feature_flag2 = FactoryGirl.create(:feature_flag, id: 2, name: 'ff2')
+    feature_flag1 = create(:feature_flag, id: 1, name: 'ff1')
+    feature_flag2 = create(:feature_flag, id: 2, name: 'ff2')
     user.update_feature_flags([ feature_flag1.id.to_s, feature_flag2.id.to_s ])
     user.save.reload
 
@@ -188,8 +188,6 @@ describe Carto::Api::UserPresenter do
     new_data[:remaining_byte_quota].should == old_data[:remaining_byte_quota]
     new_data[:geocoding].should == old_data[:geocoding]
     new_data[:here_isolines].should == old_data[:here_isolines]
-    new_data[:obs_snapshot].should == old_data[:obs_snapshot]
-    new_data[:obs_general].should == old_data[:obs_general]
     new_data[:twitter].should == old_data[:twitter]
     new_data[:billing_period].should == old_data[:billing_period]
     new_data[:next_billing_period].should == old_data[:next_billing_period]
@@ -235,16 +233,12 @@ describe Carto::Api::UserPresenter do
       new_data[:organization][:quota_in_bytes].should == old_data[:organization][:quota_in_bytes]
       new_data[:organization][:geocoding_quota].should == old_data[:organization][:geocoding_quota]
       new_data[:organization][:here_isolines_quota].should == old_data[:organization][:here_isolines_quota]
-      new_data[:organization][:obs_snapshot_quota].should == old_data[:organization][:obs_snapshot_quota]
-      new_data[:organization][:obs_general_quota].should == old_data[:organization][:obs_general_quota]
       new_data[:organization][:mapzen_routing_quota].should == old_data[:organization][:mapzen_routing_quota]
       new_data[:organization][:map_views_quota].should == old_data[:organization][:map_views_quota]
       new_data[:organization][:twitter_datasource_quota].should == old_data[:organization][:twitter_datasource_quota]
       new_data[:organization][:map_view_block_price].should == old_data[:organization][:map_view_block_price]
       new_data[:organization][:geocoding_block_price].should == old_data[:organization][:geocoding_block_price]
       new_data[:organization][:here_isolines_block_price].should == old_data[:organization][:here_isolines_block_price]
-      new_data[:organization][:obs_snapshot_block_price].should == old_data[:organization][:obs_snapshot_block_price]
-      new_data[:organization][:obs_general_block_price].should == old_data[:organization][:obs_general_block_price]
       new_data[:organization][:mapzen_routing_block_price].should == old_data[:organization][:mapzen_routing_block_price]
       new_data[:organization][:seats].should == old_data[:organization][:seats]
       new_data[:organization][:twitter_username].should == old_data[:organization][:twitter_username]

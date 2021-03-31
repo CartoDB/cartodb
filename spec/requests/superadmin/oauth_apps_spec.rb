@@ -3,7 +3,7 @@ require_relative '../../acceptance_helper'
 describe Superadmin::OauthAppsController do
 
   before(:all) do
-    @user = FactoryGirl.create(:carto_user)
+    @user = create(:carto_user)
   end
 
   after(:all) do
@@ -12,7 +12,7 @@ describe Superadmin::OauthAppsController do
 
   describe '#create' do
     before(:each) do
-      @oauth_app = FactoryGirl.build(:oauth_app, user_id: @user.id)
+      @oauth_app = build(:oauth_app, user_id: @user.id)
       @oauth_app_param = {
         oauth_app: @oauth_app.api_attributes
       }
@@ -43,7 +43,7 @@ describe Superadmin::OauthAppsController do
 
   describe '#update' do
     before(:each) do
-      @oauth_app = FactoryGirl.create(:oauth_app, user_id: @user.id)
+      @oauth_app = create(:oauth_app, user_id: @user.id)
       @oauth_app.name = 'updated_name'
       @oauth_app_param = {
         oauth_app: @oauth_app.api_attributes
@@ -94,7 +94,7 @@ describe Superadmin::OauthAppsController do
 
   describe '#destroy' do
     before(:each) do
-      @oauth_app = FactoryGirl.create(:oauth_app, user_id: @user.id)
+      @oauth_app = create(:oauth_app, user_id: @user.id)
     end
 
     after(:each) do

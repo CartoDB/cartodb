@@ -1,9 +1,5 @@
 shared_examples_for 'user table models' do
   describe '#validation' do
-    after(:each) do
-      @duplicate.try(:destroy)
-    end
-
     it 'validates that user is required' do
       ut = build_user_table
       expect(ut.valid?).to be_false
@@ -25,7 +21,7 @@ shared_examples_for 'user table models' do
     end
 
     it 'validates that name cannot be taken' do
-      @duplicate = FactoryGirl.create(:carto_user_table, user: Carto::User.find(@user.id), name: 'ut_spec_wadus')
+      @duplicate = create(:carto_user_table, user: Carto::User.find(@user.id), name: 'ut_spec_wadus')
       ut = build_user_table(user: @user, name: 'ut_spec_wadus')
       expect(ut.valid?).to be_false
       expect(ut.errors.keys.flatten).to include :name
@@ -99,20 +95,12 @@ shared_examples_for 'user table models' do
   describe 'dependent visualizations' do
     include Carto::Factories::Visualizations
 
-    before(:all) do
+    before do
       @map, @other_table, @table_visualization, @visualization = create_full_visualization(@carto_user)
       @first_layer = @visualization.data_layers.first
-      @second_layer = FactoryGirl.create(:carto_layer, kind: 'torque', maps: [@map])
-    end
-
-    before(:each) do
+      @second_layer = create(:carto_layer, kind: 'torque', maps: [@map])
       @second_layer.update_attribute(:kind, 'torque')
       @user_table.reload
-    end
-
-    after(:all) do
-      @second_layer.destroy
-      destroy_full_visualization(@map, @other_table, @table_visualization, @visualization)
     end
 
     it 'no layers depending on the table -> not dependent' do

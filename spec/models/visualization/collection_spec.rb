@@ -12,8 +12,8 @@ describe Visualization::Collection do
   include Carto::Factories::Visualizations
 
   before(:all) do
-    @user_1 = FactoryGirl.create(:valid_user, quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
-    @user_2 = FactoryGirl.create(:valid_user, private_tables_enabled: true)
+    @user_1 = create(:valid_user, quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
+    @user_2 = create(:valid_user, private_tables_enabled: true)
   end
 
   before(:each) do

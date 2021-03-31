@@ -21,11 +21,11 @@ describe "UserState" do
   before(:all) do
     @organization = create_organization_with_owner
     @org_account_type = create_account_type_fg('ORGANIZATION USER')
-    @locked_user = FactoryGirl.create(:locked_user)
+    @locked_user = create(:locked_user)
     @map, @table, @table_visualization, @visualization = create_full_builder_vis(@locked_user)
     @visualization.create_mapcap!
-    @non_locked_user = FactoryGirl.create(:valid_user)
-    @unverified_user = FactoryGirl.create(:unverified_user)
+    @non_locked_user = create(:valid_user)
+    @unverified_user = create(:unverified_user)
     @public_user_endpoints = ['/me'].freeze
     @user_endpoints = ['/account', '/profile'].freeze
     @dashboard_endpoints = ['/dashboard', '/dashboard/tables', '/dashboard/datasets', '/dashboard/visualizations',
@@ -47,7 +47,7 @@ describe "UserState" do
                               "/api/v1/users/#{@locked_user.id}"]
     @headers = {}
     @api_headers = { 'CONTENT_TYPE' => 'application/json', :format => "json" }
-    @maintenance_mode_user = FactoryGirl.create(:valid_user, maintenance_mode: true)
+    @maintenance_mode_user = create(:valid_user, maintenance_mode: true)
   end
 
   after(:all) do
@@ -282,7 +282,7 @@ describe "UserState" do
     end
 
     it 'locked user can delete their own account' do
-      to_be_deleted_user = FactoryGirl.create(:locked_user)
+      to_be_deleted_user = create(:locked_user)
       to_be_deleted_user.password = 'pwd123'
       to_be_deleted_user.password_confirmation = 'pwd123'
       to_be_deleted_user.save
@@ -448,7 +448,7 @@ describe "UserState" do
     end
 
     it 'maintenance mode user cannot delete their own account' do
-      to_be_deleted_user = FactoryGirl.create(:valid_user, maintenance_mode: true)
+      to_be_deleted_user = create(:valid_user, maintenance_mode: true)
       to_be_deleted_user.password = 'pwd123'
       to_be_deleted_user.password_confirmation = 'pwd123'
       to_be_deleted_user.save

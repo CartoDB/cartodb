@@ -1,7 +1,4 @@
-require 'rspec/mocks'
-require_relative '../../../spec_helper'
-require_relative '../../../../app/controllers/carto/api/database_groups_controller'
-require_relative '.././../../factories/visualization_creation_helpers'
+require 'spec_helper'
 
 # cURL samples:
 # - Rename group: curl -v -H "Content-Type: application/json" -X PUT -d '{ "display_name": "Demo Group" }' "http://central-org-b-admin.localhost.lan:3000/api/v1/organization/95c2c425-5c8c-4b20-8999-d79cd20c2f2c/groups/c662f7ee-aefb-4f49-93ea-1f671a77bb36?api_key=665646f527c3006b124c15a308bb98f4ed1f52e4"
@@ -28,11 +25,11 @@ describe Carto::Api::GroupsController do
         "google_maps_query_string" => @org_user_1.google_maps_query_string
       }
 
-      @group_1 = FactoryGirl.create(:random_group, display_name: 'g_1', organization: @carto_organization)
+      @group_1 = create(:random_group, display_name: 'g_1', organization: @carto_organization)
       @group_1_json = { 'id' => @group_1.id, 'organization_id' => @group_1.organization_id, 'name' => @group_1.name, 'display_name' => @group_1.display_name }
-      @group_2 = FactoryGirl.create(:random_group, display_name: 'g_2', organization: @carto_organization)
+      @group_2 = create(:random_group, display_name: 'g_2', organization: @carto_organization)
       @group_2_json = { 'id' => @group_2.id, 'organization_id' => @group_2.organization_id, 'name' => @group_2.name, 'display_name' => @group_2.display_name }
-      @group_3 = FactoryGirl.create(:random_group, display_name: 'g_3', organization: @carto_organization)
+      @group_3 = create(:random_group, display_name: 'g_3', organization: @carto_organization)
       @group_3_json = { 'id' => @group_3.id, 'organization_id' => @group_3.organization_id, 'name' => @group_3.name, 'display_name' => @group_3.display_name }
       @headers = { 'CONTENT_TYPE' => 'application/json', :format => "json", 'Accept' => 'application/json' }
     end

@@ -3,15 +3,13 @@ require 'helpers/unique_names_helper'
 
 include UniqueNamesHelper
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :organization, class: 'Carto::Organization' do
     name { unique_name('organization') }
     seats { 10 }
     quota_in_bytes { 100.megabytes }
     geocoding_quota { 1000 }
     here_isolines_quota { 1000 }
-    obs_snapshot_quota { 1000 }
-    obs_general_quota { 1000 }
     map_views_quota { 100_000 }
     website { 'carto.com' }
     description { 'Lorem ipsum dolor sit amet' }
@@ -23,6 +21,18 @@ FactoryGirl.define do
     geocoder_provider { 'heremaps' }
     isolines_provider { 'heremaps' }
     routing_provider { 'heremaps' }
+
+    transient do
+      owner { create(:user) }
+    end
+
+    trait :with_owner do
+      after(:create) do |organization, evaluator|
+        CartoDB::UserOrganization.new(organization.id, evaluator.owner.id).promote_user_to_admin
+        create_account_type_fg('ORGANIZATION USER') # TODO: move to a global callback
+        organization.reload
+      end
+    end
 
     factory :organization_whitelist_carto, class: 'Carto::Organization' do
       whitelisted_email_domains { ['carto.com'] }
@@ -37,11 +47,11 @@ FactoryGirl.define do
     factory :organization_with_users, class: 'Carto::Organization' do
       after(:create) do |org|
         create_account_type_fg('ORGANIZATION USER')
-        owner = FactoryGirl.create(:user)
+        owner = create(:user)
         uo = CartoDB::UserOrganization.new(org.id, owner.id)
         uo.promote_user_to_admin
         org.reload
-        user = FactoryGirl.build(:user)
+        user = build(:user)
         user.organization_id = org.id
         user.enabled = true
         user.save
@@ -53,7 +63,7 @@ FactoryGirl.define do
 
         after :create do |org|
           Carto::Organization.find(org.id).users.each do |user|
-            user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: user.id)
+            user.user_multifactor_auths << create(:totp, :active, user_id: user.id)
             user.save!
           end
         end
@@ -80,8 +90,6 @@ FactoryGirl.define do
       quota_in_bytes { 100.megabytes }
       geocoding_quota { 1000 }
       here_isolines_quota { 1000 }
-      obs_snapshot_quota { 1000 }
-      obs_general_quota { 1000 }
       map_views_quota { 100_000 }
       website { 'carto.com' }
       description { 'Lorem ipsum dolor sit amet' }

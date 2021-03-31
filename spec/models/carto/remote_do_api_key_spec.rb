@@ -1,4 +1,4 @@
-require 'spec_helper_min'
+require 'spec_helper_unit'
 
 describe Carto::RemoteDoApiKey do
   let(:username) { 'random-user' }

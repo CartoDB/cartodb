@@ -2,7 +2,7 @@
 shared_examples_for 'DataImport model' do
   describe 'validation' do
     before(:all) do
-      @user = FactoryGirl.create(:valid_user)
+      @user = create(:valid_user)
     end
 
     after(:all) do

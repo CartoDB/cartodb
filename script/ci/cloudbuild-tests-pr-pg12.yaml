@@ -111,7 +111,7 @@ steps:
       docker cp builder_1:/cartodb/parallel_tests_logs test_logs_${BUILD_ID}/parallel_tests_logs
       docker cp builder_1:/cartodb/serial_tests_logs test_logs_${BUILD_ID}/serial_tests_logs || true
       docker cp builder_1:/cartodb/tests_exit_status tests_exit_status
-      echo "Logs will be available during 1 day at gs://cartodb-ci-tmp-logs/${BUILD_ID}/"
+      echo "Logs will be available during 14 days at gs://cartodb-ci-tmp-logs/${BUILD_ID}/"
 
 # Upload logs to gcs
 - name: gcr.io/cloud-builders/gsutil

@@ -1,5 +1,3 @@
-require_relative '../spec_helper'
-
 shared_examples_for 'shared entity models' do
   before(:all) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)

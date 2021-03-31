@@ -10,7 +10,7 @@ describe Carto::Api::Public::FederatedTablesController do
   before(:all) do
     host! "#{@user1.username}.localhost.lan"
 
-    @feature_flag = FactoryGirl.create(:feature_flag, name: 'federated_tables', restricted: true)
+    @feature_flag = create(:feature_flag, name: 'federated_tables', restricted: true)
     @user1.activate_feature_flag!(@feature_flag)
 
     puts "Starting remote server"
@@ -146,7 +146,7 @@ describe Carto::Api::Public::FederatedTablesController do
     end
 
     it 'returns 403 when using a regular API key' do
-      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      api_key = create(:api_key_apis, user_id: @user1.id)
       params_list_servers = { api_key: api_key.token, page: 1, per_page: 10 }
       get_json api_v4_federated_servers_list_servers_url(params_list_servers) do |response|
         expect(response.status).to eq(403)
@@ -328,7 +328,7 @@ describe Carto::Api::Public::FederatedTablesController do
     end
 
     it 'returns 403 when using a regular API key' do
-      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      api_key = create(:api_key_apis, user_id: @user1.id)
       params_register_server = { api_key: api_key.token }
       post_json api_v4_federated_servers_register_server_url(params_register_server), @payload_register_server do |response|
         expect(response.status).to eq(403)
@@ -419,7 +419,7 @@ describe Carto::Api::Public::FederatedTablesController do
     end
 
     it 'returns 403 when using a regular API key' do
-      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      api_key = create(:api_key_apis, user_id: @user1.id)
       params_show_server = { federated_server_name: @federated_server_name, api_key: api_key.token }
       get_json api_v4_federated_servers_get_server_url(params_show_server) do |response|
         expect(response.status).to eq(403)
@@ -581,7 +581,7 @@ describe Carto::Api::Public::FederatedTablesController do
     end
 
     it 'returns 403 when using a regular API key' do
-      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      api_key = create(:api_key_apis, user_id: @user1.id)
       params_update_server = { federated_server_name: @federated_server_name, api_key: api_key.token }
       put_json api_v4_federated_servers_update_server_url(params_update_server), @payload_update_server do |response|
         expect(response.status).to eq(403)
@@ -615,7 +615,7 @@ describe Carto::Api::Public::FederatedTablesController do
     end
 
     it 'returns 403 when using a regular API key' do
-      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      api_key = create(:api_key_apis, user_id: @user1.id)
       params_unregister_server = { federated_server_name: @federated_server_name, api_key: api_key.token }
       delete_json api_v4_federated_servers_unregister_server_url(params_unregister_server) do |response|
         expect(response.status).to eq(403)
@@ -738,7 +738,7 @@ describe Carto::Api::Public::FederatedTablesController do
     end
 
     it 'returns 403 when using a regular API key' do
-      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      api_key = create(:api_key_apis, user_id: @user1.id)
       params_list_schemas = { federated_server_name: @federated_server_name, api_key: api_key.token, page: 1, per_page: 10 }
       get_json api_v4_federated_servers_list_schemas_url(params_list_schemas) do |response|
         expect(response.status).to eq(403)
@@ -818,7 +818,7 @@ describe Carto::Api::Public::FederatedTablesController do
     end
 
     it 'returns 403 when using a regular API key' do
-      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      api_key = create(:api_key_apis, user_id: @user1.id)
       params_list_tables = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: api_key.token, page: 1, per_page: 10 }
       get_json api_v4_federated_servers_list_tables_url(params_list_tables) do |response|
         expect(response.status).to eq(403)
@@ -1006,7 +1006,7 @@ describe Carto::Api::Public::FederatedTablesController do
     end
 
     it 'returns 403 when using a regular API key' do
-      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      api_key = create(:api_key_apis, user_id: @user1.id)
       params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: api_key.token }
       post_json api_v4_federated_servers_register_table_url(params_register_table), @payload_register_table do |response|
         expect(response.status).to eq(403)
@@ -1111,7 +1111,7 @@ describe Carto::Api::Public::FederatedTablesController do
     end
 
     it 'returns 403 when using a regular API key' do
-      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      api_key = create(:api_key_apis, user_id: @user1.id)
       params = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name, api_key: api_key.token }
       get_json api_v4_federated_servers_get_table_url(params) do |response|
         expect(response.status).to eq(403)
@@ -1306,7 +1306,7 @@ describe Carto::Api::Public::FederatedTablesController do
     end
 
     it 'returns 403 when using a regular API key' do
-      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      api_key = create(:api_key_apis, user_id: @user1.id)
       params_update_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name, api_key: api_key.token }
       put_json api_v4_federated_servers_update_table_url(params_update_table), @payload_update_table do |response|
         expect(response.status).to eq(403)
@@ -1375,7 +1375,7 @@ describe Carto::Api::Public::FederatedTablesController do
     end
 
     it 'returns 403 when using a regular API key' do
-      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      api_key = create(:api_key_apis, user_id: @user1.id)
       params_unregister_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name, api_key: api_key.token }
       delete_json api_v4_federated_servers_unregister_table_url(params_unregister_table) do |response|
         expect(response.status).to eq(403)

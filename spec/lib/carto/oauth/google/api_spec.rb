@@ -27,7 +27,7 @@ describe Carto::Oauth::Google::Api do
   describe '#user' do
     context 'with existing user' do
       before(:all) do
-        @user = FactoryGirl.create(:carto_user, email: 'fulanito@example.com', username: 'fulanito')
+        @user = create(:carto_user, email: 'fulanito@example.com', username: 'fulanito')
       end
 
       after(:all) do

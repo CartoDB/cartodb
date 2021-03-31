@@ -1,4 +1,4 @@
-require_relative '../../spec_helper'
+require 'spec_helper_unit'
 require_relative '../../../services/importer/spec/doubles/connector'
 
 describe Carto::Connection do
@@ -15,12 +15,12 @@ describe Carto::Connection do
 
   describe 'connection type is automatically computed' do
     it 'is db if parameters are present' do
-      connection = FactoryGirl.create(:connection, name: 'dumb', connector: 'dummy', parameters: {server: 'server'}, user: user)
+      connection = create(:connection, name: 'dumb', connector: 'dummy', parameters: {server: 'server'}, user: user)
       expect(connection.connection_type).to eq(Carto::Connection::TYPE_DB_CONNECTOR)
     end
 
     it 'is oauth if token is present' do
-      connection = FactoryGirl.create(:connection, name: 'dumb', connector: 'gdrive', token: 'token', user: user)
+      connection = create(:connection, name: 'dumb', connector: 'gdrive', token: 'token', user: user)
       expect(connection.connection_type).to eq(Carto::Connection::TYPE_OAUTH_SERVICE)
     end
   end
@@ -29,7 +29,7 @@ describe Carto::Connection do
     # TODO: move this to ConnectionManager tests; mock (with spy) ConnectionManager here
 
     it 'has singleton connections for OAuth' do
-      FactoryGirl.create(:connection, name: 'oauth1', connector: 'gdrive', token: 'token1', user: user)
+      create(:connection, name: 'oauth1', connector: 'gdrive', token: 'token1', user: user)
       expect do
         Carto::Connection.create!(
           user: user,
@@ -59,7 +59,7 @@ describe Carto::Connection do
     it 'specific dbs can have singleton connections' do
       Carto::ConnectionManager.stubs(:singleton_connector?).returns(true)
 
-      connection = FactoryGirl.create(
+      connection = create(
         :connection,
         user: user,
         name: 'sdb1',
@@ -91,7 +91,7 @@ describe Carto::Connection do
       parameters = { server: 'server' }
       connection_manager.stubs(:adapt_db_connector_parameters).returns([parameters, parameters.merge(provider: 'dummy')])
       connection_manager.stubs(:check).returns(true)
-      connection = FactoryGirl.build(:connection, name: 'dumb', connector: 'dummy', parameters: parameters, user: user)
+      connection = build(:connection, name: 'dumb', connector: 'dummy', parameters: parameters, user: user)
       connection_manager.expects(:manage_create).with(connection)
       connection.save!
     end
@@ -100,7 +100,7 @@ describe Carto::Connection do
       parameters = { server: 'server' }
       connection_manager.stubs(:adapt_db_connector_parameters).returns([parameters, parameters.merge(provider: 'dummy')])
       connection_manager.stubs(:check).returns(true)
-      connection = FactoryGirl.build(:connection, name: 'dumb', connector: 'dummy', parameters: parameters, user: user)
+      connection = build(:connection, name: 'dumb', connector: 'dummy', parameters: parameters, user: user)
       connection_manager.expects(:manage_create).with(connection)
       connection.save!
 
@@ -112,7 +112,7 @@ describe Carto::Connection do
       parameters = { server: 'server' }
       connection_manager.stubs(:adapt_db_connector_parameters).returns([parameters, parameters.merge(provider: 'dummy')])
       connection_manager.stubs(:check).returns(true)
-      connection = FactoryGirl.build(:connection, name: 'dumb', connector: 'dummy', parameters: parameters, user: user)
+      connection = build(:connection, name: 'dumb', connector: 'dummy', parameters: parameters, user: user)
       connection_manager.expects(:manage_create).with(connection)
       connection.save!
 
@@ -124,7 +124,7 @@ describe Carto::Connection do
       parameters = { server: 'server' }
       connection_manager.stubs(:adapt_db_connector_parameters).returns([parameters, parameters.merge(provider: 'dummy')])
       connection_manager.stubs(:check).returns(true)
-      connection = FactoryGirl.build(:connection, name: 'dumb2', connector: 'dummy', parameters: parameters, user: user)
+      connection = build(:connection, name: 'dumb2', connector: 'dummy', parameters: parameters, user: user)
       connection_manager.expects(:manage_create).with(connection)
       Carto::ConnectionManager.expects(:singleton_connector?).with(connection).returns(false)
       connection.save!
@@ -135,7 +135,7 @@ describe Carto::Connection do
       parameters = { server: 'server' }
       connection_manager.stubs(:adapt_db_connector_parameters).returns([parameters, parameters.merge(provider: 'dummy')])
       connection_manager.stubs(:check).returns(true)
-      connection = FactoryGirl.build(:connection, name: 'dumb', connector: 'dummy', parameters: parameters, user: user)
+      connection = build(:connection, name: 'dumb', connector: 'dummy', parameters: parameters, user: user)
       connection_manager.expects(:manage_create).with(connection)
       Carto::ConnectionManager.expects(:errors).with(connection).returns([])
       connection.save!

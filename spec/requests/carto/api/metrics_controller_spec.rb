@@ -6,8 +6,8 @@ describe Carto::Api::MetricsController do
   include HelperMethods
 
   before(:all) do
-    @user = FactoryGirl.create(:carto_user)
-    @intruder = FactoryGirl.create(:carto_user)
+    @user = create(:carto_user)
+    @intruder = create(:carto_user)
 
     login(@user)
   end

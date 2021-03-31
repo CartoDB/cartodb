@@ -6,14 +6,16 @@ describe Carto::UserCommons do
 
   # This is a trick to always have the reloaded record
   let(:original_user) { create(:user) }
-  let(:sequel_user) { ::User[original_user.id] }
-  let(:user) { ::Carto::User.find(original_user.id) }
-
-  let(:organization_owner) { create(:user).carto_user }
-  let(:organization) { create(:organization, owner: organization_owner) }
+  let(:sequel_user) { original_user.sequel_user }
+  let(:user) { original_user.carto_user }
+  let(:organization_owner) { create(:carto_user, factory_bot_context: { only_db_setup: true }) }
+  let(:organization) { create(:organization, :with_owner, owner: organization_owner) }
 
   describe '#has_access_to_coverband?' do
-    let(:team_organization) { organization.update!(name: 'team'); organization }
+    let(:team_organization) do
+      organization.update!(name: 'team')
+      organization
+    end
 
     subject { user.has_access_to_coverband? }
 
@@ -26,12 +28,13 @@ describe Carto::UserCommons do
 
       context 'when belongs to team' do
         before { user.update!(organization: team_organization) }
+
         after { team_organization.destroy! }
 
         it { should be_true }
 
         it 'is compatible with Sequel and ActiveRecord' do
-          expect(user.has_access_to_coverband?).to eq(sequel_user.has_access_to_coverband?)
+          expect(user.has_access_to_coverband?).to eq(sequel_user.reload.has_access_to_coverband?)
         end
       end
 
@@ -74,6 +77,9 @@ describe Carto::UserCommons do
       subject { user.feature_flags }
 
       let(:organization_feature_flag) { create(:feature_flag) }
+      let(:original_user) do
+        create(:carto_user, organization_id: organization.id, factory_bot_context: { only_db_setup: true })
+      end
 
       it 'returns user feature flags' do
         expect(subject).to include(feature_flag)

@@ -1,23 +1,19 @@
-require_relative '../../spec_helper_min'
+require 'spec_helper_unit'
 
 describe Carto::VisualizationQueryOrderer do
-  before(:all) do
-    @user = FactoryGirl.create(:carto_user)
-    @visualization_a = FactoryGirl.create(:carto_visualization, user_id: @user.id, name: 'Visualization A',
+  let(:user) { create(:carto_user, factory_bot_context: { only_db_setup: true }) }
+
+  before do
+    @visualization_a = create(:carto_visualization, user_id: user.id, name: 'Visualization A',
                                                                   privacy: Carto::Visualization::PRIVACY_PUBLIC)
     Delorean.jump(1.day)
-    @visualization_b = FactoryGirl.create(:carto_visualization, user_id: @user.id, name: 'Visualization B',
+    @visualization_b = create(:carto_visualization, user_id: user.id, name: 'Visualization B',
                                                                   privacy: Carto::Visualization::PRIVACY_LINK)
-    @visualization_b.add_like_from(@user)
+    @visualization_b.add_like_from(user)
     Delorean.back_to_the_present
 
-    query = Carto::Visualization.all.select("visualizations.*").where(user_id: @user.id)
+    query = Carto::Visualization.all.select("visualizations.*").where(user_id: user.id)
     @orderer = Carto::VisualizationQueryOrderer.new(query)
-  end
-
-  after(:all) do
-    Carto::Visualization.all.each(&:destroy)
-    @user.destroy
   end
 
   it 'orders ascending by default' do
@@ -92,15 +88,11 @@ describe Carto::VisualizationQueryOrderer do
   end
 
   context 'multiple ordering' do
-    before(:each) do
+    before do
       Delorean.jump(2.days)
-      @visualization_c = FactoryGirl.create(:derived_visualization, user_id: @user.id, name: 'Visualization C',
+      @visualization_c = create(:derived_visualization, user_id: user.id, name: 'Visualization C',
                                                                     privacy: Carto::Visualization::PRIVACY_LINK)
       Delorean.back_to_the_present
-    end
-
-    after(:each) do
-      @visualization_c.delete
     end
 
     it 'orders by privacy desc + updated_at desc' do

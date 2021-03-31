@@ -14,14 +14,6 @@ module OrganizationSoftLimits
     owner.try(:soft_here_isolines_limit)
   end
 
-  def soft_obs_snapshot_limit?
-    owner.try(:soft_obs_snapshot_limit)
-  end
-
-  def soft_obs_general_limit?
-    owner.try(:soft_obs_general_limit)
-  end
-
   def soft_mapzen_routing_limit?
     owner.try(:soft_mapzen_routing_limit)
   end

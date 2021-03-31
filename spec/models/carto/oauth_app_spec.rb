@@ -1,10 +1,10 @@
-require 'spec_helper_min'
+require 'spec_helper_unit'
 
 module Carto
   describe OauthApp do
     describe '#validation' do
-      before(:all) do
-        @user = FactoryGirl.create(:carto_user)
+      before do
+        @user = create(:carto_user, factory_bot_context: { only_db_setup: true })
       end
 
       it 'requires user' do
@@ -106,23 +106,10 @@ module Carto
     end
 
     context 'Central sync' do
-      before(:all) do
-        @user_oauth = FactoryGirl.create(:carto_user)
-      end
-
-      before(:each) do
+      before do
+        @user_oauth = create(:carto_user, factory_bot_context: { only_db_setup: true })
         Cartodb::Central.stubs(:api_sync_enabled?).returns(false)
-        @oauth_app = FactoryGirl.create(:oauth_app, user: @user_oauth, avoid_sync_central: false)
-      end
-
-      after(:each) do
-        Cartodb::Central.stubs(:api_sync_enabled?).returns(false)
-        @oauth_app.destroy! if @oauth_app
-        @oauth_app2.destroy! if @oauth_app2
-      end
-
-      after(:all) do
-        @user_oauth.destroy!
+        @oauth_app = create(:oauth_app, user: @user_oauth, avoid_sync_central: false)
       end
 
       describe '#create' do
@@ -256,10 +243,6 @@ module Carto
       end
 
       describe '#destroy' do
-        after(:each) do
-          ::Resque.unstub(:enqueue)
-        end
-
         it 'does not send notification if destroying app with no users' do
           ::Resque.expects(:enqueue)
                   .with(::Resque::UserJobs::Notifications::Send, anything, anything)

@@ -8,7 +8,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
   include HelperMethods
 
   before(:all) do
-    @user = FactoryGirl.create(:carto_user)
+    @user = create(:carto_user)
   end
 
   before(:each) do
@@ -22,12 +22,12 @@ describe Carto::Api::Public::CustomVisualizationsController do
 
   describe '#index' do
     before(:each) do
-      @app = FactoryGirl.create(:app_visualization, user: @user, name: 'app')
+      @app = create(:app_visualization, user: @user, name: 'app')
       @app.save
       @asset = Carto::Asset.for_visualization(visualization: @app,
                                               resource: StringIO.new('<html><body>test</body></html>'))
       @asset.save
-      @app_password = FactoryGirl.create(:app_protected_visualization, user: @user, name: 'app password')
+      @app_password = create(:app_protected_visualization, user: @user, name: 'app password')
       @app_password.save
       @asset_password = Carto::Asset.for_visualization(visualization: @app_password,
                                                        resource: StringIO.new('<html><body>test</body></html>'))
@@ -40,7 +40,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
     end
 
     it 'returns 403 with oauth api_key' do
-      api_key = FactoryGirl.create(:oauth_api_key, user_id: @user.id)
+      api_key = create(:oauth_api_key, user_id: @user.id)
 
       get_json api_v4_app_list_vizs_url(api_key: api_key.token) do |response|
         expect(response.status).to eq(403)
@@ -48,7 +48,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
     end
 
     it 'returns 403 with regular api_key' do
-      api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
+      api_key = create(:api_key_apis, user_id: @user.id)
 
       get_json api_v4_app_list_vizs_url(api_key: api_key.token) do |response|
         expect(response.status).to eq(403)
@@ -177,7 +177,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
     end
 
     it 'returns 403 with oauth api_key' do
-      api_key = FactoryGirl.create(:oauth_api_key, user_id: @user.id)
+      api_key = create(:oauth_api_key, user_id: @user.id)
 
       post_json api_v4_app_create_viz_url(api_key: api_key.token), data: @valid_html_base64, name: @app_name do |response|
         expect(response.status).to eq(403)
@@ -185,7 +185,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
     end
 
     it 'returns 403 wih regular api_key' do
-      api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
+      api_key = create(:api_key_apis, user_id: @user.id)
 
       post_json api_v4_app_create_viz_url(api_key: api_key.token), data: @valid_html_base64, name: @app_name do |response|
         expect(response.status).to eq(403)
@@ -266,7 +266,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
     end
 
     it 'works if it exists a visualization with the same name' do
-      visualization = FactoryGirl.create(:carto_visualization, user: @user, name: @app_name)
+      visualization = create(:carto_visualization, user: @user, name: @app_name)
       visualization.save!
 
       post_json api_v4_app_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @app_name do |response|
@@ -280,19 +280,19 @@ describe Carto::Api::Public::CustomVisualizationsController do
 
   describe '#update' do
     before(:each) do
-      @app = FactoryGirl.create(:app_visualization, user: @user)
+      @app = create(:app_visualization, user: @user)
       @app.save!
       @asset = Carto::Asset.for_visualization(visualization: @app,
                                               resource: StringIO.new('<html><body>test</body></html>'))
       @asset.save
 
-      @app2 = FactoryGirl.create(:app_visualization, user: @user, name: 'app2')
+      @app2 = create(:app_visualization, user: @user, name: 'app2')
       @app2.save!
       @asset2 = Carto::Asset.for_visualization(visualization: @app,
                                               resource: StringIO.new('<html><body>test</body></html>'))
       @asset2.save
 
-      @app_other_user = FactoryGirl.create(:app_visualization)
+      @app_other_user = create(:app_visualization)
       @app_other_user.save!
       @asset_other_user = Carto::Asset.for_visualization(visualization: @app_other_user,
                                                resource: StringIO.new('<html><body>test</body></html>'))
@@ -314,7 +314,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
     end
 
     it 'returns 403 with oauth api_key' do
-      api_key = FactoryGirl.create(:oauth_api_key, user_id: @user.id)
+      api_key = create(:oauth_api_key, user_id: @user.id)
 
       put_json api_v4_app_update_viz_url(api_key: api_key.token, id: @app.id), name: 'new name' do |response|
         expect(response.status).to eq(403)
@@ -322,7 +322,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
     end
 
     it 'returns 403 wih regular api_key' do
-      api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
+      api_key = create(:api_key_apis, user_id: @user.id)
 
       put_json api_v4_app_update_viz_url(api_key: api_key.token, id: @app.id), name: 'new name' do |response|
         expect(response.status).to eq(403)
@@ -417,7 +417,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
     it 'works if exists a visualization with the same name' do
       new_name = 'other_name'
 
-      visualization = FactoryGirl.create(:carto_visualization, user: @user, name: new_name)
+      visualization = create(:carto_visualization, user: @user, name: new_name)
       visualization.save!
 
       put_json api_v4_app_update_viz_url(api_key: @user.api_key, id: @app.id), name: new_name do |response|
@@ -431,12 +431,12 @@ describe Carto::Api::Public::CustomVisualizationsController do
 
   describe '#delete' do
     before(:each) do
-      @app = FactoryGirl.create(:app_visualization, user: @user)
+      @app = create(:app_visualization, user: @user)
       @app.save
       @asset = Carto::Asset.for_visualization(visualization: @app,
                                               resource: StringIO.new('<html><body>test</body></html>'))
       @asset.save
-      @app_other_user = FactoryGirl.create(:app_visualization)
+      @app_other_user = create(:app_visualization)
       @app_other_user.save
       @asset_other_user = Carto::Asset.for_visualization(visualization: @app_other_user,
                                                resource: StringIO.new('<html><body>test</body></html>'))
@@ -457,7 +457,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
     end
 
     it 'returns 403 with oauth api_key' do
-      api_key = FactoryGirl.create(:oauth_api_key, user_id: @user.id)
+      api_key = create(:oauth_api_key, user_id: @user.id)
 
       delete_json api_v4_app_delete_viz_url(api_key: api_key.token, id: @app.id) do |response|
         expect(response.status).to eq(403)
@@ -465,7 +465,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
     end
 
     it 'returns 403 wih regular api_key' do
-      api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
+      api_key = create(:api_key_apis, user_id: @user.id)
 
       delete_json api_v4_app_delete_viz_url(api_key: api_key.token, id: @app.id) do |response|
         expect(response.status).to eq(403)

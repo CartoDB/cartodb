@@ -7,8 +7,8 @@ describe Carto::Builder::DatasetsController do
     before(:all) do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       bypass_named_maps
-      @user = FactoryGirl.build(:valid_user, builder_enabled: true).save
-      @table = FactoryGirl.create(:carto_user_table, :full, user_id: @user.id, map: @map)
+      @user = build(:valid_user, builder_enabled: true).save
+      @table = create(:carto_user_table, :full, user_id: @user.id, map: @map)
       @map = @table.map
       @visualization = @table.table_visualization
     end
@@ -43,7 +43,7 @@ describe Carto::Builder::DatasetsController do
 
     it 'redirects to public view for visualizations not writable by user' do
       bypass_named_maps
-      @other_visualization = FactoryGirl.create(:carto_visualization, type: Carto::Visualization::TYPE_CANONICAL)
+      @other_visualization = create(:carto_visualization, type: Carto::Visualization::TYPE_CANONICAL)
 
       get builder_dataset_url(id: @other_visualization.id)
 

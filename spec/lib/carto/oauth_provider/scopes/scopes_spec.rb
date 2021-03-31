@@ -9,7 +9,7 @@ describe Carto::OauthProvider::Scopes do
     include Carto::OauthProvider::Scopes
     before :all do
       @user = Carto::User.find(create_user.id)
-      @user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+      @user_table = create(:carto_user_table, :with_db_table, user_id: @user.id)
     end
 
     after :all do
@@ -384,7 +384,7 @@ describe Carto::OauthProvider::Scopes do
     include Carto::OauthProvider::Scopes
     before :all do
       @user = Carto::User.find(create_user.id)
-      @table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+      @table = create(:carto_user_table, :with_db_table, user_id: @user.id)
     end
 
     after :all do

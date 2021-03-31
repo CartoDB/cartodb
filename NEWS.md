@@ -31,6 +31,12 @@ sudo make install
 - Remove Data Library gallery page (now redirected to Spatial Data Catalog) [#16133](https://github.com/CartoDB/cartodb/pull/16133)
 - Sync DO API keys betwenn onpremises & CARTO-managed clouds [#16205](https://github.com/CartoDB/cartodb/pull/16205)
 - Fix master build [#16213](https://github.com/CartoDB/cartodb/pull/16213)
+- Bootstrap new CI & improve stability of old CI [#16220](https://github.com/CartoDB/cartodb/pull/16220)
+- Fix for custom icons not working [#16233](https://github.com/CartoDB/cartodb/pull/16233)
+- Split tests load evenly in the new CI [#16227](https://github.com/CartoDB/cartodb/pull/16227)
+- Catalog fixes: show products only, fix the legend formatting [#16219](https://github.com/CartoDB/cartodb/pull/16219)
+- Migrate spec/models/carto to the new CI [#16228](https://github.com/CartoDB/cartodb/pull/16228)
+- Remove Data Observatory v1 [#16207](https://github.com/CartoDB/cartodb/pull/16207)
 
 ### Bug fixes / enhancements
 
@@ -98,7 +104,11 @@ sudo make install
 - Fix autoload issues in subscriber [#16171](https://github.com/CartoDB/cartodb/pull/16171)
 - Remove no longer used DO metadata DB config [#16212](https://github.com/CartoDB/cartodb/pull/16212)
 - Fix CI build by changing machine spec [#16192](https://github.com/CartoDB/cartodb/pull/16192)
+- Modify superadmin users activity endpoint to allow pagination [#16226](https://github.com/CartoDB/cartodb/pull/16226)
 - Update cartodb-common to v1.1.1, which contains serveral logging fixes [#16182](https://github.com/CartoDB/cartodb/pull/16182)
+- Read config for public statics compilation [#16234](https://github.com/CartoDB/cartodb/pull/16234)
+- Show dataset version in subscription list and details [#16235](https://github.com/CartoDB/cartodb/pull/16235)
+- Fix error that avoid to render Spatial Data Catalog properly in Internet Explorer [#16236](https://github.com/CartoDB/cartodb/pull/16236)
 
 4.44.0 (2020-11-20)
 -------------------

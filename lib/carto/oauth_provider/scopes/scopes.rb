@@ -31,7 +31,6 @@ module Carto
         DataservicesScope.new('geocoding', 'Geocoding').freeze,
         DataservicesScope.new('isolines', 'Isolines').freeze,
         DataservicesScope.new('routing', 'Routing').freeze,
-        DataservicesScope.new('observatory', 'Data Observatory').freeze,
 
         ApisScope.new('do', 'Data Observatory API').freeze,
 

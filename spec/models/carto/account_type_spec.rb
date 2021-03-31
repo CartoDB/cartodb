@@ -1,4 +1,4 @@
-require 'spec_helper_min'
+require 'spec_helper_unit'
 require 'support/helpers'
 require 'helpers/account_types_helper'
 
@@ -6,7 +6,7 @@ describe Carto::AccountType do
   include CartoDB::Factories
   include AccountTypesHelper
 
-  before :each do
+  before do
     @account_type = create_account_type_fg('PRO')
   end
 
@@ -34,7 +34,7 @@ describe Carto::AccountType do
     it 'updates the rate limits of an account_type' do
       account_type = Carto::AccountType.find(@account_type.account_type)
 
-      rate_limits = FactoryGirl.create(:rate_limits)
+      rate_limits = create(:rate_limits)
       account_type.rate_limit = rate_limits
       account_type.save
 

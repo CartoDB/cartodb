@@ -1,8 +1,6 @@
 require_relative '../../services/dataservices-metrics/lib/geocoder_usage_metrics'
 require_relative '../../services/dataservices-metrics/lib/isolines_usage_metrics'
 require_relative '../../services/dataservices-metrics/lib/routing_usage_metrics'
-require_relative '../../services/dataservices-metrics/lib/observatory_snapshot_usage_metrics'
-require_relative '../../services/dataservices-metrics/lib/observatory_general_usage_metrics'
 
 module DataServicesMetricsHelper
   def get_user_geocoding_data(user, from, to, orgwise = true)
@@ -30,24 +28,6 @@ module DataServicesMetricsHelper
   def get_organization_mapzen_routing_data(organization, from, to)
     organization.require_organization_owner_presence!
     get_routing_data(organization.owner, from, to)
-  end
-
-  def get_user_obs_snapshot_data(user, from, to, orgwise = true)
-    get_obs_snapshot_data(user, from, to, orgwise)
-  end
-
-  def get_organization_obs_snapshot_data(organization, from, to)
-    organization.require_organization_owner_presence!
-    get_obs_snapshot_data(organization.owner, from, to)
-  end
-
-  def get_user_obs_general_data(user, from, to, orgwise = true)
-    get_obs_general_data(user, from, to, orgwise)
-  end
-
-  def get_organization_obs_general_data(organization, from, to)
-    organization.require_organization_owner_presence!
-    get_obs_general_data(organization.owner, from, to)
   end
 
   private
@@ -86,24 +66,6 @@ module DataServicesMetricsHelper
     routing_key = CartoDB::RoutingUsageMetrics::ROUTING_KEYS.fetch(routing_provider, :routing_tomtom)
     success = usage_metrics.get_sum_by_date_range(routing_key, :success_responses, from, to)
     empty = usage_metrics.get_sum_by_date_range(routing_key, :empty_responses, from, to)
-    success + empty
-  end
-
-  def get_obs_snapshot_data(user, from, to, orgwise = true)
-    orgname = user.organization.nil? || !orgwise ? nil : user.organization.name
-    usage_metrics = CartoDB::ObservatorySnapshotUsageMetrics.new(user.username, orgname)
-    obs_snapshot_key = :obs_snapshot
-    success = usage_metrics.get_sum_by_date_range(obs_snapshot_key, :success_responses, from, to)
-    empty = usage_metrics.get_sum_by_date_range(obs_snapshot_key, :empty_responses, from, to)
-    success + empty
-  end
-
-  def get_obs_general_data(user, from, to, orgwise = true)
-    orgname = user.organization.nil? || !orgwise ? nil : user.organization.name
-    usage_metrics = CartoDB::ObservatoryGeneralUsageMetrics.new(user.username, orgname)
-    obs_general_key = :obs_general
-    success = usage_metrics.get_sum_by_date_range(obs_general_key, :success_responses, from, to)
-    empty = usage_metrics.get_sum_by_date_range(obs_general_key, :empty_responses, from, to)
     success + empty
   end
 end

@@ -72,10 +72,6 @@ module CartoDB
       user.isolines_provider     = attributes[:isolines_provider] || nil
       user.here_isolines_quota   = attributes[:here_isolines_quota] || 1000
       user.here_isolines_block_price = attributes[:here_isolines_block_price] || 1500
-      user.obs_snapshot_quota = attributes[:obs_snapshot_quota] || 1000
-      user.obs_snapshot_block_price = attributes[:obs_snapshot_block_price] || 1500
-      user.obs_general_quota = attributes[:obs_general_quota] || 1000
-      user.obs_general_block_price = attributes[:obs_general_block_price] || 1500
       user.routing_provider       = attributes[:routing_provider] || nil
       user.mapzen_routing_quota   = attributes[:mapzen_routing_quota] || 1000
       user.mapzen_routing_block_price = attributes[:mapzen_routing_block_price] || 1500
@@ -206,9 +202,9 @@ module CartoDB
       user.maps_dataset.destroy
       user.layers_dataset.destroy
       user.assets_dataset.destroy
+      user.delete_external_data_imports
       user.data_imports_dataset.destroy
       user.geocodings_dataset.destroy
-      user.delete_external_data_imports
       user.delete_external_sources
       CartoDB::Visualization::Collection.new.fetch(user_id: user.id).each do |v|
         # INFO: no need for explicit children deletion, parent will delete it

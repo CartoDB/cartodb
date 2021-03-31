@@ -190,3 +190,11 @@ Rails/UnknownEnv:
     - production
     - staging
     - test
+
+
+####################
+#  Lint
+####################
+
+Lint/ConstantDefinitionInBlock:
+  Enabled: false

@@ -80,7 +80,7 @@ module CartodbCentralSynchronizable
            twitter_datasource_enabled twitter_datasource_block_size
            twitter_datasource_block_price twitter_datasource_quota
            google_maps_key google_maps_private_key auth_username_password_enabled
-           auth_google_enabled here_isolines_quota here_isolines_block_price  
+           auth_google_enabled here_isolines_quota here_isolines_block_price
            salesforce_datasource_enabled geocoder_provider
            isolines_provider routing_provider engine_enabled builder_enabled
            mapzen_routing_quota mapzen_routing_block_price no_map_logo auth_github_enabled

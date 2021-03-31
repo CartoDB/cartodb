@@ -36,7 +36,7 @@ module Carto::UserCommons
                           soft_twitter_datasource_limit private_maps_enabled google_sign_in
                           max_import_file_size max_import_table_row_count
                           max_concurrent_import_count last_common_data_update_date
-                          here_isolines_quota here_isolines_block_price soft_here_isolines_limit 
+                          here_isolines_quota here_isolines_block_price soft_here_isolines_limit
                           mobile_xamarin mobile_custom_watermark mobile_offline_maps mobile_gis_extension
                           mobile_max_open_users mobile_max_private_users viewer
                           salesforce_datasource_enabled builder_enabled geocoder_provider isolines_provider

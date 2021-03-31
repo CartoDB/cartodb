@@ -21,9 +21,6 @@ module.exports = {
     publicPath: '/assets/'
   },
   devtool: 'source-map',
-  resolve: {
-    symlinks: true
-  },
   plugins: [
     new webpack.DefinePlugin({
       __ASSETS_VERSION__: `'${VERSION}'`,

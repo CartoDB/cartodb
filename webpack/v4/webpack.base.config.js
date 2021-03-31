@@ -24,7 +24,7 @@ module.exports = {
   },
   resolve: {
     extensions: ['.js', '.vue', '.json', '.scss'],
-    symlinks: true,
+    symlinks: false,
     modules: require('../common/modules.js'),
     alias: require('../common/alias.js')
   },

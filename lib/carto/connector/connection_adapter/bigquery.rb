@@ -21,7 +21,7 @@ module Carto
       end
 
       def complete?
-        return false if is_oauth_connection_without_parameters?
+        return false if oauth_connection_without_parameters?
 
         super
       end
@@ -37,19 +37,19 @@ module Carto
           end
         end
         if @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
-          if !is_oauth_connection_without_parameters? && @connection.parameters['billing_project'].blank?
+          if !oauth_connection_without_parameters? && @connection.parameters['billing_project'].blank?
             errors << "Parameter 'billing_project' must be assigned"
           end
         end
         # TODO: unless @connection.shared?
-          if @connection.connection_type == Carto::Connection::TYPE_DB_CONNECTOR
-            other_connections = @connection.user.oauth_connections
-          else
-            other_connections = @connection.user.db_connections
-          end
-          if other_connections.where(connector: 'bigquery').exists?
-            errors << 'Only a BigQuery connection (either OAuth or Service Account) per user is permitted'
-          end
+        other_connections = if @connection.connection_type == Carto::Connection::TYPE_DB_CONNECTOR
+          @connection.user.oauth_connections
+        else
+          @connection.user.db_connections
+        end
+        if other_connections.where(connector: 'bigquery').exists?
+          errors << 'Only a BigQuery connection (either OAuth or Service Account) per user is permitted'
+        end
         # TODO: end
         errors
       end
@@ -95,7 +95,7 @@ module Carto
           connection_parameters['refresh_token'] = @connection.user.oauths&.select(@connection.connector)&.token
           connector_parameters[:connection] = connection_parameters
         end
-    end
+      end
 
       private
 
@@ -106,7 +106,7 @@ module Carto
         (credentials & connection_parameters).empty?
       end
 
-      def is_oauth_connection_without_parameters?
+      def oauth_connection_without_parameters?
         # An OAuth connection may be incomplete: it's created when the token is registered,
         # but necessary parameters may be assigned later.
         # And incomplete connection is not usuable until the parameters have been assigned.
@@ -151,7 +151,7 @@ module Carto
       end
 
       def redis_metadata?
-        !is_oauth_connection_without_parameters?
+        !oauth_connection_without_parameters?
       end
 
       def connection_credentials_keys

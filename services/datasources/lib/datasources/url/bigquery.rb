@@ -17,7 +17,7 @@ module CartoDB
         MAX_DATASETS = 500_000
         MAX_TABLES = 500_000
 
-        EMAIL_SCOPE = 'https://www.googleapis.com/auth/userinfo.email'
+        EMAIL_SCOPE = 'https://www.googleapis.com/auth/userinfo.email'.freeze
 
         # Constructor (hidden)
         # @param config
@@ -44,7 +44,7 @@ module CartoDB
             token_credential_uri:  config.fetch('token_credential_uri'),
             client_id: config.fetch('client_id'),
             client_secret: config.fetch('client_secret'),
-            scope: config.fetch('scope') + [ EMAIL_SCOPE ],
+            scope: config.fetch('scope') + [EMAIL_SCOPE],
             redirect_uri: config.fetch('callback_url'),
             access_type: :offline,
             additional_parameters: { login_hint: @user.email }
@@ -116,11 +116,11 @@ module CartoDB
           service = Google::Apis::Oauth2V2::Oauth2Service.new
           service.authorization = auth
           response = service.tokeninfo
-          unless response.email.to_s.downcase == @user.email.downcase
+          unless response.email.to_s.casecmp(@user.email).zero?
             revoke_token
             raise AuthError.new(
-              "The email used for authorization must match the email in the CARTO account. " \
-              "The authorization has been revoked",
+              'The email used for authorization must match the email in the CARTO account. ' \
+              'The authorization has been revoked',
               DATASOURCE_NAME
             )
           end

@@ -102,7 +102,7 @@ export default {
       localFiles: LOCAL_FILES,
       supportedFormats: UploadConfig.fileExtensions,
       extension: this.$route.params.extension,
-      uploadObject: this.getUploadObject()
+      uploadObject: this.getUploadObject(this.$store.state.user.account_type)
     };
   },
   computed: {

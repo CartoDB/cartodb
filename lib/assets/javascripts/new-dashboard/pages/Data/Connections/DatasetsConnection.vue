@@ -159,7 +159,7 @@ export default {
       loadingFiles: true,
       fileList: null,
       selectedFile: null,
-      uploadObject: this.getUploadObject()
+      uploadObject: this.getUploadObject(this.$store.state.user.account_type)
     };
   },
   props: {

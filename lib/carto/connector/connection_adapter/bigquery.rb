@@ -21,7 +21,7 @@ module Carto
       end
 
       def complete?
-        return false if incomplete?
+        return false if is_oauth_connection_without_parameters?
 
         super
       end
@@ -37,7 +37,7 @@ module Carto
           end
         end
         if @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
-          if !incomplete? && @connection.parameters['billing_project'].blank?
+          if !is_oauth_connection_without_parameters? && @connection.parameters['billing_project'].blank?
             errors << "Parameter 'billing_project' must be assigned"
           end
         end
@@ -106,7 +106,7 @@ module Carto
         (credentials & connection_parameters).empty?
       end
 
-      def incomplete?
+      def is_oauth_connection_without_parameters?
         # An OAuth connection may be incomplete: it's created when the token is registered,
         # but necessary parameters may be assigned later.
         # And incomplete connection is not usuable until the parameters have been assigned.
@@ -151,7 +151,7 @@ module Carto
       end
 
       def redis_metadata?
-        !incomplete?
+        !is_oauth_connection_without_parameters?
       end
 
       def connection_credentials_keys

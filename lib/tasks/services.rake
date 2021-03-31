@@ -1,18 +1,17 @@
+# Prefixes corresponding to User columns names/REDIS keys that store providers
+DS_PROVIDED_SERVICES = ['geocoder', 'routing', 'isolines'].freeze
+
+# service provider names
+DS_PROVIDERS = ['heremaps', 'google', 'mapzen', 'mapbox', 'tomtom', 'geocodio'].freeze
+
+# Prefixes/infixes corresponding to User columns names/REDIS keys that store quotas / soft limits
+# note that there's a couple of naming incosistence due to historical reasons:
+# * here_isolines refers to isolines in general, not only those provided by here
+# * mapzen_routing refers to routing in general
+DS_SERVICES = ['geocoding', 'here_isolines', 'mapzen_routing'].freeze
+
 namespace :cartodb do
   namespace :services do
-
-    # Prefixes corresponding to User columns names/REDIS keys that store providers
-    DS_PROVIDED_SERVICES = ['geocoder', 'routing', 'isolines'].freeze
-
-    # service provider names
-    DS_PROVIDERS = ['heremaps', 'google', 'mapzen', 'mapbox', 'tomtom', 'geocodio'].freeze
-
-    # Prefixes/infixes corresponding to User columns names/REDIS keys that store quotas / soft limits
-    # note that there's a couple of naming incosistence due to historical reasons:
-    # * here_isolines refers to isolines in general, not only those provided by here
-    # * mapzen_routing refers to routing in general
-    DS_SERVICES = ['geocoding', 'here_isolines', 'mapzen_routing'].freeze
-
     def assert_valid_arg(args, parameter, accepted_values: nil)
       value = args[parameter]
       if value.blank?

@@ -299,7 +299,8 @@ describe Carto::ConnectionManager do
         token: 'oauth-token',
         parameters: {
           'billing_project' => 'the-billing-project'
-        }
+        },
+        new_record?: ->(){ false }
       )
       params = { table: 'a-table' }
       expected_in_params = params.merge(
@@ -502,7 +503,8 @@ describe Carto::ConnectionManager do
         parameters: {
           'billing_project' => 'the-billing-project',
           'service_account' => 'the-service-account'
-        }
+        },
+        new_record?: ->(){ false }
       )
       redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
       expect(redis_json).to be(nil)
@@ -548,7 +550,8 @@ describe Carto::ConnectionManager do
         token: 'the-token',
         parameters: {
           'billing_project' => 'the-billing-project'
-        }
+        },
+        new_record?: ->(){ false }
       )
       redis_json = $users_metadata.hget("cloud_connections:#{user.username}:bigquery", connection.id)
       expect(redis_json).to be(nil)
@@ -780,7 +783,7 @@ describe Carto::ConnectionManager do
         connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,
         parameters: nil,
         token: 'the-token',
-        valid?: true
+        new_record?: ->(){ false }
       )
       expect(connection_manager.present_connection(connection)[:complete]).to eq(true)
 
@@ -797,12 +800,12 @@ describe Carto::ConnectionManager do
           'password' => 'the-password'
         },
         token: nil,
-        valid?: true
+        new_record?: ->(){ false }
       )
       expect(connection_manager.present_connection(connection)[:complete]).to eq(true)
     end
 
-    it "returns false for invalid connections" do
+    it "returns false for unsaved connections" do
       connection = mocked_record(
         id: '123',
         user: user,
@@ -811,7 +814,7 @@ describe Carto::ConnectionManager do
         connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,
         parameters: nil,
         token: 'the-token',
-        valid?: false
+        new_record?: ->(){ true }
       )
       expect(connection_manager.present_connection(connection)[:complete]).to eq(false)
     end
@@ -828,7 +831,7 @@ describe Carto::ConnectionManager do
           'billing_project' => 'the-billing-project'
         },
         token: nil,
-        valid?: true
+        new_record?: ->(){ false }
       )
       expect(connection_manager.present_connection(connection)[:complete]).to eq(true)
     end
@@ -842,7 +845,7 @@ describe Carto::ConnectionManager do
         connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,
         token: 'the-token',
         parameters: nil,
-        valid?: true
+        new_record?: ->(){ false }
       )
       expect(connection_manager.present_connection(connection)[:complete]).to eq(false)
     end
@@ -858,7 +861,7 @@ describe Carto::ConnectionManager do
         parameters: {
           'billing_project' => 'the-billing-project'
         },
-        valid?: true
+        new_record?: ->(){ false }
       )
       expect(connection_manager.present_connection(connection)[:complete]).to eq(true)
     end

@@ -82,18 +82,6 @@ module CartoDB
         geocoder_provider: geocoder_provider,
         isolines_provider: isolines_provider,
         routing_provider: routing_provider,
-        obs_snapshot: {
-          quota:       organization_user? ? organization.obs_snapshot_quota : obs_snapshot_quota,
-          block_price: organization_user? ? organization.obs_snapshot_block_price : obs_snapshot_block_price,
-          monthly_use: organization_user? ? organization.get_obs_snapshot_calls : get_obs_snapshot_calls,
-          hard_limit:  hard_obs_snapshot_limit?
-        },
-        obs_general: {
-          quota:       organization_user? ? organization.obs_general_quota : obs_general_quota,
-          block_price: organization_user? ? organization.obs_general_block_price : obs_general_block_price,
-          monthly_use: organization_user? ? organization.get_obs_general_calls : get_obs_general_calls,
-          hard_limit:  hard_obs_general_limit?
-        },
         twitter: {
           enabled:     organization_user? ? organization.twitter_datasource_enabled : twitter_datasource_enabled,
           quota:       organization_user? ? organization.twitter_datasource_quota : twitter_datasource_quota,

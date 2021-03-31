@@ -1359,34 +1359,6 @@ namespace :cartodb do
       end
     end
 
-    # usage:
-    #   bundle exec rake cartodb:db:obs_quota_enterprise[1000]
-    desc 'Give data observatory quota to all the enterprise users'
-    task :obs_quota_enterprise, [:quota] => [:environment] do |task, args|
-      args.with_defaults(:quota => 1000)
-      raise 'Not a valid quota' if args[:quota].blank?
-      do_quota = args[:quota]
-      users = User.where("account_type ilike 'enterprise%' or account_type ilike 'partner'").all
-      puts "Number of enterprise users to process: #{users.size}"
-      users.each do |u|
-        begin
-          if u.organization_owner? && !u.organization.nil?
-            u.organization.obs_general_quota = do_quota if u.organization.obs_general_quota.to_i == 0
-            u.organization.obs_snapshot_quota = do_quota if u.organization.obs_snapshot_quota.to_i == 0
-            u.organization.save
-            puts "Organization #{u.organization.name} processed OK"
-          else
-            u.obs_general_quota = do_quota if u.obs_general_quota.to_i == 0
-            u.obs_snapshot_quota = do_quota if u.obs_snapshot_quota.to_i == 0
-            u.save
-            puts "User #{u.username} processed OK"
-          end
-        rescue StandardError => e
-          puts "Error trying to give DO quota to #{u.username}: #{e.message}"
-        end
-      end
-    end
-
     desc 'Fix analysis table the_geom type'
     task fix_analysis_the_geom_type: [:environment] do
       total_users = User.count

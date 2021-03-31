@@ -117,18 +117,6 @@
     "geocoder_provider":null,
     "isolines_provider":null,
     "routing_provider":null,
-    "obs_snapshot":{
-      "quota":0,
-      "block_price":null,
-      "monthly_use":0,
-      "hard_limit":true
-    },
-    "obs_general":{
-      "quota":0,
-      "block_price":null,
-      "monthly_use":0,
-      "hard_limit":true
-    },
     "twitter":{
       "enabled":null,
       "quota":0,

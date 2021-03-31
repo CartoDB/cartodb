@@ -10,7 +10,7 @@
           }}</span>
           /
           <span class="text is-txtMainTextColor">{{
-            dataset.data_source_name
+            dataset.provider_name
           }}</span>
         </p>
         <p class="text is-caption is-txtMainTextColor" v-else>

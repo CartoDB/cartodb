@@ -7,7 +7,7 @@
     </div>
   </div>
 <% } else if (status === 'error') { %>
-  <div class="u-flex u-alignCenter u-justifyCenter CDB-Text CDB-Size-medium u-bSpace--m u-tSpace--m u-errorTextColor"><%- _t('components.backbone-forms.data-observatory.dropdown.error', {
+  <div class="u-flex u-alignCenter u-justifyCenter CDB-Text CDB-Size-medium u-bSpace--m u-tSpace--m u-errorTextColor"><%- _t('components.backbone-forms.error', {
     type: type
   }) %></div>
 <% } else if (status === 'empty') { %>

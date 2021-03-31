@@ -5,8 +5,6 @@ module Carto
 
     DEFAULT_GEOCODING_QUOTA = 0
     DEFAULT_HERE_ISOLINES_QUOTA = 0
-    DEFAULT_OBS_SNAPSHOT_QUOTA = 0
-    DEFAULT_OBS_GENERAL_QUOTA = 0
     DEFAULT_MAPZEN_ROUTING_QUOTA = nil
 
     class_methods do
@@ -23,8 +21,6 @@ module Carto
     def overquota?(delta)
       over_geocoding_quota?(delta) ||
         over_here_isolines_quota?(delta) ||
-        over_obs_snapshot_quota?(delta) ||
-        over_obs_general_quota?(delta) ||
         over_twitter_datasource_quota?(delta) ||
         over_mapzen_routing_quota?(delta)
     rescue Carto::Organization::OrganizationWithoutOwner => e
@@ -54,18 +50,6 @@ module Carto
       get_organization_mapzen_routing_data(self, date_from, date_to)
     end
 
-    def get_obs_snapshot_calls(options = {})
-      require_organization_owner_presence!
-      date_from, date_to = quota_dates(options)
-      get_organization_obs_snapshot_data(self, date_from, date_to)
-    end
-
-    def get_obs_general_calls(options = {})
-      require_organization_owner_presence!
-      date_from, date_to = quota_dates(options)
-      get_organization_obs_general_data(self, date_from, date_to)
-    end
-
     def remaining_geocoding_quota(options = {})
       remaining = geocoding_quota.to_i - get_geocoding_calls(options)
       (remaining.positive? ? remaining : 0)
@@ -78,16 +62,6 @@ module Carto
 
     def remaining_mapzen_routing_quota(options = {})
       remaining = mapzen_routing_quota.to_i - get_mapzen_routing_calls(options)
-      (remaining.positive? ? remaining : 0)
-    end
-
-    def remaining_obs_snapshot_quota(options = {})
-      remaining = obs_snapshot_quota.to_i - get_obs_snapshot_calls(options)
-      (remaining.positive? ? remaining : 0)
-    end
-
-    def remaining_obs_general_quota(options = {})
-      remaining = obs_general_quota.to_i - get_obs_general_calls(options)
       (remaining.positive? ? remaining : 0)
     end
 
@@ -116,8 +90,6 @@ module Carto
     def set_default_quotas
       self.geocoding_quota ||= DEFAULT_GEOCODING_QUOTA
       self.here_isolines_quota ||= DEFAULT_HERE_ISOLINES_QUOTA
-      self.obs_snapshot_quota ||= DEFAULT_OBS_SNAPSHOT_QUOTA
-      self.obs_general_quota ||= DEFAULT_OBS_GENERAL_QUOTA
       self.mapzen_routing_quota ||= DEFAULT_MAPZEN_ROUTING_QUOTA
     end
 
@@ -125,8 +97,6 @@ module Carto
     def register_modified_quotas
       @geocoding_quota_modified = geocoding_quota_changed?
       @here_isolines_quota_modified = here_isolines_quota_changed?
-      @obs_snapshot_quota_modified = obs_snapshot_quota_changed?
-      @obs_general_quota_modified = obs_general_quota_changed?
       @mapzen_routing_quota_modified = mapzen_routing_quota_changed?
 
       raise errors.join('; ') unless valid?
@@ -144,16 +114,6 @@ module Carto
     def over_here_isolines_quota?(delta)
       limit = here_isolines_quota.to_i - (here_isolines_quota.to_i * delta)
       get_here_isolines_calls > limit
-    end
-
-    def over_obs_snapshot_quota?(delta)
-      limit = obs_snapshot_quota.to_i - (obs_snapshot_quota.to_i * delta)
-      get_obs_snapshot_calls > limit
-    end
-
-    def over_obs_general_quota?(delta)
-      limit = obs_general_quota.to_i - (obs_general_quota.to_i * delta)
-      get_obs_general_calls > limit
     end
 
     def over_twitter_datasource_quota?(delta)

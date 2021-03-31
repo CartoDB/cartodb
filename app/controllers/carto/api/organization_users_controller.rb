@@ -50,14 +50,6 @@ module Carto
           account_creator.with_soft_here_isolines_limit(create_params[:soft_here_isolines_limit])
         end
 
-        if create_params[:soft_obs_snapshot_limit].present?
-          account_creator.with_soft_obs_snapshot_limit(create_params[:soft_obs_snapshot_limit])
-        end
-
-        if create_params[:soft_obs_general_limit].present?
-          account_creator.with_soft_obs_general_limit(create_params[:soft_obs_general_limit])
-        end
-
         if create_params[:soft_twitter_datasource_limit].present?
           account_creator.with_soft_twitter_datasource_limit(create_params[:soft_twitter_datasource_limit])
         end
@@ -153,8 +145,6 @@ module Carto
         :quota_in_bytes,
         :soft_geocoding_limit,
         :soft_here_isolines_limit,
-        :soft_obs_general_limit,
-        :soft_obs_snapshot_limit,
         :soft_twitter_datasource_limit,
         :soft_mapzen_routing_limit,
         :viewer,

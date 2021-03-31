@@ -23,8 +23,6 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
     @user.soft_geocoding_limit = current_user.soft_geocoding_limit
     @user.soft_here_isolines_limit = current_user.soft_here_isolines_limit
-    @user.soft_obs_snapshot_limit = current_user.soft_obs_snapshot_limit
-    @user.soft_obs_general_limit = current_user.soft_obs_general_limit
     @user.soft_twitter_datasource_limit = current_user.soft_twitter_datasource_limit
     @user.soft_mapzen_routing_limit = current_user.soft_mapzen_routing_limit
 
@@ -66,7 +64,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
       [
         :username, :email, :password, :quota_in_bytes, :password_confirmation,
         :twitter_datasource_enabled, :soft_geocoding_limit, :soft_here_isolines_limit,
-        :soft_obs_snapshot_limit, :soft_obs_general_limit, :soft_mapzen_routing_limit
+        :soft_mapzen_routing_limit
       ]
     )
     @user.viewer = params[:user][:viewer] == 'true'
@@ -149,8 +147,6 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.password_confirmation = attributes[:password_confirmation] if attributes[:password_confirmation].present?
     @user.soft_geocoding_limit = attributes[:soft_geocoding_limit] if attributes[:soft_geocoding_limit].present?
     @user.soft_here_isolines_limit = attributes[:soft_here_isolines_limit] if attributes[:soft_here_isolines_limit].present?
-    @user.soft_obs_snapshot_limit = attributes[:soft_obs_snapshot_limit] if attributes[:soft_obs_snapshot_limit].present?
-    @user.soft_obs_general_limit = attributes[:soft_obs_general_limit] if attributes[:soft_obs_general_limit].present?
     @user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] if attributes[:twitter_datasource_enabled].present?
     @user.soft_twitter_datasource_limit = attributes[:soft_twitter_datasource_limit] if attributes[:soft_twitter_datasource_limit].present?
     @user.soft_mapzen_routing_limit = attributes[:soft_mapzen_routing_limit] if attributes[:soft_mapzen_routing_limit].present?
@@ -249,7 +245,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
   end
 
   def extras_enabled?
-    extra_geocodings_enabled? || extra_here_isolines_enabled? || extra_obs_snapshot_enabled? || extra_obs_general_enabled? || extra_tweets_enabled?
+    extra_geocodings_enabled? || extra_here_isolines_enabled? || extra_tweets_enabled?
   end
 
   def extra_geocodings_enabled?
@@ -257,14 +253,6 @@ class Admin::OrganizationUsersController < Admin::AdminController
   end
 
   def extra_here_isolines_enabled?
-    true
-  end
-
-  def extra_obs_snapshot_enabled?
-    true
-  end
-
-  def extra_obs_general_enabled?
     true
   end
 

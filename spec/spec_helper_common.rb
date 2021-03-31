@@ -1,5 +1,10 @@
 def mocked_record(data)
-  Struct.new(*data.keys).new(*data.values)
+  methods, attributes = data.partition { |k, v| v.kind_of?(Proc) }.map { |h| Hash[h] }
+  record = Struct.new(*attributes.keys).new(*attributes.values)
+  methods.each do |name, proc|
+    record.define_singleton_method(name, proc)
+  end
+  record
 end
 
 def replace_connector_providers(*args)

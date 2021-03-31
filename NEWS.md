@@ -112,6 +112,7 @@ sudo make install
 - Read config for public statics compilation [#16234](https://github.com/CartoDB/cartodb/pull/16234)
 - Show dataset version in subscription list and details [#16235](https://github.com/CartoDB/cartodb/pull/16235)
 - Fix error that avoid to render Spatial Data Catalog properly in Internet Explorer [#16236](https://github.com/CartoDB/cartodb/pull/16236)
+- Free users can't create datasets due to default state was private [16223](https://github.com/CartoDB/cartodb/pull/16223)
 
 4.44.0 (2020-11-20)
 -------------------

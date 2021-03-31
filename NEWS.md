@@ -38,6 +38,7 @@ sudo make install
 - Catalog fixes: show products only, fix the legend formatting [#16219](https://github.com/CartoDB/cartodb/pull/16219)
 - Migrate spec/models/carto to the new CI [#16228](https://github.com/CartoDB/cartodb/pull/16228)
 - Add OAuth BigQuery connection [#16218](https://github.com/CartoDB/cartodb/pull/16218)
+- Remove Data Observatory v1 [#16207](https://github.com/CartoDB/cartodb/pull/16207)
 
 ### Bug fixes / enhancements
 
@@ -109,6 +110,8 @@ sudo make install
 - Update cartodb-common to v1.1.1, which contains serveral logging fixes [#16182](https://github.com/CartoDB/cartodb/pull/16182)
 - Only load DO totals in dashboard when it is needed [#16161](https://github.com/CartoDB/cartodb/pull/16161)
 - Read config for public statics compilation [#16234](https://github.com/CartoDB/cartodb/pull/16234)
+- Show dataset version in subscription list and details [#16235](https://github.com/CartoDB/cartodb/pull/16235)
+- Fix error that avoid to render Spatial Data Catalog properly in Internet Explorer [#16236](https://github.com/CartoDB/cartodb/pull/16236)
 
 4.44.0 (2020-11-20)
 -------------------

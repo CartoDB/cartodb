@@ -42,8 +42,6 @@ module CartoGearsApi
         user.quota_in_bytes = quota_in_bytes || user.organization.default_quota_in_bytes
         user.soft_geocoding_limit = user.organization.owner.soft_geocoding_limit
         user.soft_here_isolines_limit = user.organization.owner.soft_here_isolines_limit
-        user.soft_obs_snapshot_limit = user.organization.owner.soft_obs_snapshot_limit
-        user.soft_obs_general_limit = user.organization.owner.soft_obs_general_limit
         user.soft_twitter_datasource_limit = user.organization.owner.soft_twitter_datasource_limit
         user.soft_mapzen_routing_limit = user.organization.owner.soft_mapzen_routing_limit
 

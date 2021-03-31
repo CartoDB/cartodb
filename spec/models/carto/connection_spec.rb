@@ -188,7 +188,7 @@ describe Carto::Connection do
       parameters = { server: 'server' }
       connection_manager.stubs(:adapt_db_connector_parameters).returns([parameters, parameters.merge(provider: 'dummy')])
       connection_manager.stubs(:check).returns(true)
-      connection = FactoryGirl.build(:connection, name: 'dumb', connector: 'dummy', parameters: parameters, user: user)
+      connection = build(:connection, name: 'dumb', connector: 'dummy', parameters: parameters, user: user)
       connection_manager.expects(:manage_prevalidation).with(connection)
       connection.valid?
     end

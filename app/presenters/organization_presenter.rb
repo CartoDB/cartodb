@@ -26,10 +26,6 @@ class OrganizationPresenter < BasePresenter
       geocoding_block_price: geocoding_block_price,
       here_isolines_quota: here_isolines_quota,
       here_isolines_block_price: here_isolines_block_price,
-      obs_snapshot_quota: obs_snapshot_quota,
-      obs_snapshot_block_price: obs_snapshot_block_price,
-      obs_general_quota: obs_general_quota,
-      obs_general_block_price: obs_general_block_price,
       mapzen_routing_quota: mapzen_routing_quota,
       mapzen_routing_block_price: mapzen_routing_block_price,
       admin_email: admin_email,
@@ -98,14 +94,6 @@ class OrganizationPresenter < BasePresenter
       mapzen_routing: {
         quota: mapzen_routing_quota,
         monthly_use: get_mapzen_routing_calls
-      },
-      obs_snapshot: {
-        quota: obs_snapshot_quota,
-        monthly_use: get_obs_snapshot_calls
-      },
-      obs_general: {
-        quota: obs_general_quota,
-        monthly_use: get_obs_general_calls
       },
       twitter: {
         enabled: twitter_datasource_enabled,

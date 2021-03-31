@@ -181,24 +181,6 @@ class Carto::User < ActiveRecord::Base
     (remaining > 0 ? remaining : 0)
   end
 
-  def remaining_obs_snapshot_quota(options = {})
-    remaining = if organization.present?
-                  organization.remaining_obs_snapshot_quota(options)
-                else
-                  obs_snapshot_quota - get_obs_snapshot_calls(options)
-                end
-    (remaining > 0 ? remaining : 0)
-  end
-
-  def remaining_obs_general_quota(options = {})
-    remaining = if organization.present?
-                  organization.remaining_obs_general_quota(options)
-                else
-                  obs_general_quota - get_obs_general_calls(options)
-                end
-    (remaining > 0 ? remaining : 0)
-  end
-
   def remaining_mapzen_routing_quota(options = {})
     remaining = if organization.present?
                   organization.remaining_mapzen_routing_quota(options)
@@ -224,16 +206,6 @@ class Carto::User < ActiveRecord::Base
   def get_here_isolines_calls(options = {})
     date_from, date_to, orgwise = ds_metrics_parameters_from_options(options)
     get_user_here_isolines_data(self, date_from, date_to, orgwise)
-  end
-
-  def get_obs_snapshot_calls(options = {})
-    date_from, date_to, orgwise = ds_metrics_parameters_from_options(options)
-    get_user_obs_snapshot_data(self, date_from, date_to, orgwise)
-  end
-
-  def get_obs_general_calls(options = {})
-    date_from, date_to, orgwise = ds_metrics_parameters_from_options(options)
-    get_user_obs_general_data(self, date_from, date_to, orgwise)
   end
 
   def get_mapzen_routing_calls(options = {})

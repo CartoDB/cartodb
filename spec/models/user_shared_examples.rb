@@ -1,8 +1,6 @@
 require 'mock_redis'
 require 'active_support/time'
 require_relative '../../services/dataservices-metrics/lib/geocoder_usage_metrics'
-require_relative '../../services/dataservices-metrics/lib/observatory_snapshot_usage_metrics'
-require_relative '../../services/dataservices-metrics/lib/observatory_general_usage_metrics'
 
 # Tests should define the following method:
 # - `get_twitter_imports_count_by_user_id`

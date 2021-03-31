@@ -1,8 +1,6 @@
 require_relative '../../services/dataservices-metrics/lib/geocoder_usage_metrics'
 require_relative '../../services/dataservices-metrics/lib/isolines_usage_metrics'
 require_relative '../../services/dataservices-metrics/lib/routing_usage_metrics'
-require_relative '../../services/dataservices-metrics/lib/observatory_snapshot_usage_metrics'
-require_relative '../../services/dataservices-metrics/lib/observatory_general_usage_metrics'
 
 module DataServicesMetricsHelper
   def get_user_geocoding_data(user, from, to, orgwise = true)

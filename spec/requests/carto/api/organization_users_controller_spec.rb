@@ -368,7 +368,7 @@ describe Carto::Api::OrganizationUsersController do
 
       last_response.status.should eq 410
       errors = JSON.parse(last_response.body)
-      errors.count.should eq 5
+      errors.count.should eq 3
 
       @organization.reload
       @organization.users.find { |u| u.username == username }.should be_nil
@@ -710,7 +710,7 @@ describe Carto::Api::OrganizationUsersController do
 
       last_response.status.should eq 410
       errors = JSON.parse(last_response.body)
-      errors.count.should eq 5
+      errors.count.should eq 3
 
       user_to_update.reload
       verify_soft_limits(user_to_update, false)

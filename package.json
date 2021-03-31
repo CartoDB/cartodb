@@ -75,7 +75,7 @@
     "torque.js": "CartoDB/torque#master",
     "trackjs": "^3.1.2",
     "underscore": "1.8.3",
-    "urijs": "^1.19.0",
+    "urijs": "^1.19.6",
     "url-parse": "^1.4.0",
     "vue": "^2.5.20",
     "vue-i18n": "^8.2.1",

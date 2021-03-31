@@ -6,7 +6,7 @@
  */
 
 const CARTO_BUILDER_ASSET_HOST = JSON.stringify(process.env.CARTO_BUILDER_ASSET_HOST || '');
-const CARTO_MAPS_API_V2_EXTERNAL_URL = JSON.stringify(process.env.CARTO_MAPS_API_V2_EXTERNAL_URL || 'http://localhost.lan:8282');
+const CARTO_MAPS_API_V2_EXTERNAL_URL = JSON.stringify(process.env.CARTO_MAPS_API_V2_EXTERNAL_URL || 'https://maps-api-v2.carto-staging.com/user/{user}');
 
 module.exports = {
   'CARTO_BUILDER_ASSET_HOST': CARTO_BUILDER_ASSET_HOST,

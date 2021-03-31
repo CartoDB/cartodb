@@ -365,7 +365,6 @@ class UserMetadataExportFactory
               "user:profile",
               "dataservices:routing",
               "dataservices:isolines",
-              "dataservices:observatory",
               "dataservices:geocoding",
               "datasets:r:test1",
               "schemas:c"

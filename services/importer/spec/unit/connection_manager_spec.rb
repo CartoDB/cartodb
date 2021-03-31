@@ -301,7 +301,7 @@ describe Carto::ConnectionManager do
           'billing_project' => 'the-billing-project'
         }
       )
-      params = { table: 'a-table'}
+      params = { table: 'a-table' }
       expected_in_params = params.merge(
         connection_id: connection.id
       )

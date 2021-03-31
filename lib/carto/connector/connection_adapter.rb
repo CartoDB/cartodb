@@ -51,17 +51,17 @@ module Carto
     end
 
     def prevalidate
-      unless @connection.connection_type.present?
-        @connection.connection_type = @connection.token.present? ? Carto::Connection::TYPE_OAUTH_SERVICE : Carto::Connection::TYPE_DB_CONNECTOR
+      if @connection.connection_type.blank?
+        @connection.connection_type = @connection.token.present? ?
+          Carto::Connection::TYPE_OAUTH_SERVICE : Carto::Connection::TYPE_DB_CONNECTOR
       end
 
-      unless @connection.name.present?
-        @connection.name = @connection.connector if @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
+      if @connection.name.blank? && @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
+        @connection.name = @connection.connector
       end
     end
 
-    def adapt_parameters(connector_parameters)
-    end
+    def adapt_parameters(connector_parameters); end
 
     private
 

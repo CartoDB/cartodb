@@ -7,9 +7,12 @@
         "corejs": 3
       }
     ],
+    "@vue/cli-plugin-babel/preset",
     "@babel/preset-react"
   ],
   "plugins": [
+    "@babel/plugin-proposal-export-default-from",
+    "@babel/plugin-transform-arrow-functions",
     "@babel/plugin-proposal-object-rest-spread",
     "@babel/plugin-transform-classes",
     "@babel/plugin-transform-object-assign",
@@ -25,9 +28,12 @@
     "test": {
       "presets": [
         ["@babel/env"],
+        "@vue/cli-plugin-babel/preset",
         "@babel/preset-react"
       ],
       "plugins": [
+        "@babel/plugin-proposal-export-default-from",
+        "@babel/plugin-transform-arrow-functions",
         "@babel/plugin-proposal-object-rest-spread",
         "@babel/plugin-transform-classes",
         "@babel/plugin-transform-object-assign",

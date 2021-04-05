@@ -14,7 +14,7 @@ module CartodbCentralSynchronizable
   def validate_credentials_not_taken_in_central
     return true unless user?
 
-    if Cartodb::Central.message_broker_sync_disabled?
+    if Cartodb::Central.api_sync_disabled?
       log_central_unavailable
       return true
     end

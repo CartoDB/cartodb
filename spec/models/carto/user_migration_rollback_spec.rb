@@ -4,6 +4,7 @@ require './spec/support/factories/tables'
 require './spec/support/factories/organizations'
 require 'helpers/database_connection_helper'
 require 'factories/carto_visualizations'
+require './services/user-mover/import_user'
 
 describe 'UserMigration' do
   include Carto::Factories::Visualizations

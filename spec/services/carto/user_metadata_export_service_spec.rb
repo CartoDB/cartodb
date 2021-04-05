@@ -157,8 +157,19 @@ describe Carto::UserMetadataExportService do
     end
 
     it 'includes all user model attributes' do
+      # TODO: remove once columns are dropped from DB
+      deprecated_data_observatory_v1_attributes = [
+        :obs_snapshot_quota,
+        :obs_snapshot_block_price,
+        :soft_obs_snapshot_limit,
+        :obs_general_quota,
+        :obs_general_block_price,
+        :soft_obs_general_limit
+      ]
       # session_salt temporarily excluded until added to the model
-      expected_attrs = @user.attributes.symbolize_keys.keys - [:rate_limit_id, :session_salt] + [:rate_limit]
+      expected_attrs = @user.attributes.symbolize_keys.keys - [:rate_limit_id, :session_salt] + [:rate_limit] -
+                       deprecated_data_observatory_v1_attributes
+
 
       export = service.export_user_json_hash(@user)
 

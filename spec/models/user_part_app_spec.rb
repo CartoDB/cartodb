@@ -255,19 +255,13 @@ describe User do
       user.soft_twitter_datasource_limit.should eq false
       user.here_isolines_quota.should eq 0
       user.soft_here_isolines_limit.should eq false
-      user.obs_snapshot_quota.should eq 0
-      user.soft_obs_snapshot_limit.should eq false
-      user.obs_general_quota.should eq 0
-      user.soft_obs_general_limit.should eq false
     end
 
     describe 'creation' do
       it 'assigns 0 as quota and no soft limit no matter what is requested' do
         @user = create_user email: 'u_v@whatever.com', username: 'viewer', password: 'user11', viewer: true,
                             geocoding_quota: 10, soft_geocoding_limit: true, twitter_datasource_quota: 100,
-                            soft_twitter_datasource_limit: 10, here_isolines_quota: 10, soft_here_isolines_limit: true,
-                            obs_snapshot_quota: 100, soft_obs_snapshot_limit: true, obs_general_quota: 100,
-                            soft_obs_general_limit: true
+                            soft_twitter_datasource_limit: 10, here_isolines_quota: 10, soft_here_isolines_limit: true
         verify_viewer_quota(@user)
         @user.destroy
       end
@@ -277,9 +271,7 @@ describe User do
       it 'assigns 0 as quota and no soft limit no matter what is requested' do
         @user = create_user email: 'u_v@whatever.com', username: 'builder-to-viewer', password: 'user11', viewer: false,
                             geocoding_quota: 10, soft_geocoding_limit: true, twitter_datasource_quota: 100,
-                            soft_twitter_datasource_limit: 10, here_isolines_quota: 10, soft_here_isolines_limit: true,
-                            obs_snapshot_quota: 100, soft_obs_snapshot_limit: true, obs_general_quota: 100,
-                            soft_obs_general_limit: true
+                            soft_twitter_datasource_limit: 10, here_isolines_quota: 10, soft_here_isolines_limit: true
         # Random check, but we can trust create_user
         @user.quota_in_bytes.should_not eq 0
 

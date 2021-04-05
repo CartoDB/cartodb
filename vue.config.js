@@ -3,6 +3,7 @@ const { version } = require('./package.json');
 
 module.exports = {
   runtimeCompiler: true,
+  transpileDependencies: ['@mapbox/martini', 'd3-array', 'd3-scale'],
   publicPath: '/spatial-data-catalog/browser/',
   outputDir: path.resolve(__dirname, `public/assets/${version}/javascripts`),
   configureWebpack: {
@@ -28,6 +29,8 @@ module.exports = {
     }
   },
   chainWebpack: config => {
+    config.module.rule('js')
+      .use('babel-loader').loader('babel-loader');
     if (process.env.NODE_ENV === 'production') {
       config.module.rule('images').use('url-loader')
         .loader('file-loader')

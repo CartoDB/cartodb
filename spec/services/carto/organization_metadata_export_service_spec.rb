@@ -56,8 +56,19 @@ describe Carto::OrganizationMetadataExportService do
 
     it 'includes all user model attributes' do
       export = service.export_organization_json_hash(organization)
+      # TODO: remove once columns are dropped from DB
+      deprecated_data_observatory_v1_attributes = [
+        :obs_snapshot_quota,
+        :obs_snapshot_block_price,
+        :soft_obs_snapshot_limit,
+        :obs_general_quota,
+        :obs_general_block_price,
+        :soft_obs_general_limit
+      ]
 
-      expect(export[:organization].keys).to include(*organization.attributes.symbolize_keys.keys)
+      expect(export[:organization].keys).to(
+        include(*organization.attributes.symbolize_keys.keys - deprecated_data_observatory_v1_attributes)
+      )
     end
 
     it 'exports notifications and received notifications' do
@@ -345,10 +356,6 @@ describe Carto::OrganizationMetadataExportService do
         here_isolines_quota: 0,
         here_isolines_block_price: nil,
         strong_passwords_enabled: false,
-        obs_snapshot_quota: 0,
-        obs_snapshot_block_price: nil,
-        obs_general_quota: 999999999,
-        obs_general_block_price: nil,
         salesforce_datasource_enabled: false,
         viewer_seats: 100,
         geocoder_provider: "heremaps",

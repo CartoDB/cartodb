@@ -36,10 +36,12 @@ sudo make install
 - Split tests load evenly in the new CI [#16227](https://github.com/CartoDB/cartodb/pull/16227)
 - Catalog fixes: show products only, fix the legend formatting [#16219](https://github.com/CartoDB/cartodb/pull/16219)
 - Migrate spec/models/carto to the new CI [#16228](https://github.com/CartoDB/cartodb/pull/16228)
+- Remove Data Observatory v1 [#16207](https://github.com/CartoDB/cartodb/pull/16207)
 - Add new static page for tilesets viewer [#16232](https://github.com/CartoDB/cartodb/pull/16232)
 
 ### Bug fixes / enhancements
 
+- Free users can't create datasets due to default state was private [16223](https://github.com/CartoDB/cartodb/pull/16223)
 - Fix Data page not loading due to null rows [16224](https://github.com/CartoDB/cartodb/pull/16224)
 - Add unicorn config sample and output log to stdout by setting environment variable [16221](https://github.com/CartoDB/cartodb/pull/16221/files)
 - Some CI improvements [16179](https://github.com/CartoDB/cartodb/pull/16179)
@@ -105,7 +107,10 @@ sudo make install
 - Fix CI build by changing machine spec [#16192](https://github.com/CartoDB/cartodb/pull/16192)
 - Modify superadmin users activity endpoint to allow pagination [#16226](https://github.com/CartoDB/cartodb/pull/16226)
 - Update cartodb-common to v1.1.1, which contains serveral logging fixes [#16182](https://github.com/CartoDB/cartodb/pull/16182)
+- Fix SAML and LDAP integrations for on-premise installations [#16239](https://github.com/CartoDB/cartodb/pull/16239)
 - Read config for public statics compilation [#16234](https://github.com/CartoDB/cartodb/pull/16234)
+- Show dataset version in subscription list and details [#16235](https://github.com/CartoDB/cartodb/pull/16235)
+- Fix error that avoid to render Spatial Data Catalog properly in Internet Explorer [#16236](https://github.com/CartoDB/cartodb/pull/16236)
 
 4.44.0 (2020-11-20)
 -------------------

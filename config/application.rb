@@ -78,8 +78,6 @@ module CartoDB
       dashboard_templates_static.js
       dashboard_deps_static.js
       dashboard_static.js
-      data_library_deps.js
-      data_library.js
       public_map_templates.js
       public_map_deps.js
       public_map.js
@@ -183,7 +181,6 @@ module CartoDB
       public_map.css
       public_map_new.css
       embed_map.css
-      data_library.css
       public_table.css
       public_table_new.css
       sessions.css

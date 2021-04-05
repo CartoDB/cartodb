@@ -179,24 +179,6 @@ describe Carto::Superadmin::OrganizationsController do
       it_behaves_like 'dataservices usage metrics'
     end
 
-    describe 'obs_general' do
-      before(:all) do
-        @class = CartoDB::ObservatoryGeneralUsageMetrics
-        @service = :obs_general
-      end
-
-      it_behaves_like 'dataservices usage metrics'
-    end
-
-    describe 'obs_snapshot' do
-      before(:all) do
-        @class = CartoDB::ObservatorySnapshotUsageMetrics
-        @service = :obs_snapshot
-      end
-
-      it_behaves_like 'dataservices usage metrics'
-    end
-
     describe 'routing_mapzen' do
       before(:all) do
         @class = CartoDB::RoutingUsageMetrics

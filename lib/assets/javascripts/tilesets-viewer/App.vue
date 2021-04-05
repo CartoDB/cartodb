@@ -6,9 +6,9 @@
 <script>
 import init from '@carto/viewer/src/init';
 
-/* global __CARTO_MAPS_API_V2_EXTERNAL_URL__:false */
-// __CARTO_MAPS_API_V2_EXTERNAL_URL__ is injected via Webpack
-const CARTO_MAPS_API_V2_EXTERNAL_URL = __CARTO_MAPS_API_V2_EXTERNAL_URL__;
+/* global __CARTO_MAPS_API_V2_EXTERNAL_URL_TEMPLATE__:false */
+// __CARTO_MAPS_API_V2_EXTERNAL_URL_TEMPLATE__ is injected via Webpack
+const CARTO_MAPS_API_V2_EXTERNAL_URL_TEMPLATE = __CARTO_MAPS_API_V2_EXTERNAL_URL_TEMPLATE__;
 
 export default {
   name: 'App',
@@ -23,7 +23,7 @@ export default {
       this.props = {
         username: username,
         type: type,
-        mapsUrl: `${CARTO_MAPS_API_V2_EXTERNAL_URL}/user/{user}`,
+        mapsUrl: CARTO_MAPS_API_V2_EXTERNAL_URL_TEMPLATE,
         query: new URLSearchParams(window.location.search),
         goBackFunction: () => {
           window.location = '/';

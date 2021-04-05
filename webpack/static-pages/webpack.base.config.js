@@ -22,7 +22,7 @@ module.exports = {
     new webpack.DefinePlugin({
       __ASSETS_VERSION__: JSON.stringify(VERSION),
       __CARTO_BUILDER_ASSET_HOST__: JSON.stringify(PUBLIC_STATICS_CONFIG.CARTO_BUILDER_ASSET_HOST),
-      __CARTO_MAPS_API_V2_EXTERNAL_URL__: JSON.stringify(PUBLIC_STATICS_CONFIG.CARTO_MAPS_API_V2_EXTERNAL_URL)
+      __CARTO_MAPS_API_V2_EXTERNAL_URL_TEMPLATE__: JSON.stringify(PUBLIC_STATICS_CONFIG.CARTO_MAPS_API_V2_EXTERNAL_URL_TEMPLATE)
     }),
 
     ...Object.keys(webpackFiles.htmlFiles).map((entryName) => {

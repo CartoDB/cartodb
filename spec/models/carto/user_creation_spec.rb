@@ -213,7 +213,7 @@ describe Carto::UserCreation do
     it 'neither creates a new User nor sends the mail and marks creation as failure if saving fails' do
       organization.save
 
-      Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(false)
+      Cartodb::Central.stubs(:api_sync_disabled?).returns(true)
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser).never
       ::User.any_instance.stubs(:save).raises('saving error')
 
@@ -232,7 +232,7 @@ describe Carto::UserCreation do
     end
 
     it 'neither creates a new User nor sends the mail and marks creation as failure if Central fails' do
-      Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(true)
+      Cartodb::Central.stubs(:api_sync_disabled?).returns(false)
       ::User.any_instance.stubs(:create_in_central).raises('Error on state creating_user_in_central, mark_as_failure: false. Error: Application server responded with http 422: {"errors":["Existing username."]}')
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser).never
@@ -302,7 +302,7 @@ describe Carto::UserCreation do
     end
 
     def prepare_fake_central_user
-      Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(true)
+      Cartodb::Central.stubs(:api_sync_disabled?).returns(false)
       fake_central_client = {}
       fake_central_client.stubs(:create_organization_user).returns(true)
       ::User.any_instance.stubs(:cartodb_central_client).returns(fake_central_client)

@@ -52,12 +52,17 @@ module Carto
         id: connection.id,
         name: connection.name,
         connector: connection.connector,
-        type: connection.connection_type
+        type: connection.connection_type,
+        complete: adapter(connection).complete?
       }
       presented_connection[:parameters] = adapter(connection).presented_parameters if connection.parameters.present?
       presented_connection[:token] = adapter(connection).presented_token if connection.token.present?
       # TODO: compute in_use
       presented_connection
+    end
+
+    def complete?(connection)
+      adapter(connection).complete?
     end
 
     def find_db_connection(provider, parameters)
@@ -178,7 +183,7 @@ module Carto
       connection = fetch_connection(id)
 
       new_attributes = {}
-      new_attributes[:parameters] = connection.parameters.merge(parameters) if parameters.present?
+      new_attributes[:parameters] = (connection.parameters || {}).merge(parameters) if parameters.present?
       new_attributes[:name] = name if name.present?
       connection.update!(new_attributes)
     end
@@ -209,7 +214,7 @@ module Carto
       input_parameters = connector_parameters.dup
       if connection.present?
         connector_parameters[:provider] = provider = obtain_checked_provider(provider, connection)
-        connection_parameters = adapter(connection).filtered_connection_parameters
+        connection_parameters = connection.parameters
 
         connector_parameters[:connection] = connection_parameters
         connector_parameters.delete :connection_id
@@ -218,28 +223,16 @@ module Carto
         input_parameters.delete :provider
       end
 
-      if legacy_oauth_db_connection?(connector_parameters)
-        connection_parameters = connector_parameters[:connection].dup || {}
-        connection_parameters[:refresh_token] = @user.oauths&.select(provider)&.token
-        connector_parameters[:connection] = connection_parameters
-      end
+      adapter(connection || connection_placeholder(connector_parameters[:provider])).adapt_parameters(connector_parameters)
 
       [input_parameters, connector_parameters]
-    end
-
-    def legacy_oauth_db_connection?(connector_parameters)
-      return false unless connector_parameters[:provider] == 'bigquery'
-
-      credentials = [:service_token, :refresh_token, :access_token]
-      connection_parameters = (connector_parameters[:connection].dup || {}).keys
-      (credentials & connection_parameters).empty?
     end
 
     def self.adapter(connection)
       Carto::ConnectionAdapter::Factory.adapter_for_connection(connection)
     end
 
-
+    # There can only be one connection of this kind per user, connection and connector type.
     def self.singleton_connector?(connection)
       adapter(connection).singleton?
     end
@@ -271,6 +264,10 @@ module Carto
       adapter(connection).update
     end
 
+    def manage_prevalidation(connection)
+      adapter(connection).prevalidate
+    end
+
     def check(connection)
       if connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
         oauth_connection_valid?(connection)
@@ -298,6 +295,10 @@ module Carto
     end
 
     private
+
+    def connection_placeholder(connector)
+      Carto::Connection.new(user: @user, connector: connector, connection_type: Carto::Connection::TYPE_DB_CONNECTOR)
+    end
 
     def obtain_connection(connection_id, provider, connection_parameters, register)
       if connection_id.present?

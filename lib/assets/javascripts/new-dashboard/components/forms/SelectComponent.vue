@@ -1,6 +1,6 @@
 <template>
   <div class="select-wrapper">
-    <select v-model="selectValue">
+    <select v-model="selectValue" :disabled="disabled">
       <option v-for="element in elements" :key="element.id" :value="element.id">{{element.label}}</option>
     </select>
   </div>
@@ -20,6 +20,7 @@ export default {
   props: {
     placeholder: String,
     elements: Array,
+    disabled: Boolean,
     value: null,
     type: {
       type: String,

@@ -3,6 +3,7 @@
 require 'signet/oauth_2/client'
 require_relative '../../../../../lib/carto/http/client'
 require 'google/apis/bigquery_v2'
+require 'google/apis/oauth2_v2'
 
 module CartoDB
   module Datasources
@@ -15,6 +16,8 @@ module CartoDB
         MAX_PROJECTS = 500_000
         MAX_DATASETS = 500_000
         MAX_TABLES = 500_000
+
+        EMAIL_SCOPE = 'https://www.googleapis.com/auth/userinfo.email'.freeze
 
         # Constructor (hidden)
         # @param config
@@ -41,9 +44,10 @@ module CartoDB
             token_credential_uri:  config.fetch('token_credential_uri'),
             client_id: config.fetch('client_id'),
             client_secret: config.fetch('client_secret'),
-            scope: config.fetch('scope'),
+            scope: config.fetch('scope') + [EMAIL_SCOPE],
             redirect_uri: config.fetch('callback_url'),
-            access_type: :offline
+            access_type: :offline,
+            additional_parameters: { login_hint: @user.email }
           )
           @revoke_uri = config.fetch('revoke_auth_uri')
           @bigquery_api = Google::Apis::BigqueryV2::BigqueryService.new
@@ -101,8 +105,25 @@ module CartoDB
             )
           end
           @refresh_token = @client.refresh_token
+          check_user_email @client.access_token
+          @refresh_token
         rescue Google::Apis::AuthorizationError, Signet::AuthorizationError => ex
           raise AuthError.new("validating auth code: #{ex.message}", DATASOURCE_NAME)
+        end
+
+        def check_user_email(access_token)
+          auth = Signet::OAuth2::Client.new(access_token: access_token)
+          service = Google::Apis::Oauth2V2::Oauth2Service.new
+          service.authorization = auth
+          response = service.tokeninfo
+          unless response.email.to_s.casecmp(@user.email).zero?
+            revoke_token
+            raise AuthError.new(
+              'The email used for authorization must match the email in the CARTO account. ' \
+              'The authorization has been revoked',
+              DATASOURCE_NAME
+            )
+          end
         end
 
         # Store the refresh token

@@ -1,3 +1,4 @@
+require 'signet/oauth_2/client'
 require 'google/apis/bigquery_v2'
 require 'date'
 require 'json'
@@ -20,18 +21,33 @@ module Carto
     TILESET_PRIVACY_PRIVATE = 'private'.freeze
 
     def initialize(user:, connection_id:, project_id:)
-      conn = user.db_connections.where(id: connection_id, connector: 'bigquery').first
-      raise Carto::LoadError, 'Missing bigquery connector' unless conn
+      conn = user.connections.find_by(id: connection_id)
+      raise Carto::LoadError, 'Missing BigQuery connection' unless conn
+      raise Carto::LOadError, 'Invalid BigQuery connection' unless conn.connector == 'bigquery' && conn.complete?
 
       @connection_id = connection_id
       @project_id = project_id
-      @service_account = conn.parameters['service_account']
       @billing_project_id = conn.parameters['billing_project']
-
       @bigquery_api = Google::Apis::BigqueryV2::BigqueryService.new
-      @bigquery_api.authorization = Google::Auth::ServiceAccountCredentials.make_creds(
-        json_key_io: StringIO.new(@service_account), scope: SCOPES
-      )
+      if conn.connection_type == Carto::Connection::TYPE_DB_CONNECTOR
+        service_account = conn.parameters['service_account']
+        @bigquery_api.authorization = Google::Auth::ServiceAccountCredentials.make_creds(
+          json_key_io: StringIO.new(service_account), scope: SCOPES
+        )
+        @owner = service_account['client_email']
+      else
+        refresh_token = conn.token
+        oauth_config = Cartodb.get_config(:oauth, 'bigquery')
+        @bigquery_api.authorization = Signet::OAuth2::Client.new(
+          authorization_uri: oauth_config['authorization_uri'],
+          token_credential_uri:  oauth_config['token_credential_uri'],
+          client_id: oauth_config['client_id'],
+          client_secret: oauth_config['client_secret'],
+          scope: SCOPES,
+          refresh_token: refresh_token
+        )
+        @owner = user.email
+      end
     end
 
     def list_datasets
@@ -101,11 +117,9 @@ module Carto
       end
 
       metadata = tileset_metadata(tileset_id)
-      service_account = JSON.parse(@service_account)
-
       {
         id: tileset_id,
-        owner: service_account['client_email'],
+        owner: @owner,
         privacy: public ? TILESET_PRIVACY_PUBLIC : TILESET_PRIVACY_PRIVATE,
         created_at: metadata['created_at'],
         updated_at: metadata['updated_at'],
@@ -137,12 +151,15 @@ module Carto
     private
 
     def tileset_metadata_script(dataset_id:, **pagination)
+      empty_metadata_query = %{
+        SELECT CAST(NULL AS STRING) AS id, CAST(NULL AS STRING) AS metadata LIMIT 0
+      }
       %{
         DECLARE tilesets ARRAY<STRING>;
         DECLARE i INT64 DEFAULT 0;
         DECLARE tileset STRING DEFAULT '';
         DECLARE query STRING default '';
-        DECLARE metadata_query STRING default '';
+        DECLARE metadata_query STRING default '#{empty_metadata_query}';
 
         SET tilesets = (
           SELECT

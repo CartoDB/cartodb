@@ -897,11 +897,15 @@
     "oauthRequesting": "Requesting oAuth",
     "oauthCheckingToken": "Checking token...",
     "BigQuery": {
+      "oauthSmallDescription": "Authorize CARTO to use your Google Cloud account",
+      "serviceAccountSmallDescription": "Connect to Google Cloud using a service account",
       "title": "Connect CARTO to your BigQuery project",
       "disclaimer1": "CARTO makes use of a set of custom functions available in BigQuery. We call this the <a href='https://docs.carto.com/spatial-extension-bq/overview/'>CARTO Spatial Extension for BigQuery</a>.",
       "disclaimer2": "Please ensure that the email address you use for your CARTO and Google BigQuery accounts are the same.",
-      "disclaimer3": "We will use your <span class='is-semibold'>Google account email</span> to grant access to the Spatial Extension from the BigQuery Console. We will also use a <span class='is-semibold'>Google account service account</span> for other operations such as listing the tilesets stored in your project’s datasets, publishing and unpublishing tilesets for public visualizations.",
+      "disclaimer3": "We will use your <span class='is-semibold'>Google account email</span> to grant access to the Spatial Extension from the BigQuery Console. We will also use a <span class='is-semibold'>Google service account</span> for other operations such as listing the tilesets stored in your project’s datasets, publishing and unpublishing tilesets for public visualizations.",
+      "disclaimer3Oauth": "We will use your <span class='is-semibold'>Google account email</span> to grant access to the Spatial Extension from the BigQuery Console and for other operations such as listing the tilesets stored in your project’s datasets, publishing, and unpublishing tilesets for public visualizations.",
       "disclaimer4": "Our recommendation is to configure specific limits in BigQuery or get a flat-rate pricing agreement to avoid any unexpected processing charges. For more detailed information on CARTO usage limits and BigQuery, check out our <a href='https://docs.carto.com/spatial-extension-bq/overview/#pricing-and-cost'>documentation</a> area.",
+      "disclaimer4Oauth": "Your Google account should have been granted the following <a href='https://cloud.google.com/iam/docs/understanding-roles#bigquery-roles'>roles</a>: <span class='is-semibold'>BigQuery Data Owner</span> (<span class='is-code u-code-highlighted'>bigquery.dataOwner</span>), <span class='is-semibold'>BigQuery Job User</span> (<span class='is-code u-code-highlighted'>bigquery.jobUser</span>) and <span class='is-semibold'>BigQuery Read Session User</span> (<span class='is-code u-code-highlighted'>bigquery.readSessionUser</span>). Read  our <a href='https://docs.carto.com/spatial-extension-bq/overview/#authorization'>documentation</a> to learn more about roles and permission requirements.",
       "fileInputLabel": "Service Account Credentials",
       "fileInputHelper": "<p>Upload a service account key in JSON format. Get help creating and managing Google Cloud service accounts <a href='https://cloud.google.com/iam/docs/creating-managing-service-account-keys'>here</a>.</p><br><p>We will use this service account to list tilesets, visualize them privately and grant publishing permissions. Be sure that the service account has <a href='https://cloud.google.com/iam/docs/understanding-roles#bigquery-roles'>BigQuery Data Owner</a> (<span class='is-code u-code-highlighted'>bigquery.dataOwner</span>), <a href='https://cloud.google.com/iam/docs/understanding-roles#bigquery-roles'>BigQuery Job User</a> (<span class='is-code u-code-highlighted'>bigquery.jobUser</span>) and <a href='https://cloud.google.com/iam/docs/understanding-roles#bigquery-roles'>BigQuery Read Session User</a> (<span class='is-code u-code-highlighted'>bigquery.readSessionUser</a>).</p><br><p>Read  our <a href='https://docs.carto.com/spatial-extension-bq/overview/#authorization'>documentation</a> if you want to learn about the specific permissions CARTO requires.</p>",
       "emailLabel": "User name to employ in the BigQuery Console",
@@ -917,6 +921,7 @@
         "cancel": "Cancel",
         "accept": "Accept and connect"
       } ,
+      "connection_oauth_error": "Connection failed: Please make sure that your Google account matches your CARTO account's email address and <a href='mailto:support@carto.com'>contact support</a> if the error persists.",
       "connection-error_401": "Your service account doesn't seem to have the required permission. Please check the <a href='https://docs.carto.com/spatial-extension-bq/overview/#authorizaton' target='_blank'>documentation</a> for the specific list of roles that are needed.",
       "connection-error_internal": "Internal error trying to fetch a billing project"
     },

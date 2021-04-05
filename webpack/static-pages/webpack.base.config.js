@@ -7,9 +7,6 @@ const Package = require('./../../package.json');
 const VERSION = Package.version;
 const PUBLIC_STATICS_CONFIG = require('../../config/public_statics_config');
 
-console.log(`CARTO_BUILDER_ASSET_HOST is: ${PUBLIC_STATICS_CONFIG.CARTO_BUILDER_ASSET_HOST}`);
-console.log(`CARTO_MAPS_API_V2_EXTERNAL_URL is: ${PUBLIC_STATICS_CONFIG.CARTO_MAPS_API_V2_EXTERNAL_URL}`);
-
 module.exports = {
   entry: Object.assign(
     { main: './lib/assets/javascripts/dashboard/statics/static.js' },
@@ -23,9 +20,9 @@ module.exports = {
   devtool: 'source-map',
   plugins: [
     new webpack.DefinePlugin({
-      __ASSETS_VERSION__: `'${VERSION}'`,
-      __CARTO_BUILDER_ASSET_HOST__: PUBLIC_STATICS_CONFIG.CARTO_BUILDER_ASSET_HOST,
-      __CARTO_MAPS_API_V2_EXTERNAL_URL__: PUBLIC_STATICS_CONFIG.CARTO_MAPS_API_V2_EXTERNAL_URL
+      __ASSETS_VERSION__: JSON.stringify(VERSION),
+      __CARTO_BUILDER_ASSET_HOST__: JSON.stringify(PUBLIC_STATICS_CONFIG.CARTO_BUILDER_ASSET_HOST),
+      __CARTO_MAPS_API_V2_EXTERNAL_URL__: JSON.stringify(PUBLIC_STATICS_CONFIG.CARTO_MAPS_API_V2_EXTERNAL_URL)
     }),
 
     ...Object.keys(webpackFiles.htmlFiles).map((entryName) => {

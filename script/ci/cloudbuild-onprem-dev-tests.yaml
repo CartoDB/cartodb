@@ -18,7 +18,7 @@ steps:
   args:
   - kms
   - decrypt
-  - --ciphertext-file=.cloudbuild/.id_github_cartofante.enc
+  - --ciphertext-file=script/ci/.id_github_cartofante.enc
   - --plaintext-file=/root/.ssh/id_rsa
   - --location=global
   - --keyring=keyring-github-ci
@@ -38,7 +38,7 @@ steps:
     Hostname github.com
     IdentityFile /root/.ssh/id_rsa
     EOF
-    mv .cloudbuild/known_hosts /root/.ssh/known_hosts
+    mv script/ci/known_hosts /root/.ssh/known_hosts
   volumes:
   - name: 'ssh'
     path: /root/.ssh

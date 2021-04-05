@@ -1,0 +1,256 @@
+steps:
+
+# Cancel previous job on the same branch
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: /bin/bash
+  args:
+  - '-c'
+  - 'gcloud builds list --ongoing --filter="buildTriggerId=19215594-3f3e-4f4b-a5ae-d2f6b00af733 AND substitutions.BRANCH_NAME=${BRANCH_NAME} AND id!=${BUILD_ID}" --format="get(ID)" > jobs_to_cancel'
+
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: /bin/bash
+  args:
+  - '-c'
+  - 'gcloud builds cancel $(cat jobs_to_cancel | xargs) || true'
+
+# Decrypt github key
+- name: gcr.io/cloud-builders/gcloud
+  args:
+  - kms
+  - decrypt
+  - --ciphertext-file=.cloudbuild/.id_github_cartofante.enc
+  - --plaintext-file=/root/.ssh/id_rsa
+  - --location=global
+  - --keyring=keyring-github-ci
+  - --key=github-key
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
+# Set up git with key and domain
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    chmod 600 /root/.ssh/id_rsa
+    cat <<EOF >/root/.ssh/config
+    Hostname github.com
+    IdentityFile /root/.ssh/id_rsa
+    EOF
+    mv .cloudbuild/known_hosts /root/.ssh/known_hosts
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
+# Clean working directory
+- name: alpine
+  args: ['sh', '-c', 'rm -rf .* | true && rm -rf *']
+
+# Checkout repo with submodules
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'sh'
+  args: ['-c', 'git clone git@github.com:CartoDB/${_REPO} -b "${BRANCH_NAME}" --depth 1 --recursive cartodb']
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
+# Checkout db-connectors
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'sh'
+  dir: cartodb
+  args: ['-c', 'git clone git@github.com:CartoDB/db-connectors --depth 1 private_gears/db-connectors']
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
+# Checkout repo with submodules
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'sh'
+  args: ['-c', 'git clone git@github.com:CartoDB/docker-dev-env --depth 1']
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
+# Checkout repo with submodules
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'sh'
+  args: ['-c', 'git clone git@github.com:CartoDB/dockerize-onpremises --depth 1']
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
+# Prepare dev-env files
+- name: ubuntu
+  entrypoint: /bin/bash
+  dir: /workspace/docker-dev-env
+  args: 
+      - -cx
+      - |
+        cp .env.sample .env
+        echo 'CARTO_BUILDER_SERVER=rails' >> .env
+        echo 'CARTO_DOMAIN=localhost.lan' >> .env
+        sed -i 's@'"$_DOCKER_IMAGE_NAME":latest'@'"$_DOCKER_IMAGE_NAME":"$SHORT_SHA"'@' .env
+        cat .env | grep 'IMAGE'
+
+# Pull images in background
+- name: 'docker/compose:1.28.0'
+  entrypoint: /bin/sh
+  dir: /workspace/docker-dev-env
+  args: 
+      - -cx
+      - |
+        docker-compose pull &
+
+# Copy build files
+- name: ubuntu
+  entrypoint: /bin/bash
+  dir: cartodb
+  args:
+    - -c
+    - |
+      cp private/Dockerfil* .
+      cp config/unicorn.conf.rb.sample config/unicorn.conf.rb
+      cp config/app_config.yml.sample config/app_config.yml
+      cp config/database.yml.sample config/database.yml
+      cp lib/assets/javascripts/cdb/secrets.example.json lib/assets/javascripts/cdb/secrets.json
+
+# Build image
+- name: gcr.io/cloud-builders/docker
+  entrypoint: /bin/bash
+  dir: cartodb
+  args:
+    - -cx
+    - |
+      docker pull ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG}
+      if [ $? -ne 0 ]
+      then
+        docker pull ${_DOCKER_IMAGE_NAME}:latest
+      fi
+        
+      docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} --build-arg COMPILE_ASSETS=true --build-arg BUNDLE_JOBS=4 -t ${_DOCKER_IMAGE_NAME}:latest -t ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG} -t ${_DOCKER_IMAGE_NAME}:${SHORT_SHA} -t ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG}--${SHORT_SHA} --cache-from ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG} --cache-from ${_DOCKER_IMAGE_NAME}:latest .
+      docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} -t ${_DOCKER_IMAGE_NAME}-resque:latest -t ${_DOCKER_IMAGE_NAME}-resque:${_BRANCH_TAG}  -t ${_DOCKER_IMAGE_NAME}-resque:${SHORT_SHA} -t ${_DOCKER_IMAGE_NAME}-resque:${_BRANCH_TAG}--${SHORT_SHA}   -f Dockerfile.resque .
+      docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} -t ${_DOCKER_IMAGE_NAME}-subscriber:latest -t ${_DOCKER_IMAGE_NAME}-subscriber:${_BRANCH_TAG} -t ${_DOCKER_IMAGE_NAME}-subscriber:${SHORT_SHA} -t ${_DOCKER_IMAGE_NAME}-subscriber:${_BRANCH_TAG}--${SHORT_SHA}  -f Dockerfile.subscriber .        
+
+# Checkout onprem licensing gear
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'sh'
+  dir: cartodb
+  args: ['-c', 'git clone git@github.com:CartoDB/onpremises_licensing_gear --depth 1 private_gears/onpremises_licensing_gear']
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
+# Build onprem image
+- name: gcr.io/cloud-builders/docker
+  entrypoint: /bin/bash
+  dir: cartodb
+  args:
+    - -cx
+    - |
+      docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} --label=com.carto.onprem.revision=$(git -C private_gears/onpremises_licensing_gear/ rev-parse HEAD) -f private/Dockerfile.onprem  --build-arg BUNDLE_JOBS=4 -t ${_DOCKER_IMAGE_NAME}-onprem:latest -t ${_DOCKER_IMAGE_NAME}-onprem:${_BRANCH_TAG} -t ${_DOCKER_IMAGE_NAME}-onprem:${SHORT_SHA} -t ${_DOCKER_IMAGE_NAME}-onprem:${_BRANCH_TAG}--${SHORT_SHA} .
+
+## docker-dev-env tests ##
+
+# Init dev-env
+- name: 'docker/compose:1.28.0'
+  entrypoint: /bin/sh
+  dir: /workspace/docker-dev-env
+  args: ['scripts/init.sh']
+
+# Run dev tests
+- name: gcr.io/cloud-builders/docker
+  entrypoint: /bin/bash
+  dir: /workspace/docker-dev-env
+  args:
+    - -cx
+    - |
+      source .env
+      docker run --rm --name tavern-tester-dev \
+          --env "CARTO_USER=$${USER_USERNAME}"  \
+          --env "CARTO_DOMAIN=$${CARTO_DOMAIN}" \
+          --network host \
+          --env-file .env \
+          gcr.io/cartodb-on-gcp-main-artifacts/tavern-tester:latest \
+          all dev
+      echo $? >> dev_result
+
+# Stop dev services and volumes
+- name: 'docker/compose:1.28.0'
+  dir: /workspace/docker-dev-env
+  args: ['down', '-v']
+
+## Onprem tests
+# Change nginx host port to 8443: 443 is bussy inside Cloud Build host
+- name: ubuntu
+  entrypoint: /bin/bash
+  dir: /workspace/dockerize-onpremises
+  args: 
+      - -cx
+      - |
+        sed -i 's@'"$_DOCKER_IMAGE_NAME":latest'@'"$_DOCKER_IMAGE_NAME":"$SHORT_SHA"'@' .env
+        cat .env | grep 'IMAGE'
+        sed -i 's/443:443/8443:443/g' docker-compose.yml
+
+# Init onprem
+- name: 'docker/compose:1.28.2'
+  entrypoint: /bin/sh
+  dir: /workspace/dockerize-onpremises
+  args: ['ci/init.sh']
+
+# Install license
+- name: gcr.io/cloud-builders/docker
+  entrypoint: /bin/bash
+  dir: /workspace/dockerize-onpremises
+  args: 
+    - -cex
+    - |
+      mkdir -p license && cp -f ci/test_license/dockerize-onpremises-tests-license.lic license/carto.lic
+      ./script/license.sh
+
+# Run onprem tests
+- name: gcr.io/cloud-builders/docker
+  entrypoint: /bin/bash
+  dir: /workspace/dockerize-onpremises
+  args: 
+      - -cx
+      - |
+        source .env
+        source ci/.env.ci
+        docker run --rm --name tavern-tester-onprem \
+          --env "CARTO_USER=$${USER_USERNAME}"  \
+          --env "CARTO_DOMAIN=$${CARTO_DOMAIN}" \
+          --network "$${COMPOSE_PROJECT_NAME}_default" \
+          --env-file .env \
+          gcr.io/cartodb-on-gcp-main-artifacts/tavern-tester:latest \
+          all onprem
+        echo $? >> onprem_result
+
+# Handle exit code
+- name: ubuntu
+  entrypoint: bash
+  dir: /workspace
+  args: 
+      - -cx
+      - |
+        if [ "$(cat /workspace/docker-dev-env/dev_result)" -eq 0 ] && [ "$(cat /workspace/dockerize-onpremises/onprem_result)" -eq 0 ];then
+          echo '[PASSED] All tests passed'
+          exit 0
+        elif [ "$(cat /workspace/docker-dev-env/dev_result)" -ne 0 ];then
+          echo '[FAILED] Development environment tests failed'
+          exit 1
+        elif [ "$(cat /workspace/dockerize-onpremises/onprem_result)" -ne 0 ];then
+          echo '[FAILED] Onprem tests failed'
+          exit 1  
+        else
+          echo '[FAILED] All tests failed'
+          exit 1
+        fi
+
+timeout: 1800s
+options:
+  machineType: 'E2_HIGHCPU_8'
+substitutions:
+  _BRANCH_TAG: ${BRANCH_NAME//\//-}
+  _DOCKER_IMAGE_NAME: gcr.io/cartodb-on-gcp-main-artifacts/builder
+  _REPO: cartodb

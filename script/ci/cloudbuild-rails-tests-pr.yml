@@ -50,7 +50,7 @@ steps:
 # Checkout repo with submodules
 - name: 'gcr.io/cloud-builders/git'
   entrypoint: 'sh'
-  args: ['-c', 'git clone git@github.com:CartoDB/cartodb -b "${BRANCH_NAME}" --depth 1 --recursive .']
+  args: ['-c', 'git clone git@github.com:CartoDB/${_REPO} -b "${BRANCH_NAME}" --depth 1 --recursive .']
   volumes:
   - name: 'ssh'
     path: /root/.ssh
@@ -82,13 +82,13 @@ steps:
   args:
     - -cx
     - |
-      docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}
+      docker pull ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG}
       if [ $? -ne 0 ]
       then
-          docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:latest
-          docker tag gcr.io/cartodb-on-gcp-main-artifacts/builder:latest gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}
+          docker pull ${_DOCKER_IMAGE_NAME}:latest
+          docker tag ${_DOCKER_IMAGE_NAME}:latest ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG}
       fi
-      docker build --build-arg COMPILE_ASSETS=false --build-arg BUNDLE_JOBS=16 -t gcr.io/cartodb-on-gcp-main-artifacts/builder:current -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG} -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}--${SHORT_SHA} --cache-from gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG} .
+      docker build --build-arg COMPILE_ASSETS=false --build-arg BUNDLE_JOBS=16 -t ${_DOCKER_IMAGE_NAME}:current -t ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG} -t ${_DOCKER_IMAGE_NAME}:${SHORT_SHA} -t ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG}--${SHORT_SHA} --cache-from ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG} .
 
 # Start necessary services (redis, postgres) in background
 - name: 'docker/compose:1.28.0'
@@ -170,9 +170,11 @@ steps:
       echo "Detailed logs are at https://console.cloud.google.com/storage/browser/cartodb-ci-tmp-logs/parallel_test_logs_${BUILD_ID}"
       exit $(cat tests_exit_code)
 
-
+timeout: 2400s
 substitutions:
-    _BRANCH_TAG: ${BRANCH_NAME//\//-}
+  _BRANCH_TAG: ${BRANCH_NAME//\//-}
+  _DOCKER_IMAGE_NAME: gcr.io/cartodb-on-gcp-main-artifacts/builder
+  _REPO: cartodb
 options:
     machineType: N1_HIGHCPU_8
-timeout: 2400s
+

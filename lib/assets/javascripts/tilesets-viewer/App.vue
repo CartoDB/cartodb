@@ -23,7 +23,7 @@ export default {
       this.props = {
         username: username,
         type: type,
-        mapsUrl: CARTO_MAPS_API_V2_EXTERNAL_URL,
+        mapsUrl: `${CARTO_MAPS_API_V2_EXTERNAL_URL}/user/{user}`,
         query: new URLSearchParams(window.location.search),
         goBackFunction: () => {
           window.location = '/';

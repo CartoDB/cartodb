@@ -158,5 +158,7 @@ substitutions:
   _BRANCH_TAG: ${BRANCH_NAME//\//-}
   _DOCKER_IMAGE_NAME: gcr.io/cartodb-on-gcp-main-artifacts/builder
   _REPO: cartodb
+options:
+  machineType: 'E2_HIGHCPU_32'
 
 

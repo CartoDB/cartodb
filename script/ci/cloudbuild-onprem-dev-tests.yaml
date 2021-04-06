@@ -304,7 +304,7 @@ steps:
 
 timeout: 1800s
 options:
-  machineType: 'E2_HIGHCPU_8'
+  machineType: 'E2_HIGHCPU_32'
 substitutions:
   _BRANCH_TAG: ${BRANCH_NAME//\//-}
   _DOCKER_IMAGE_NAME: gcr.io/cartodb-on-gcp-main-artifacts/builder

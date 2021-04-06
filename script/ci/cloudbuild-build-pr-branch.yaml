@@ -126,5 +126,5 @@ substitutions:
   _DOCKER_IMAGE_NAME: gcr.io/cartodb-on-gcp-main-artifacts/builder
   _REPO: cartodb
 options:
-    machineType: 'E2_HIGHCPU_8'
+  machineType: 'E2_HIGHCPU_32'
 

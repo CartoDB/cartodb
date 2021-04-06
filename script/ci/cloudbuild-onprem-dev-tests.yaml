@@ -1,5 +1,13 @@
 steps:
 
+# Print logs url
+- name: ubuntu
+  entrypoint: /bin/bash
+  args:
+    - -c
+    - |
+      echo "[LOGS] Tests & compose logs will be stored at https://console.cloud.google.com/storage/browser/cartodb-ci-tmp-logs/test_logs_${BUILD_ID}"
+
 # Cancel previous job on the same branch
 - name: gcr.io/cloud-builders/gcloud
   entrypoint: /bin/bash

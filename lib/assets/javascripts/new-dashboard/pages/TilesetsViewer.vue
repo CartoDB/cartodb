@@ -71,7 +71,7 @@ export default {
             this.$router.push({ name: 'tilesets' });
           },
           shareOptions: {
-            baseUrl: `${this.base_url}/viewer`,
+            baseUrl: `${this.base_url.replace(/\/(u|user)\/.*/, '')}/viewer`,
             privacy: tileset.privacy,
             setPrivacy: this.setPrivacy
           }

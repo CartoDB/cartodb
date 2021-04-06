@@ -39,6 +39,7 @@ sudo make install
 - Migrate spec/models/carto to the new CI [#16228](https://github.com/CartoDB/cartodb/pull/16228)
 - Add OAuth BigQuery connection [#16218](https://github.com/CartoDB/cartodb/pull/16218)
 - Remove Data Observatory v1 [#16207](https://github.com/CartoDB/cartodb/pull/16207)
+- Add new static page for tilesets viewer [#16232](https://github.com/CartoDB/cartodb/pull/16232)
 
 ### Bug fixes / enhancements
 

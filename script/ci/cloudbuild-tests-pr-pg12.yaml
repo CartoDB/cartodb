@@ -87,6 +87,7 @@ steps:
       then
           docker pull ${_DOCKER_IMAGE_NAME}:latest
       fi
+      set -e
       docker build --build-arg COMPILE_ASSETS=false --build-arg BUNDLE_JOBS=16 -t ${_DOCKER_IMAGE_NAME}:current -t ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG} -t ${_DOCKER_IMAGE_NAME}:${SHORT_SHA} -t ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG}--${SHORT_SHA} --cache-from ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG} --cache-from ${_DOCKER_IMAGE_NAME}:latest .
 
 # Start necessary services (redis, postgres) in background

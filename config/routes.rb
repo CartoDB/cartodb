@@ -341,6 +341,7 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/get-started/:id'   => 'visualizations#index', as: :get_started_onboarding
 
     # Tileset viewer
+    get '/viewer/user/:user_domain/:type' => 'tilesets_viewer#index', as: :public_tilesets_viewer
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/tilesets/:id'   => 'visualizations#index', as: :tilesets_viewer, constraints: { id: /[0-z.-]+/ }
 
     # Public dashboard

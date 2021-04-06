@@ -95,6 +95,7 @@ module CartoDB
       account.js
       profile.js
       profile_templates.js
+      tilesets_viewer.js
       keys_templates.js
       keys_deps.js
       keys.js
@@ -154,6 +155,7 @@ module CartoDB
       common_new.css
       old_common.css
       dashboard.css
+      tilesets_viewer.css
       cartodb.css
       front.css
       editor.css

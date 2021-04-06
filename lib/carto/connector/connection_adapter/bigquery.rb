@@ -9,7 +9,6 @@ module Carto
     class BigQuery < ConnectionAdapter
 
       BQ_CONFIDENTIAL_PARAMS = %w(service_account refresh_token access_token).freeze
-      NON_CONNECTOR_PARAMETERS = [].freeze
       BQ_ADVANCED_CENTRAL_ATTRIBUTE = :bq_advanced
       BQ_ADVANCED_PROJECT_CENTRAL_ATTRIBUTE = :bq_advanced_project
 
@@ -17,12 +16,14 @@ module Carto
         super(connection, confidential_parameters: BQ_CONFIDENTIAL_PARAMS)
       end
 
-      def filtered_connection_parameters
-        @connection.parameters&.except(*NON_CONNECTOR_PARAMETERS)
-      end
-
       def singleton?
         true
+      end
+
+      def complete?
+        return false if incomplete?
+
+        super
       end
 
       def errors
@@ -35,6 +36,21 @@ module Carto
             errors << 'Parameter access_token not supported through connections; use import API'
           end
         end
+        if @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
+          if complete? && @connection.parameters['billing_project'].blank?
+            errors << "Parameter 'billing_project' must be assigned"
+          end
+        end
+        # TODO: unless @connection.shared?
+        other_connections = if @connection.connection_type == Carto::Connection::TYPE_DB_CONNECTOR
+          @connection.user.oauth_connections
+        else
+          @connection.user.db_connections
+        end
+        if other_connections.where(connector: 'bigquery').exists?
+          errors << 'Only a BigQuery connection (either OAuth or Service Account) per user is permitted'
+        end
+        # TODO: end
         errors
       end
 
@@ -65,7 +81,39 @@ module Carto
       #   central_user_data[BQ_ADVANCED_CENTRAL_ATTRIBUTE.to_s]
       # end
 
+      def adapt_parameters(connector_parameters)
+        super(connector_parameters)
+
+        if @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
+          # BQ db connector expects a refresh_token parameter for using OAuth
+          connection_parameters = connector_parameters[:connection].dup || {}
+          connection_parameters['refresh_token'] ||= @connection.token
+          connector_parameters[:connection] = connection_parameters
+        elsif legacy_oauth_db_connection?(connector_parameters)
+          # Old BQ Oauth imports didn't have any parameter
+          connection_parameters = connector_parameters[:connection].dup || {}
+          connection_parameters['refresh_token'] = @connection.user.oauths&.select(@connection.connector)&.token
+          connector_parameters[:connection] = connection_parameters
+        end
+      end
+
       private
+
+      def legacy_oauth_db_connection?(connector_parameters)
+        credentials = [:service_token, :refresh_token, :access_token]
+        credentials += credentials.map(&:to_s)
+        connection_parameters = (connector_parameters[:connection].dup || {}).keys
+        (credentials & connection_parameters).empty?
+      end
+
+      def incomplete?
+        # An OAuth connection may be incomplete: it's created when the token is registered,
+        # but necessary parameters may be assigned later.
+        # And incomplete connection is not usuable until the parameters have been assigned.
+        return @connection.parameters.nil? if @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
+
+        false
+      end
 
       def central
         @central ||= Cartodb::Central.new
@@ -90,6 +138,8 @@ module Carto
       def update_spatial_extension_setup
         if @connection.changes[:parameters]
           old_parameters, new_parameters = @connection.changes[:parameters]
+          old_parameters ||= {}
+          new_parameters ||= {}
           if old_parameters['billing_project'] != new_parameters['billing_project']
             central.update_user(
               @connection.user.username,
@@ -101,10 +151,7 @@ module Carto
       end
 
       def redis_metadata?
-        # Both OAuth & DB connections are saved in redis as long as they have some parameter.
-        # Note that legacy BQ OAuth connections (migrated from synchronization_oauths) do not have
-        # parameters, but future BQ OAuth connections will have at least one parameter (billing_project)
-        @connection.parameters.present?
+        complete?
       end
 
       def connection_credentials_keys
@@ -114,7 +161,7 @@ module Carto
       def connection_credentials
         return super unless @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
 
-        { 'token': @connection.token }
+        { 'refresh_token': @connection.token }
       end
 
       # Temporally we need to mantain this redis key until maps api is updated

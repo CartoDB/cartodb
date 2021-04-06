@@ -38,7 +38,7 @@
         v-if="!dataset.is_geography && !minimal"
       >
         <div
-          class="grid-cell--col7 grid grid--align-end grid--no-wrap"
+          class="grid-cell--col9 grid grid--align-end grid--no-wrap"
         >
           <div class="license">
             <p>License</p> {{ dataset.license_name }}
@@ -46,13 +46,20 @@
           <div class="geography" :title="dataset.placetype_name">
             <p>Placetype</p> {{ dataset.placetype_name }}
           </div>
-        </div>
-        <div
-          class="grid-cell--col5 grid grid--align-end grid--space grid--no-wrap"
-        >
-          <div class="aggregation">
+          <div v-if="extra" class="aggregation">
             <p>Temporal aggr.</p> {{ temporalAggregation }}
           </div>
+        </div>
+        <div
+          class="grid-cell--col3 grid grid--align-end grid--space grid--no-wrap"
+        >
+          <div v-if="extra" class="version">
+            <p>Version</p> {{ dataset.version }}
+          </div>
+          <div v-else class="aggregation">
+            <p>Temporal aggr.</p> {{ temporalAggregation }}
+          </div>
+
           <div class="provider">
             <img
               :src="providerLogo"
@@ -64,7 +71,7 @@
       </div>
       <div class="extra text is-small grid u-mt--16" v-else-if="!minimal">
         <div
-          class="grid-cell--col7 grid grid--align-end grid--no-wrap"
+          class="grid-cell--col9 grid grid--align-end grid--no-wrap"
         >
           <div class="license">
             <p>License</p> {{ dataset.license_name }}
@@ -72,11 +79,17 @@
           <div class="geography" :title="dataset.placetype_name">
             <p>Placetype</p> {{ dataset.placetype_name }}
           </div>
+          <div v-if="extra" class="aggregation">
+            <p>Geometry type</p> {{ geometryType }}
+          </div>
         </div>
         <div
-          class="grid-cell--col5 grid grid--align-end grid--space grid--no-wrap"
+          class="grid-cell--col3 grid grid--align-end grid--space grid--no-wrap"
         >
-          <div class="aggregation">
+          <div v-if="extra" class="version">
+            <p>Version</p> {{ dataset.version }}
+          </div>
+          <div v-else class="aggregation">
             <p>Geometry type</p> {{ geometryType }}
           </div>
           <div class="provider">
@@ -209,7 +222,7 @@ export default {
       margin-bottom: 4px;
     }
 
-    .license {
+    .license, .geography {
       margin-right: 24px;
     }
 

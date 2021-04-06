@@ -7,8 +7,6 @@ module Carto::Superadmin
     USAGE_METRICS_CLASSES = [
       CartoDB::GeocoderUsageMetrics,
       CartoDB::IsolinesUsageMetrics,
-      CartoDB::ObservatoryGeneralUsageMetrics,
-      CartoDB::ObservatorySnapshotUsageMetrics,
       CartoDB::RoutingUsageMetrics,
       Carto::Metrics::MapviewsUsageMetrics
     ].freeze

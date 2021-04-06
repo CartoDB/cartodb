@@ -381,7 +381,7 @@ describe Carto::Api::ImportsController do
       connector = Carto::Connection.new(user_id: @user.id, connector: service, token: 'kk-t')
       connector.save
       get api_v1_imports_service_oauth_callback_url(id: service), params
-      response.code.should == '400'
+      response.code.should eq '400'
       connector.destroy
     end
 
@@ -389,7 +389,7 @@ describe Carto::Api::ImportsController do
       CartoDB::Datasources::DatasourcesFactory.stubs(:get_datasource).raises(CartoDB::Datasources::TokenExpiredOrInvalidError.new('kk', 'mailchimp'))
 
       get api_v1_imports_service_oauth_callback_url(id: 'mailchimp'), params
-      response.code.should == '401'
+      response.code.should eq '400'
 
       # INFO: this can never happen with the current implementation since it first checks there's no previous Connection
       Carto::Connection.where(connector: 'mailchimp').first.should eq nil

@@ -32,8 +32,6 @@ module Carto
     validates(
       :geocoding_quota,
       :here_isolines_quota,
-      :obs_snapshot_quota,
-      :obs_general_quota,
       numericality: { only_integer: true }
     )
     validates :default_quota_in_bytes, numericality: { only_integer: true, allow_nil: true, greater_than: 0 }

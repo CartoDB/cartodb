@@ -1,0 +1,85 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BigQuerySelectionMode.vue Render should render OAuth version editing an oauth connection 1`] = `
+<div class="u-flex u-flex__justify--center">
+  <div class="u-flex u-flex__justify--center">
+    <div class="main u-flex u-flex__align--center u-flex__direction--column">
+      <div class="disclaimer">
+        <h4 class="is-small is-semibold u-mt--16">ConnectorsPage.BigQuery.title</h4>
+        <ul class="u-mt--8">
+          <li class="u-mb--16"><span class="text is-small">ConnectorsPage.BigQuery.disclaimer1</span></li>
+          <li class="u-mb--16"><span class="text is-small">ConnectorsPage.BigQuery.disclaimer2</span></li>
+          <li class="u-mb--16"><span class="text is-small">ConnectorsPage.BigQuery.disclaimer3Oauth</span></li>
+          <li class="u-mb--16"><span class="text is-small">ConnectorsPage.BigQuery.disclaimer4Oauth</span></li>
+          <li class="u-mb--16"><span class="text is-small">ConnectorsPage.BigQuery.disclaimer4</span></li>
+        </ul>
+        <!---->
+        <div class="u-mt--48 u-flex u-flex__justify--end u-flex__align--center"><button class="is-small is-semibold is-txtPrimary">ConnectorsPage.BigQuery.conditions.cancel</button> <button class="button is-primary u-ml--36">DataPage.continue</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`BigQuerySelectionMode.vue Render should render Service account editing a service account connection 1`] = `
+<div class="u-flex u-flex__justify--center">
+  <div class="u-flex u-flex__justify--center">
+    <div class="main u-flex u-flex__align--center u-flex__direction--column">
+      <div>
+        <div class="section-header is-semibold is-small u-mb--4">
+          ConnectorsPage.BigQuery.fileInputLabel
+        </div>
+        <div class="text is-small is-txtMidGrey u-mb--24">ConnectorsPage.BigQuery.fileInputHelper</div>
+        <div class="u-flex u-flex__direction--column u-flex__align--center">
+          <!---->
+          <div>
+            <div class="drag-zone u-flex u-flex__align--center reduced dz-clickable"><img svg-inline="" src="../../assets/icons/datasets/move-up.svg">
+              <h4 class="text is-small is-txtMidGrey u-ml--12 u-flex__grow--1">Drag &amp; drop your file</h4> <button class="button button--outline">Browse</button> <input accept=".json" type="file">
+            </div>
+          </div>
+          <!---->
+          <!---->
+        </div>
+        <!---->
+        <!---->
+        <div class="u-flex u-flex__justify--end u-mt--32"><button class="u-mr--28 is-small is-semibold is-txtPrimary">ConnectorsPage.cancel</button> <button class="CDB-Button CDB-Button--primary CDB-Button--big is-disabled"><span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium">
+            DataPage.continue
+          </span></button></div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`BigQuerySelectionMode.vue Render should render properly 1`] = `
+<div class="u-flex u-flex__justify--center">
+  <div class="main">
+    <div class="section-header is-semibold is-small">
+      ConnectorsPage.BigQuery.fileInputLabel
+    </div>
+    <div class="u-flex u-flex__justify--between u-mt--24">
+      <div class="mode oauth"><img svg-inline="" src="../../assets/icons/datasets/oauth.svg"> <span class="is-semibold is-caption u-mt--16">OAuth</span> <span class="text is-txtMidGrey is-caption u-mt--9">ConnectorsPage.BigQuery.oauthSmallDescription</span></div>
+      <div class="mode serviceAccount"><img svg-inline="" src="../../assets/icons/datasets/service-account.svg"> <span class="is-semibold is-caption u-mt--16">Service Account</span> <span class="text is-txtMidGrey is-caption u-mt--9">ConnectorsPage.BigQuery.serviceAccountSmallDescription</span></div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`BigQuerySelectionMode.vue Render should skip mode selection if oauth is not enabled 1`] = `
+<div class="u-flex u-flex__justify--center">
+  <div class="u-flex u-flex__justify--center">
+    <div class="main u-flex u-flex__align--center u-flex__direction--column">
+      <div class="disclaimer">
+        <h4 class="is-small is-semibold u-mt--16">ConnectorsPage.BigQuery.title</h4>
+        <ul class="u-mt--8">
+          <li class="u-mb--16"><span class="text is-small">ConnectorsPage.BigQuery.disclaimer1</span></li>
+          <li class="u-mb--16"><span class="text is-small">ConnectorsPage.BigQuery.disclaimer2</span></li>
+          <li class="u-mb--16"><span class="text is-small">ConnectorsPage.BigQuery.disclaimer3</span></li>
+          <li class="u-mb--16"><span class="text is-small">ConnectorsPage.BigQuery.disclaimer4</span></li>
+        </ul>
+        <div class="u-mt--48 u-flex u-flex__justify--center u-flex__align--center"><button class="is-small is-semibold is-txtPrimary">ConnectorsPage.BigQuery.conditions.cancel</button> <button class="button is-primary u-ml--36">DataPage.continue</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

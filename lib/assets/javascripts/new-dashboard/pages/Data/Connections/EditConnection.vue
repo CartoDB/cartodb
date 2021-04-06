@@ -22,9 +22,8 @@
           :connector="importOption"
           :connection="connection"
           @connectClicked="connectionSuccess" @cancel="onCancel"></DatabaseConnectionForm>
-        <BigQueryConnectionForm v-else-if="isBigQuery"
-          :connector="importOption"
-          :connection="connection" @cancel="onCancel" @connectionSuccess="connectionSuccess"></BigQueryConnectionForm>
+        <BigQuerySelectionMode v-else-if="isBigQuery"
+          :connection="connection" @cancel="onCancel" @connectionSuccess="connectionSuccess"></BigQuerySelectionMode>
         <OAuthConnectionForm v-else-if="type === 'cloud'"
           :connector="importOption"
           :connection="connection" @connectionSuccess="connectionSuccess"></OAuthConnectionForm>
@@ -53,7 +52,7 @@
 import exportedScssVars from 'new-dashboard/styles/helpers/_assetsDir.scss';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import { getImportOption } from 'new-dashboard/utils/connector/import-option';
-import BigQueryConnectionForm from 'new-dashboard/components/Connector/BigQueryConnectionForm';
+import BigQuerySelectionMode from 'new-dashboard/components/Connector/BigQuerySelectionMode';
 import OAuthConnectionForm from 'new-dashboard/components/Connector/OAuthConnectionForm';
 import DatabaseConnectionForm from 'new-dashboard/components/Connector/DatabaseConnectionForm';
 import { mapState } from 'vuex';
@@ -64,7 +63,7 @@ export default {
     Dialog,
     DatabaseConnectionForm,
     OAuthConnectionForm,
-    BigQueryConnectionForm
+    BigQuerySelectionMode
   },
   props: {
     backNamedRoute: {

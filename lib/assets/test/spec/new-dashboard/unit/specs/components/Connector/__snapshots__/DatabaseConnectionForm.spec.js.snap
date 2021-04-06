@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Connections.vue Edit should render properly 1`] = `
+exports[`DatabaseConnections.vue Edit should render properly 1`] = `
 <div class="u-flex u-flex__justify--center">
   <div>
     <div class="alert u-pl--36 u-pt--8 u-pb--8 u-pr--8 u-mb--24"><span class="is-small">ConnectorsPage.editConnectionDisclaimer</span></div>
@@ -36,7 +36,7 @@ exports[`Connections.vue Edit should render properly 1`] = `
 </div>
 `;
 
-exports[`Connections.vue Render should render properly 1`] = `
+exports[`DatabaseConnections.vue Render should render properly 1`] = `
 <div class="u-flex u-flex__justify--center">
   <div>
     <!---->

@@ -80,6 +80,7 @@ sudo make install
 - Fix a loop between our logger and rollbar [#16026](https://github.com/CartoDB/cartodb/pull/16026)
 - Make the MessageBroker subscriber PIDFILE check more resilient [#16022](https://github.com/CartoDB/cartodb/pull/16022)
 - Bump version of lib/sql submodule to 0.37.1
+- Add Maps API v2 related config to authenticated v4/me endpoint [#16237](https://github.com/CartoDB/cartodb/pull/16237)
 - Public profile can be disabled via Feature Flag [#15982](https://github.com/CartoDB/cartodb/pull/15995)
 - Update cartodb-common to v0.5.3, which in turns udpates pubsub to 2.3.0 [#16038](https://github.com/CartoDB/cartodb/pull/16038)
 - Select distinct permissions on OAuth all datasets scope [#16196](https://github.com/CartoDB/cartodb/pull/16196)

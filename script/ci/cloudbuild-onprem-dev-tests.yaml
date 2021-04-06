@@ -275,6 +275,7 @@ steps:
   args: 
       - -cx
       - |
+        echo "[LOGS] Tests & compose logs are at https://console.cloud.google.com/storage/browser/cartodb-ci-tmp-logs/test_logs_${BUILD_ID}"
         if [ "$(cat /workspace/docker-dev-env/dev_result)" -eq 0 ] && [ "$(cat /workspace/dockerize-onpremises/onprem_result)" -eq 0 ];then
           echo '[PASSED] All tests passed'
           exit 0
@@ -292,7 +293,6 @@ steps:
           cat /workspace/dockerize-onpremises/onprem_output
           exit 1
         fi
-        echo "[LOGS] Tests & compose logs are at https://console.cloud.google.com/storage/browser/cartodb-ci-tmp-logs/test_logs_${BUILD_ID}"
 
 timeout: 1800s
 options:

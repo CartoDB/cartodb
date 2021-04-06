@@ -27,6 +27,12 @@ const entries = {
     rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
   ],
 
+  tilesets_viewer: [
+    rootDir('lib/assets/javascripts/tilesets-viewer/main.js'),
+    rootDir('lib/assets/javascripts/tilesets-viewer/main.scss'),
+    rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
+  ],
+
   header: [
     rootDir('lib/assets/javascripts/new-dashboard/bundles/header/header.js'),
     rootDir('lib/assets/javascripts/new-dashboard/styles/bundles/header.scss')

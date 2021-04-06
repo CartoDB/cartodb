@@ -6,7 +6,7 @@ steps:
   args:
     - -c
     - |
-      echo "[LOGS] Tests & compose logs will be stored at https://console.cloud.google.com/storage/browser/cartodb-ci-tmp-logs/test_logs_${BUILD_ID}"
+      echo "[LOGS] Tests & compose logs will be stored at https://console.cloud.google.com/storage/browser/${_REPO}-ci-tmp-logs/test_logs_${BUILD_ID}"
 
 # Cancel previous job on the same branch
 - name: gcr.io/cloud-builders/gcloud
@@ -192,7 +192,7 @@ steps:
     - -c
     - |
       docker-compose logs --no-color > dev_docker_compose_logs
-      echo "Logs will be available during 14 days at gs://cartodb-ci-tmp-logs/${BUILD_ID}/"
+      echo "Logs will be available during 14 days at gs://${_REPO}-ci-tmp-logs/${BUILD_ID}/"
 
 # Upload dev logs to gcs
 - name: gcr.io/cloud-builders/gsutil
@@ -201,8 +201,8 @@ steps:
   args: 
     - -c 
     - |
-      gsutil -m cp dev_output gs://cartodb-ci-tmp-logs/test_logs_${BUILD_ID}/
-      gsutil -m cp dev_docker_compose_logs gs://cartodb-ci-tmp-logs/test_logs_${BUILD_ID}/
+      gsutil -m cp dev_output gs://${_REPO}-ci-tmp-logs/test_logs_${BUILD_ID}/
+      gsutil -m cp dev_docker_compose_logs gs://${_REPO}-ci-tmp-logs/test_logs_${BUILD_ID}/
 
 # Stop dev services and volumes
 - name: 'docker/compose:1.28.0'
@@ -264,7 +264,7 @@ steps:
     - -c
     - |
       docker-compose -f docker-compose.yml -f ci/docker-compose.ci.yml logs --no-color > onprem_docker_compose_logs
-      echo "Logs will be available during 14 days at gs://cartodb-ci-tmp-logs/test_logs_${BUILD_ID}/"
+      echo "Logs will be available during 14 days at gs://${_REPO}-ci-tmp-logs/test_logs_${BUILD_ID}/"
 
 # Upload onprem logs to gcs
 - name: gcr.io/cloud-builders/gsutil
@@ -273,8 +273,8 @@ steps:
   args: 
     - -c 
     - |
-      gsutil -m cp onprem_output gs://cartodb-ci-tmp-logs/test_logs_${BUILD_ID}/
-      gsutil -m cp onprem_docker_compose_logs gs://cartodb-ci-tmp-logs/test_logs_${BUILD_ID}/
+      gsutil -m cp onprem_output gs://${_REPO}-ci-tmp-logs/test_logs_${BUILD_ID}/
+      gsutil -m cp onprem_docker_compose_logs gs://${_REPO}-ci-tmp-logs/test_logs_${BUILD_ID}/
 
 # Handle exit code
 - name: ubuntu

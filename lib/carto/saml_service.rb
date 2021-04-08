@@ -84,7 +84,7 @@ module Carto
     end
 
     def debug_response(message, response)
-      log_info(
+      Rails.logger.warn(
         message: message,
         response: {
           settings: response.settings.to_json,

@@ -56,12 +56,10 @@ describe SessionsController do
       FakeNetLdap.register_user(username: normal_user_cn, password: normal_user_password)
       FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', normal_user_username), [ldap_entry_data])
 
-      errors = {
-        errors: {
-          organization: ["Organization owner is not set. Administrator must login first."]
-        }
-      }
-      ::CartoDB.expects(:notify_debug).with('User not valid at signup', errors).returns(nil)
+      Rails.logger.expects(:warn).with(
+        message: 'User not valid at signup',
+        errors: { organization: ['Organization owner is not set. Administrator must login first.'] }.inspect
+      )
 
       post create_session_url(user_domain: user_domain, email: normal_user_username, password: normal_user_password)
 

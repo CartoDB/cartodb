@@ -256,14 +256,14 @@ class SessionsController < ApplicationController
       render 'shared/signup_confirmation'
     else
       errors = account_creator.validation_errors
-      CartoDB.notify_debug('User not valid at signup', { errors: errors } )
+      Rails.logger.warn(message: 'User not valid at signup', errors: errors.inspect)
       @signup_source = created_via.upcase
       @signup_errors = errors
       render 'shared/signup_issue'
     end
   rescue StandardError => e
     new_user = account_creator.nil? ? "account_creator nil" : account_creator.user.inspect
-    CartoDB.report_exception(e, "Creating user", new_user: new_user)
+    Rails.logger.error(exception: e, new_user: new_user.inspect)
     flash.now[:error] = e.message
     render action: 'new'
   end

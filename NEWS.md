@@ -116,6 +116,7 @@ sudo make install
 - Show dataset version in subscription list and details [#16235](https://github.com/CartoDB/cartodb/pull/16235)
 - Fix error that avoid to render Spatial Data Catalog properly in Internet Explorer [#16236](https://github.com/CartoDB/cartodb/pull/16236)
 - Free users can't create datasets due to default state was private [16223](https://github.com/CartoDB/cartodb/pull/16223)
+- Improve visibility over SAML errors [#16243](https://github.com/CartoDB/cartodb/pull/16243)
 
 4.44.0 (2020-11-20)
 -------------------

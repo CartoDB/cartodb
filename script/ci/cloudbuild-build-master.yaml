@@ -122,7 +122,7 @@ steps:
 
 # Checkout onprem licensing gear
 - name: 'gcr.io/cloud-builders/git'
-  id: checkout-lincensing-gear
+  id: checkout-licensing-gear
   dir: /workspace/cartodb-onprem
   entrypoint: 'sh'
   args: ['-c', 'git clone git@github.com:CartoDB/onpremises_licensing_gear --depth 1 private_gears/onpremises_licensing_gear']

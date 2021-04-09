@@ -382,6 +382,7 @@ describe SessionsController do
 
     describe 'SAML logout' do
       it 'calls SamlService#sp_logout_request from user-initiated logout' do
+        SessionsController.any_instance.stubs(:current_user).returns(@user)
         stub_saml_service(@user)
 
         host! "#{@user.username}.localhost.lan"

@@ -242,6 +242,7 @@ class SessionsController < ApplicationController
     redirect_to login_url + "?error=#{MULTIFACTOR_AUTHENTICATION_INACTIVITY}"
   end
 
+  # rubocop:disable Metrics/AbcSize
   def create_user(params = {}, &config_account_creator_block)
     @organization = Carto::Organization.find(params[:organization_id])
 
@@ -276,6 +277,7 @@ class SessionsController < ApplicationController
     flash.now[:error] = e.message
     render action: 'new'
   end
+  # rubocop:enable Metrics/AbcSize
 
   protected
 

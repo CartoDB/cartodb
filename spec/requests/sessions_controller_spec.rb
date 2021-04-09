@@ -4,6 +4,7 @@ require_relative '../helpers/subdomainless_helper'
 require 'fake_net_ldap'
 require_relative '../lib/fake_net_ldap_bind_as'
 
+# rubocop:disable RSpec/InstanceVariable
 describe SessionsController do
 
   def create_ldap_user(admin_user_username, admin_user_password)
@@ -382,7 +383,7 @@ describe SessionsController do
 
     describe 'SAML logout' do
       it 'calls SamlService#sp_logout_request from user-initiated logout' do
-        SessionsController.any_instance.stubs(:current_user).returns(@user)
+        described_class.any_instance.stubs(:current_user).returns(@user)
         stub_saml_service(@user)
 
         host! "#{@user.username}.localhost.lan"
@@ -1078,3 +1079,4 @@ describe SessionsController do
     Carto::NamedMaps::Api.any_instance.stubs(show: nil, create: true, update: true, destroy: true)
   end
 end
+# rubocop:enable RSpec/InstanceVariable

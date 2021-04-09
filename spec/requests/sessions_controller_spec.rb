@@ -64,7 +64,7 @@ describe SessionsController do
       post create_session_url(user_domain: user_domain, email: normal_user_username, password: normal_user_password)
 
       response.status.should == 200
-      (response.body =~ /Signup issues/).to_i.should_not eq 0
+      expect(response.body).to include('Signup issues')
     end
 
     it "Allows to login and triggers creation if using the org admin account" do
@@ -87,7 +87,7 @@ describe SessionsController do
       post create_session_url(user_domain: user_domain, email: admin_user_username, password: admin_user_password)
 
       response.status.should == 200
-      (response.body =~ /Your account is being created/).to_i.should_not eq 0
+      expect(response.body).to include('Your account is being created')
     end
 
     it "Allows to login and triggers creation of normal users if admin already present" do
@@ -125,7 +125,7 @@ describe SessionsController do
       post create_session_url(user_domain: user_domain, email: normal_user_username, password: normal_user_password)
 
       response.status.should == 200
-      (response.body =~ /Your account is being created/).to_i.should_not eq 0
+      expect(response.body).to include('Your account is being created')
 
       @admin_user.destroy
     end
@@ -349,7 +349,7 @@ describe SessionsController do
       post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
 
       response.status.should == 200
-      (response.body =~ /Your account is being created/).to_i.should_not eq 0
+      expect(response.body).to include('Your account is being created')
 
       ::User.where(username: new_user.username).first.try(:destroy)
     end
@@ -366,7 +366,7 @@ describe SessionsController do
       post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
 
       response.status.should == 200
-      (response.body =~ /Your account is being created/).to_i.should_not eq 0
+      expect(response.body).to include('Your account is being created')
 
       ::User.where(username: new_user.username).first.try(:destroy)
     end
@@ -438,7 +438,7 @@ describe SessionsController do
 
   describe 'SAML authentication' do
     def setup_saml_organization
-      @organization = create(:saml_organization, quota_in_bytes: 1.gigabytes)
+      @organization = create(:saml_organization, quota_in_bytes: 1.gigabytes, viewer_seats: 20)
       @admin_user = create_admin_user(@organization)
       @user = create(:carto_user)
       @user.organization_id = @organization.id

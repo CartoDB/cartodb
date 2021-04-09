@@ -2,19 +2,23 @@ steps:
 
 # Cancel previous job on the same branch
 - name: gcr.io/cloud-builders/gcloud
+  id: list-builds
   entrypoint: /bin/bash
   args:
   - '-c'
   - 'gcloud builds list --ongoing --filter="buildTriggerId=6d19ac2c-1e62-4d92-b42e-ed6753d476d8 AND substitutions.BRANCH_NAME=${BRANCH_NAME} AND id!=${BUILD_ID}" --format="get(ID)" > jobs_to_cancel'
 
 - name: gcr.io/cloud-builders/gcloud
+  id: cancel-builds
   entrypoint: /bin/bash
   args:
   - '-c'
   - 'gcloud builds cancel $(cat jobs_to_cancel | xargs) || true'
+  waitFor: ['list-builds']
 
 # Decrypt github key
 - name: gcr.io/cloud-builders/gcloud
+  id: decrypt-key
   args:
   - kms
   - decrypt
@@ -26,9 +30,11 @@ steps:
   volumes:
   - name: 'ssh'
     path: /root/.ssh
+  waitFor: ['cancel-builds']
 
 # Set up git with key and domain
 - name: 'gcr.io/cloud-builders/git'
+  id: setup-git
   entrypoint: 'bash'
   args:
   - '-c'
@@ -42,26 +48,33 @@ steps:
   volumes:
   - name: 'ssh'
     path: /root/.ssh
+  waitFor: ['decrypt-key']
 
 # Clean working directory
 - name: alpine
+  id: cleanup
   args: ['sh', '-c', 'rm -rf .* | true && rm -rf *']
+  waitFor: ['setup-git']
 
 # Checkout repo with submodules
 - name: 'gcr.io/cloud-builders/git'
+  id: checkout-cartodb
   entrypoint: 'sh'
   args: ['-c', 'git clone git@github.com:CartoDB/${_REPO} -b "${BRANCH_NAME}" --depth 1 --recursive .']
   volumes:
   - name: 'ssh'
     path: /root/.ssh
+  waitFor: ['cleanup']
 
 # Checkout db-connectors
 - name: 'gcr.io/cloud-builders/git'
+  id: checkout-db-connectors
   entrypoint: 'sh'
   args: ['-c', 'git clone git@github.com:CartoDB/db-connectors --depth 1 private_gears/db-connectors']
   volumes:
   - name: 'ssh'
     path: /root/.ssh
+  waitFor: ['checkout-cartodb']
 
 # Copy files to the right directories to run the tests
 - name: ubuntu
@@ -75,6 +88,7 @@ steps:
       cp config/app_config.yml.sample config/app_config.yml
       cp config/database.yml.sample config/database.yml
       cp lib/assets/javascripts/cdb/secrets.example.json lib/assets/javascripts/cdb/secrets.json
+  waitFor: ['checkout-db-connectors']
 
 # Build image
 - name: gcr.io/cloud-builders/docker

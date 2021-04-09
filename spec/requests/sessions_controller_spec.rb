@@ -4,6 +4,7 @@ require_relative '../helpers/subdomainless_helper'
 require 'fake_net_ldap'
 require_relative '../lib/fake_net_ldap_bind_as'
 
+# rubocop:disable RSpec/InstanceVariable
 describe SessionsController do
 
   def create_ldap_user(admin_user_username, admin_user_password)
@@ -382,10 +383,11 @@ describe SessionsController do
 
     describe 'SAML logout' do
       it 'calls SamlService#sp_logout_request from user-initiated logout' do
+        described_class.any_instance.stubs(:current_user).returns(@user)
         stub_saml_service(@user)
-        SessionsController.any_instance.expects(:authenticate!).with(:saml, scope: @user.username).returns(@user).once
 
-        post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
+        host! "#{@user.username}.localhost.lan"
+        post create_session_url(email: @user.email, password: password)
 
         # needs returning an url to do a redirection
         Carto::SamlService.any_instance.stubs(:sp_logout_request).returns('http://carto.com').once
@@ -394,9 +396,9 @@ describe SessionsController do
 
       it 'does not call SamlService#sp_logout_request if logout URL is not configured' do
         stub_saml_service(@user)
-        SessionsController.any_instance.expects(:authenticate!).with(:saml, scope: @user.username).returns(@user).once
 
-        post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
+        host! "#{@user.username}.localhost.lan"
+        post create_session_url(email: @user.email, password: password)
 
         # needs returning an url to do a redirection
         Carto::SamlService.any_instance.stubs(:logout_url_configured?).returns(false)
@@ -437,12 +439,28 @@ describe SessionsController do
   end
 
   describe 'SAML authentication' do
+    let(:password) { '12345678' }
+    let(:organization) do
+      create(
+        :organization_with_users, :saml_enabled,
+        quota_in_bytes: 1.gigabytes,
+        viewer_seats: 20
+      )
+    end
+    let(:user) do
+      create(
+        :carto_user,
+        organization_id: organization.id,
+        password: password,
+        password_confirmation: password,
+        factory_bot_context: { only_db_setup: true }
+      )
+    end
+
     def setup_saml_organization
-      @organization = create(:saml_organization, quota_in_bytes: 1.gigabytes, viewer_seats: 20)
-      @admin_user = create_admin_user(@organization)
-      @user = create(:carto_user)
-      @user.organization_id = @organization.id
-      @user.save
+      @organization = organization
+      @admin_user = @organization.owner
+      @user = user
     end
 
     def cleanup
@@ -1061,3 +1079,4 @@ describe SessionsController do
     Carto::NamedMaps::Api.any_instance.stubs(show: nil, create: true, update: true, destroy: true)
   end
 end
+# rubocop:enable RSpec/InstanceVariable

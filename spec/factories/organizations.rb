@@ -34,6 +34,20 @@ FactoryBot.define do
       end
     end
 
+    trait :saml_enabled do
+      auth_saml_configuration do
+        {
+          issuer: 'localhost.lan',
+          idp_sso_target_url: 'https://example.com/saml/signon/',
+          idp_slo_target_url: 'https://example.com/saml/signon/',
+          idp_cert_fingerprint: '',
+          assertion_consumer_service_url: 'https://localhost.lan/saml/finalize',
+          name_identifier_format: '',
+          email_attribute: 'username'
+        }.stringify_keys
+      end
+    end
+
     factory :organization_whitelist_carto, class: 'Carto::Organization' do
       whitelisted_email_domains { ['carto.com'] }
       auth_username_password_enabled { true }

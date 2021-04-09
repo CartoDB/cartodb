@@ -32,11 +32,11 @@ module Carto
 
     # SLO (Single Log Out) request initiated from CARTO
     # Returns the SAML logout request that to be redirected to
-    def sp_logout_request(user)
+    def sp_logout_request(user_email)
       settings = saml_settings
 
       if logout_url_configured?
-        settings.name_identifier_value = user.email
+        settings.name_identifier_value = user_email
         OneLogin::RubySaml::Logoutrequest.new.create(settings)
       else
         raise "SLO IdP Endpoint not found in settings for #{@organization}"

@@ -400,22 +400,23 @@ class SessionsController < ApplicationController
   end
 
   def saml_logout
+    # IDP-initiated logout request
     if params[:SAMLRequest]
-      # If we're given a logout request, handle it in the IdP logout initiated method
       redirect_to saml_service.idp_logout_request(params[:SAMLRequest], params[:RelayState]) { cdb_logout }
+    # IDP-initiated logout response
     elsif params[:SAMLResponse]
-      # We've been given a response back from the IdP, process it
       begin
         saml_service.process_logout_response(params[:SAMLResponse])
       rescue StandardError => e
-        log_warning(exception: e, message: 'Error proccessing SAML logout')
+        Rails.logger.error(message: 'Error proccessing SAML logout', exception: e)
       ensure
         cdb_logout
       end
 
       redirect_to default_logout_url
+    # SP-initiated logout
     else
-      # Initiate SLO (send Logout Request)
+      cdb_logout # Close session in CARTO first, in case somthing goes wrong in the IDP
       redirect_to saml_service.sp_logout_request(current_user)
     end
   end

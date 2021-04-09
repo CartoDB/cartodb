@@ -92,6 +92,16 @@ steps:
       cp config/grunt_production.json.sample config/grunt_production.json
   waitFor: ['checkout-db-connectors']
 
+# Copy repo folder to isolate onprem build context
+- name: ubuntu
+  id: copy-cartodb-repo
+  entrypoint: /bin/bash
+  args:
+    - -c
+    - |
+      cp -r cartodb cartodb-onprem
+  waitFor: ['copy-private-files']
+
 # Build image
 - name: gcr.io/cloud-builders/docker
   id: build-cartodb
@@ -114,27 +124,18 @@ steps:
 # Checkout onprem licensing gear
 - name: 'gcr.io/cloud-builders/git'
   id: checkout-lincensing-gear
+  dir: /workspace/cartodb-onprem
   entrypoint: 'sh'
-  args: ['-c', 'git clone git@github.com:CartoDB/onpremises_licensing_gear --depth 1 onpremises_licensing_gear']
+  args: ['-c', 'git clone git@github.com:CartoDB/onpremises_licensing_gear --depth 1 private_gears/onpremises_licensing_gear']
   volumes:
   - name: 'ssh'
     path: /root/.ssh
-  waitFor: ['copy-private-files']
-
-# Copy licensing gear to private_gears dir
-- name: ubuntu
-  id: copy-licensing-gear
-  entrypoint: /bin/bash
-  args:
-    - -c
-    - |
-      cp -r onpremises_licensing_gear cartodb/private_gears/onpremises_licensing_gear
-  waitFor: ['checkout-lincensing-gear']
+  waitFor: ['copy-cartodb-repo']
 
 # Build onprem image
 - name: gcr.io/cloud-builders/docker
   id: build-cartodb-onprem
-  dir: /workspace/cartodb
+  dir: /workspace/cartodb-onprem
   entrypoint: /bin/bash
   args:
     - -cx
@@ -146,7 +147,7 @@ steps:
       fi
       set -e
       docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} --build-arg GRUNT_ENV=production --build-arg COMPILE_ASSETS=true --build-arg BUNDLE_JOBS=4 -t ${_DOCKER_IMAGE_NAME}-onprem:latest -t ${_DOCKER_IMAGE_NAME}-onprem:${_BRANCH_TAG} -t ${_DOCKER_IMAGE_NAME}-onprem:${SHORT_SHA} -t ${_DOCKER_IMAGE_NAME}-onprem:${_BRANCH_TAG}--${SHORT_SHA} --cache-from ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG} --cache-from ${_DOCKER_IMAGE_NAME}:latest .
-  waitFor: ['copy-licensing-gear']
+  waitFor: ['checkout-licensing-gear']
 
 timeout: 1800s
 images:

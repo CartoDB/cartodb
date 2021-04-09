@@ -418,8 +418,9 @@ class SessionsController < ApplicationController
       redirect_to default_logout_url
     # SP-initiated logout
     else
+      user_email = current_user.email # Save email for afterwards (current_user is cleared by cdb_logout)
       cdb_logout # Close session in CARTO first, in case somthing goes wrong in the IDP
-      redirect_to saml_service.sp_logout_request(current_user)
+      redirect_to saml_service.sp_logout_request(user_email)
     end
   end
 

@@ -60,7 +60,7 @@ steps:
 - name: 'gcr.io/cloud-builders/git'
   id: checkout-cartodb
   entrypoint: 'sh'
-  args: ['-c', 'git clone git@github.com:CartoDB/${_REPO} -b "${BRANCH_NAME}" --depth 1 --recursive .']
+  args: ['-c', 'git clone git@github.com:CartoDB/${_REPO} -b "${BRANCH_NAME}" --depth 1 --recursive cartodb']
   volumes:
   - name: 'ssh'
     path: /root/.ssh
@@ -70,7 +70,7 @@ steps:
 - name: 'gcr.io/cloud-builders/git'
   id: checkout-db-connectors
   entrypoint: 'sh'
-  args: ['-c', 'git clone git@github.com:CartoDB/db-connectors --depth 1 private_gears/db-connectors']
+  args: ['-c', 'git clone git@github.com:CartoDB/db-connectors --depth 1 cartodb/private_gears/db-connectors']
   volumes:
   - name: 'ssh'
     path: /root/.ssh
@@ -79,6 +79,7 @@ steps:
 # Copy files to the right directories to run the tests
 - name: ubuntu
   id: copy-private-files
+  dir: /workspace/cartodb
   entrypoint: /bin/bash
   args:
     - -c
@@ -203,5 +204,3 @@ substitutions:
   _REPO: cartodb
 options:
   machineType: 'E2_HIGHCPU_32'
-
-

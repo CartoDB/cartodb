@@ -2,19 +2,23 @@ steps:
 
 # Cancel previous job on the same branch
 - name: gcr.io/cloud-builders/gcloud
+  id: list-builds
   entrypoint: /bin/bash
   args:
   - '-c'
   - 'gcloud builds list --ongoing --filter="buildTriggerId=6d19ac2c-1e62-4d92-b42e-ed6753d476d8 AND substitutions.BRANCH_NAME=${BRANCH_NAME} AND id!=${BUILD_ID}" --format="get(ID)" > jobs_to_cancel'
 
 - name: gcr.io/cloud-builders/gcloud
+  id: cancel-builds
   entrypoint: /bin/bash
   args:
   - '-c'
   - 'gcloud builds cancel $(cat jobs_to_cancel | xargs) || true'
+  waitFor: ['list-builds']
 
 # Decrypt github key
 - name: gcr.io/cloud-builders/gcloud
+  id: decrypt-key
   args:
   - kms
   - decrypt
@@ -26,9 +30,11 @@ steps:
   volumes:
   - name: 'ssh'
     path: /root/.ssh
+  waitFor: ['cancel-builds']
 
 # Set up git with key and domain
 - name: 'gcr.io/cloud-builders/git'
+  id: setup-git
   entrypoint: 'bash'
   args:
   - '-c'
@@ -42,29 +48,37 @@ steps:
   volumes:
   - name: 'ssh'
     path: /root/.ssh
+  waitFor: ['decrypt-key']
 
 # Clean working directory
 - name: alpine
+  id: cleanup
   args: ['sh', '-c', 'rm -rf .* | true && rm -rf *']
+  waitFor: ['setup-git']
 
 # Checkout repo with submodules
 - name: 'gcr.io/cloud-builders/git'
+  id: checkout-cartodb
   entrypoint: 'sh'
   args: ['-c', 'git clone git@github.com:CartoDB/${_REPO} -b "${BRANCH_NAME}" --depth 1 --recursive .']
   volumes:
   - name: 'ssh'
     path: /root/.ssh
+  waitFor: ['cleanup']
 
 # Checkout db-connectors
 - name: 'gcr.io/cloud-builders/git'
+  id: checkout-db-connectors
   entrypoint: 'sh'
   args: ['-c', 'git clone git@github.com:CartoDB/db-connectors --depth 1 private_gears/db-connectors']
   volumes:
   - name: 'ssh'
     path: /root/.ssh
+  waitFor: ['checkout-cartodb']
 
 # Copy files to the right directories to run the tests
 - name: ubuntu
+  id: copy-private-files
   entrypoint: /bin/bash
   args:
     - -c
@@ -74,9 +88,23 @@ steps:
       cp config/app_config.yml.sample config/app_config.yml
       cp config/database.yml.sample config/database.yml
       cp lib/assets/javascripts/cdb/secrets.example.json lib/assets/javascripts/cdb/secrets.json
+      cp config/grunt_production.json.sample config/grunt_production.json
+  waitFor: ['checkout-db-connectors']
+
+# Copy repo folder to isolate onprem build context
+- name: ubuntu
+  id: copy-cartodb-repo
+  entrypoint: /bin/bash
+  args:
+    - -c
+    - |
+      cp -r cartodb cartodb-onprem
+  waitFor: ['copy-private-files']
 
 # Build image
 - name: gcr.io/cloud-builders/docker
+  id: build-cartodb
+  dir: /workspace/cartodb
   entrypoint: /bin/bash
   args:
     - -cx
@@ -90,22 +118,35 @@ steps:
       docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} --build-arg COMPILE_ASSETS=true --build-arg BUNDLE_JOBS=4 -t ${_DOCKER_IMAGE_NAME}:latest -t ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG} -t ${_DOCKER_IMAGE_NAME}:${SHORT_SHA} -t ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG}--${SHORT_SHA} --cache-from ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG} --cache-from ${_DOCKER_IMAGE_NAME}:latest .
       docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} -t ${_DOCKER_IMAGE_NAME}-resque:latest -t ${_DOCKER_IMAGE_NAME}-resque:${_BRANCH_TAG}  -t ${_DOCKER_IMAGE_NAME}-resque:${SHORT_SHA} -t ${_DOCKER_IMAGE_NAME}-resque:${_BRANCH_TAG}--${SHORT_SHA}   -f Dockerfile.resque .
       docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} -t ${_DOCKER_IMAGE_NAME}-subscriber:latest -t ${_DOCKER_IMAGE_NAME}-subscriber:${_BRANCH_TAG} -t ${_DOCKER_IMAGE_NAME}-subscriber:${SHORT_SHA} -t ${_DOCKER_IMAGE_NAME}-subscriber:${_BRANCH_TAG}--${SHORT_SHA}  -f Dockerfile.subscriber .        
+  waitFor: ['copy-private-files']
 
 # Checkout onprem licensing gear
 - name: 'gcr.io/cloud-builders/git'
+  id: checkout-licensing-gear
+  dir: /workspace/cartodb-onprem
   entrypoint: 'sh'
   args: ['-c', 'git clone git@github.com:CartoDB/onpremises_licensing_gear --depth 1 private_gears/onpremises_licensing_gear']
   volumes:
   - name: 'ssh'
     path: /root/.ssh
+  waitFor: ['copy-cartodb-repo']
 
 # Build onprem image
 - name: gcr.io/cloud-builders/docker
+  id: build-cartodb-onprem
+  dir: /workspace/cartodb-onprem
   entrypoint: /bin/bash
   args:
     - -cx
     - |
-      docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} --label=com.carto.onprem.revision=$(git -C private_gears/onpremises_licensing_gear/ rev-parse HEAD)  -f private/Dockerfile.onprem  --build-arg BUNDLE_JOBS=4 -t ${_DOCKER_IMAGE_NAME}-onprem:latest -t ${_DOCKER_IMAGE_NAME}-onprem:${_BRANCH_TAG} -t ${_DOCKER_IMAGE_NAME}-onprem:${SHORT_SHA} -t ${_DOCKER_IMAGE_NAME}-onprem:${_BRANCH_TAG}--${SHORT_SHA} .
+      docker pull ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG}
+      if [ $? -ne 0 ]
+      then
+        docker pull ${_DOCKER_IMAGE_NAME}:latest
+      fi
+      set -e
+      docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} --build-arg GRUNT_ENV=production --build-arg COMPILE_ASSETS=true --build-arg BUNDLE_JOBS=4 -t ${_DOCKER_IMAGE_NAME}-onprem:latest -t ${_DOCKER_IMAGE_NAME}-onprem:${_BRANCH_TAG} -t ${_DOCKER_IMAGE_NAME}-onprem:${SHORT_SHA} -t ${_DOCKER_IMAGE_NAME}-onprem:${_BRANCH_TAG}--${SHORT_SHA} --cache-from ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG} --cache-from ${_DOCKER_IMAGE_NAME}:latest .
+  waitFor: ['checkout-licensing-gear']
 
 # Push image
 - name: gcr.io/cloud-builders/docker
@@ -153,6 +194,8 @@ steps:
           docker push ${_DOCKER_IMAGE_NAME}-resque:${TAG_NAME}
           docker push ${_DOCKER_IMAGE_NAME}-subscriber:${TAG_NAME}
       fi
+  waitFor: ['build-cartodb-onprem', 'build-cartodb']
+
 timeout: 1800s
 substitutions:
   _BRANCH_TAG: ${BRANCH_NAME//\//-}

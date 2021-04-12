@@ -20,6 +20,8 @@ module Carto
 
         only_liked = params[:only_liked] == 'true'
         only_shared = params[:only_shared] == 'true'
+        only_subscriptions = params[:subscribed] == 'true'
+        only_samples = params[:sample] == 'true'
         exclude_shared = params[:exclude_shared] == 'true'
         exclude_raster = params[:exclude_raster] == 'true'
         locked = params[:locked]
@@ -55,6 +57,8 @@ module Carto
         if current_user
           vqb.with_current_user_id(current_user.id)
           vqb.with_liked_by_user_id(current_user.id) if only_liked
+          vqb.with_subscription if only_subscriptions
+          vqb.with_sample if only_samples
           case shared
           when FILTER_SHARED_YES
             vqb.with_owned_by_or_shared_with_user_id(current_user.id)

@@ -127,6 +127,16 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  def with_subscription
+    @filtering_params[:with_subscription] = true
+    self
+  end
+
+  def with_sample
+    @filtering_params[:with_sample] = true
+    self
+  end
+
   def with_prefetch_user(force_join = false)
     if force_join
       with_eager_load_of(:user)

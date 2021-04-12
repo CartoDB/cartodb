@@ -169,4 +169,3 @@ substitutions:
   _REPO: cartodb
 options:
   machineType: 'E2_HIGHCPU_32'
-

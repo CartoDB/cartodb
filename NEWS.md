@@ -118,6 +118,8 @@ sudo make install
 - Free users can't create datasets due to default state was private [16223](https://github.com/CartoDB/cartodb/pull/16223)
 - Improve visibility over SAML errors [#16243](https://github.com/CartoDB/cartodb/pull/16243)
 - Support staging hostname in the catalog [#16245](https://github.com/CartoDB/cartodb/pull/16245)
+- SAML adjustments [#16246](https://github.com/CartoDB/cartodb/pull/16246)
+- Retrieve user email for SAML logout before closing CARTO session [#16248](https://github.com/CartoDB/cartodb/pull/16248)
 
 4.44.0 (2020-11-20)
 -------------------

@@ -169,10 +169,14 @@ class SessionsController < ApplicationController
 
     username = warden.env['warden.options'][:cartodb_username]
     organization_id = warden.env['warden.options'][:organization_id]
-    email = warden.env['warden.options'][:ldap_email].blank? ? nil : warden.env['warden.options'][:ldap_email]
-    created_via = Carto::UserCreation::CREATED_VIA_LDAP
+    email = warden.env['warden.options'][:ldap_email].presence
 
-    create_user(username, organization_id, email, created_via)
+    create_user(
+      username: username,
+      organization_id: organization_id,
+      email: email,
+      created_via: Carto::UserCreation::CREATED_VIA_LDAP
+    )
   end
 
   def saml_user_not_in_carto
@@ -186,9 +190,14 @@ class SessionsController < ApplicationController
     username = CartoDB::UserAccountCreator.email_to_username(saml_email)
     unique_username = Carto::UsernameProposer.find_unique(username)
     organization_id = warden.env['warden.options'][:organization_id]
-    created_via = Carto::UserCreation::CREATED_VIA_SAML
 
-    create_user(unique_username, organization_id, saml_email, created_via)
+    create_user(
+      username: unique_username,
+      organization_id: organization_id,
+      email: saml_email,
+      created_via: Carto::UserCreation::CREATED_VIA_SAML,
+      viewer: true
+    )
   end
 
   def verify_warden_failure
@@ -233,14 +242,15 @@ class SessionsController < ApplicationController
     redirect_to login_url + "?error=#{MULTIFACTOR_AUTHENTICATION_INACTIVITY}"
   end
 
-  def create_user(username, organization_id, email, created_via, &config_account_creator_block)
-    @organization = Carto::Organization.find(organization_id)
+  # rubocop:disable Metrics/AbcSize
+  def create_user(params = {}, &config_account_creator_block)
+    @organization = Carto::Organization.find(params[:organization_id])
 
-    account_creator = CartoDB::UserAccountCreator.new(created_via)
+    account_creator = CartoDB::UserAccountCreator.new(params[:created_via])
 
-    account_creator.with_organization(@organization)
-                   .with_username(username)
-    account_creator.with_email(email) unless email.nil?
+    account_creator.with_organization(@organization, viewer: params[:viewer] || false)
+                   .with_username(params[:username])
+    account_creator.with_email(params[:email]) if params[:email].present?
 
     # Allows externals gears to override this method and add further configuration to the
     # account creator
@@ -257,7 +267,7 @@ class SessionsController < ApplicationController
     else
       errors = account_creator.validation_errors
       Rails.logger.warn(message: 'User not valid at signup', errors: errors.inspect)
-      @signup_source = created_via.upcase
+      @signup_source = params[:created_via].upcase
       @signup_errors = errors
       render 'shared/signup_issue'
     end
@@ -267,6 +277,7 @@ class SessionsController < ApplicationController
     flash.now[:error] = e.message
     render action: 'new'
   end
+  # rubocop:enable Metrics/AbcSize
 
   protected
 
@@ -391,23 +402,26 @@ class SessionsController < ApplicationController
   end
 
   def saml_logout
+    # IDP-initiated logout request
     if params[:SAMLRequest]
-      # If we're given a logout request, handle it in the IdP logout initiated method
       redirect_to saml_service.idp_logout_request(params[:SAMLRequest], params[:RelayState]) { cdb_logout }
+    # IDP-initiated logout response
     elsif params[:SAMLResponse]
-      # We've been given a response back from the IdP, process it
       begin
         saml_service.process_logout_response(params[:SAMLResponse])
       rescue StandardError => e
-        log_warning(exception: e, message: 'Error proccessing SAML logout')
+        Rails.logger.error(message: 'Error proccessing SAML logout', exception: e)
       ensure
         cdb_logout
       end
 
       redirect_to default_logout_url
+    # SP-initiated logout
     else
-      # Initiate SLO (send Logout Request)
-      redirect_to saml_service.sp_logout_request(current_user)
+      user_email = current_user&.email # Save email for afterwards (current_user is cleared by cdb_logout)
+      cdb_logout # Close session in CARTO first, in case somthing goes wrong in the IDP
+      redirect_url = user_email ? saml_service.sp_logout_request(user_email) : default_logout_url
+      redirect_to(redirect_url)
     end
   end
 

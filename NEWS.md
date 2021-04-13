@@ -27,7 +27,6 @@ sudo make install
 - Add search in 'new map' screen [16166](https://github.com/CartoDB/cartodb/pull/16166)
 - Migrate FeatureFlag & PricePlan synchronization to the Message Broker [#16098](https://github.com/CartoDB/cartodb/pull/16098)
 - Sync DO Service Account info between central and on-prem and cloud instances [#16189](https://github.com/CartoDB/cartodb/pull/16189)
-- Fix OAuth all datasets scope when there is a temp importing table [#16252](https://github.com/CartoDB/cartodb/pull/16252)
 - Cleanup after [#16189](https://github.com/CartoDB/cartodb/pull/16189). See [#16200](https://github.com/CartoDB/cartodb/pull/16200)
 - Split configuration for Message Broker & Central login redirection [#16150](https://github.com/CartoDB/cartodb/pull/16150)
 - Remove Data Library gallery page (now redirected to Spatial Data Catalog) [#16133](https://github.com/CartoDB/cartodb/pull/16133)

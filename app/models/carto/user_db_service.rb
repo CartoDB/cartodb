@@ -169,7 +169,7 @@ module Carto
         DISTINCT table_schema, table_name, privilege_type
       })).where(Arel.sql(%{
         grantee IN ('#{all_user_roles.join("','")}') AND
-        table_schema NOT IN ('cartodb', 'aggregation', 'cdb_importer') AND
+        table_schema NOT IN ('cartodb', 'aggregation') AND
         grantor != 'postgres' AND
         privilege_type IN ('SELECT', 'UPDATE')
       })).as('uniq_grants')

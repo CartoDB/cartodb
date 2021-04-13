@@ -469,7 +469,8 @@ describe SessionsController do
       create(
         :user_creation,
         user_id: user.id,
-        created_via: Carto::UserCreation::CREATED_VIA_SAML)
+        created_via: Carto::UserCreation::CREATED_VIA_SAML
+      )
       user
     end
 

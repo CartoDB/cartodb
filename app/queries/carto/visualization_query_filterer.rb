@@ -153,30 +153,21 @@ class Carto::VisualizationQueryFilterer
       )
     end
 
-    # NOTE: Checking if the visualization has a sample, this should be equivalent to calling
-    #       `sample.present?` for each `Carto::Visualization`
-    if params[:with_sample]
-      query = query
-        .includes(map: { user_table: :data_import, layers: { user_tables: :data_import } })
-        .where(layers: { kind: Carto::Layer::DATA_LAYER_KINDS })
-        .where(
-          "data_imports.service_name = :service_name OR " \
-          "data_imports_user_tables.service_name = :service_name",
-          service_name: 'connector'
-        )
-        .where(
-          "data_imports.service_item_id LIKE :provider OR " \
-          "data_imports_user_tables.service_item_id LIKE :provider",
-          provider: '%"provider":"do-v2-sample"%'
-        )
-    end
+    # NOTE: The information about DO v2 subscriptions is stored in redis, so keep these filters as
+    #       the last ones, to use 'select' with the least number of records
 
-    # NOTE: The information about DO v2 subscriptions is stored in redis, so keep this as the last
-    #       filter, to use 'select' with the least number of records
     if params[:with_subscription]
       query = query.where(
         id: query.includes(map: { user_table: :data_import })
                  .find_each.lazy.select { |v| v.subscription.present? }
+                 .map(&:id)
+      )
+    end
+
+    if params[:with_sample]
+      query = query.where(
+        id: query.includes(map: { user_table: :data_import })
+                 .find_each.lazy.select { |v| v.sample.present? }
                  .map(&:id)
       )
     end

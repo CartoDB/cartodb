@@ -119,6 +119,7 @@ sudo make install
 - Improve visibility over SAML errors [#16243](https://github.com/CartoDB/cartodb/pull/16243)
 - SAML adjustments [#16246](https://github.com/CartoDB/cartodb/pull/16246)
 - Retrieve user email for SAML logout before closing CARTO session [#16248](https://github.com/CartoDB/cartodb/pull/16248)
+- SAML logout only for users who were created via SAML [#16253](https://github.com/CartoDB/cartodb/pull/16253)
 
 4.44.0 (2020-11-20)
 -------------------

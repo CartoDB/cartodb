@@ -120,6 +120,7 @@ sudo make install
 - Improve visibility over SAML errors [#16243](https://github.com/CartoDB/cartodb/pull/16243)
 - SAML adjustments [#16246](https://github.com/CartoDB/cartodb/pull/16246)
 - Retrieve user email for SAML logout before closing CARTO session [#16248](https://github.com/CartoDB/cartodb/pull/16248)
+- Support staging hostname in the catalog [#](https://github.com/CartoDB/cartodb/pull/)
 
 4.44.0 (2020-11-20)
 -------------------

@@ -466,10 +466,10 @@ describe SessionsController do
         password_confirmation: password,
         factory_bot_context: { only_db_setup: true }
       )
-      create(:user_creation,
+      create(
+        :user_creation,
         user_id: user.id,
-        created_via: Carto::UserCreation::CREATED_VIA_SAML
-      )
+        created_via: Carto::UserCreation::CREATED_VIA_SAML)
       user
     end
 

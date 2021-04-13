@@ -501,18 +501,18 @@ module Carto
 
       def calculate_do_totals(vqb)
         subscription_count = if params[:subscribed] == 'true'
-          vqb.count
-        else
-          vqb.filtered_query.includes(map: { user_table: :data_import }).find_each.lazy
-             .count { |v| v.subscription.present? }
-        end
+                               vqb.count
+                             else
+                               vqb.filtered_query.includes(map: { user_table: :data_import }).find_each.lazy
+                                  .count { |v| v.subscription.present? }
+                             end
 
         sample_count = if params[:sample] == 'true'
-          vqb.count
-        else
-          vqb.filtered_query.includes(map: { user_table: :data_import }).find_each.lazy
-             .count { |v| v.sample.present? }
-        end
+                         vqb.count
+                       else
+                         vqb.filtered_query.includes(map: { user_table: :data_import }).find_each.lazy
+                            .count { |v| v.sample.present? }
+                       end
 
         { total_subscriptions: subscription_count, total_samples: sample_count }
       end

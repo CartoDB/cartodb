@@ -111,6 +111,7 @@ sudo make install
 - Modify superadmin users activity endpoint to allow pagination [#16226](https://github.com/CartoDB/cartodb/pull/16226)
 - Update cartodb-common to v1.1.1, which contains serveral logging fixes [#16182](https://github.com/CartoDB/cartodb/pull/16182)
 - Only load DO totals in dashboard when it is needed [#16161](https://github.com/CartoDB/cartodb/pull/16161)
+- Fix subscription/sample filter for datasets [#16254](https://github.com/CartoDB/cartodb/pull/16254)
 - Fix SAML and LDAP integrations for on-premise installations [#16239](https://github.com/CartoDB/cartodb/pull/16239)
 - Read config for public statics compilation [#16234](https://github.com/CartoDB/cartodb/pull/16234)
 - Show dataset version in subscription list and details [#16235](https://github.com/CartoDB/cartodb/pull/16235)

@@ -90,7 +90,8 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    saml_authentication? && saml_service.try(:logout_url_configured?) ? saml_logout : do_logout
+    saml_user = current_user.created_via == Carto::UserCreation::CREATED_VIA_SAML
+    saml_authentication? && saml_service.try(:logout_url_configured?) && saml_user ? saml_logout : do_logout
   end
 
   def show

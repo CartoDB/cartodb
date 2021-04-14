@@ -130,7 +130,7 @@ steps:
   volumes:
   - name: 'ssh'
     path: /root/.ssh
-  waitFor: ['copy-cartodb-repo']
+  waitFor: ['build-cartodb']
 
 # Build onprem image
 - name: gcr.io/cloud-builders/docker

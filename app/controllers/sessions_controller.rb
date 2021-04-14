@@ -304,7 +304,7 @@ class SessionsController < ApplicationController
   def saml_user?
     subdomain = CartoDB.extract_subdomain(request)
     user = Carto::User.find_by(username: subdomain)
-    user.sequel_user.created_via == Carto::UserCreation::CREATED_VIA_SAML unless user.nil?
+    user.created_via == Carto::UserCreation::CREATED_VIA_SAML unless user.nil?
   end
 
   private

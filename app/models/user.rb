@@ -1281,10 +1281,6 @@ class User < Sequel::Model
     Carto::SearchTweet.where(user_id: id).order(created_at: :desc)
   end
 
-  def created_via
-    @created_via || get_user_creation.try(:created_via)
-  end
-
   private
 
   def common_data_outdated?
@@ -1305,10 +1301,6 @@ class User < Sequel::Model
     if !user_creation.nil? && user_creation.has_valid_invitation?
       user_creation.invitation_token
     end
-  end
-
-  def get_user_creation
-    @user_creation ||= Carto::UserCreation.find_by_user_id(id)
   end
 
   def quota_dates(options)

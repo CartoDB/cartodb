@@ -160,7 +160,7 @@ class Carto::VisualizationQueryFilterer
       query = query.where(
         id: query.includes(map: { user_table: :data_import })
                  .find_each.lazy.select { |v| v.subscription.present? }
-                 .map(&:id)
+                 .map(&:id).force
       )
     end
 
@@ -168,7 +168,7 @@ class Carto::VisualizationQueryFilterer
       query = query.where(
         id: query.includes(map: { user_table: :data_import })
                  .find_each.lazy.select { |v| v.sample.present? }
-                 .map(&:id)
+                 .map(&:id).force
       )
     end
 

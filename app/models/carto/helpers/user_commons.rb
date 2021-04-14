@@ -457,4 +457,12 @@ module Carto::UserCommons
     true
   end
 
+  def created_via
+    @created_via || user_creation.try(:created_via)
+  end
+
+  def user_creation
+    @user_creation ||= Carto::UserCreation.find_by(user_id: id)
+  end
+
 end

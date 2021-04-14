@@ -1,4 +1,8 @@
-EmailAddress::Config.configure(local_format: :conventional, host_validation: Cartodb.config[:disable_email_mx_check] ? :syntax : :mx )
+# Previously we validated email domains against DNS records, but since we forced the email verification before
+# provisioning users this is not needed anymore.
+# Also, some user emails coming from SAML IDPs may have domains which don't have a corresponding DNS record
+# https://app.clubhouse.io/cartoteam/story/145527/reef-set-up-sso#activity-146696
+EmailAddress::Config.configure(local_format: :conventional, host_validation: :syntax)
 
 class EmailValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)

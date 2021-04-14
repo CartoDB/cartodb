@@ -4,6 +4,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WebpackDeleteAfterEmit = require('webpack-delete-after-emit');
 const { version } = require('../../package.json');
 const { http_path_prefix } = require(`../../config/grunt_${process.env.NODE_ENV}.json`);
+const PUBLIC_STATICS_CONFIG = require('../../config/public_statics_config');
 const entryPoints = require('./entryPoints');
 
 const vueLoaderConfig = require('../new-dashboard/vue-loader.conf');
@@ -42,7 +43,8 @@ module.exports = {
       __ENV__: JSON.stringify('prod'),
       __ASSETS_VERSION__: JSON.stringify(version),
       __ASSETS_PATH__: JSON.stringify(`${http_path_prefix}/assets/${version}`),
-      __KEPLERGL_BASE_URL__: JSON.stringify('https://kepler.gl')
+      __KEPLERGL_BASE_URL__: JSON.stringify('https://kepler.gl'),
+      __CARTO_MAPS_API_V2_EXTERNAL_URL_TEMPLATE__: JSON.stringify(PUBLIC_STATICS_CONFIG.CARTO_MAPS_API_V2_EXTERNAL_URL_TEMPLATE)
     }),
 
     new MiniCssExtractPlugin({

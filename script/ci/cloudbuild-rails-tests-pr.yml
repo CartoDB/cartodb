@@ -88,7 +88,7 @@ steps:
           docker pull ${_DOCKER_IMAGE_NAME}:latest
       fi
       set -e
-      docker build --build-arg COMPILE_ASSETS=false --build-arg BUNDLE_JOBS=16 -t ${_DOCKER_IMAGE_NAME}:current -t ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG} -t ${_DOCKER_IMAGE_NAME}:${SHORT_SHA} -t ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG}--${SHORT_SHA} --cache-from ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG} --cache-from ${_DOCKER_IMAGE_NAME}:latest .
+      docker build --build-arg COMPILE_ASSETS=false --build-arg BUNDLE_JOBS=4 -t ${_DOCKER_IMAGE_NAME}:current -t ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG} -t ${_DOCKER_IMAGE_NAME}:${SHORT_SHA} -t ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG}--${SHORT_SHA} --cache-from ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG} --cache-from ${_DOCKER_IMAGE_NAME}:latest .
 
 # Start necessary services (redis, postgres) in background
 - name: 'docker/compose:1.28.0'
@@ -157,7 +157,7 @@ steps:
   args:
     - -cx
     - |
-      if [ "${BRANCH_NAME}" = 'master' ] || [ "${BRANCH_NAME}" = 'feature/ch143303/migrate-spec-models-carto-to-the-new-ci' ] ; then
+      if [ "${BRANCH_NAME}" = 'master' ]; then
           gsutil cp parallel_test_logs_${BUILD_ID}/parallel_runtime_rspec.log gs://cartodb-ci-tmp-logs/
       fi
 

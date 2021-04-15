@@ -99,7 +99,7 @@ module Carto
 
         response = { visualizations: visualizations, total_entries: vqb.count }
         response.merge!(calculate_totals(types)) if current_user && params[:load_totals].to_s != 'false'
-        response.merge!(calculate_do_totals(vqb)) if params[:load_do_totals].to_s == 'true'
+        response.merge!(calculate_do_totals(vqb, types)) if params[:load_do_totals].to_s == 'true'
 
         render_jsonp(response)
       rescue CartoDB::BoundingBoxError => e
@@ -499,22 +499,30 @@ module Carto
         }
       end
 
-      def calculate_do_totals(vqb)
+      def calculate_do_totals(vqb, total_types)
         subscription_count = if params[:subscribed] == 'true'
                                vqb.count
                              else
-                               vqb.filtered_query.includes(map: { user_table: :data_import }).find_each.lazy
-                                  .count { |v| v.subscription.present? }
+                               do_total_filtered_query(total_types).find_each.lazy
+                                                                   .count { |v| v.subscription.present? }
                              end
 
         sample_count = if params[:sample] == 'true'
                          vqb.count
                        else
-                         vqb.filtered_query.includes(map: { user_table: :data_import }).find_each.lazy
-                            .count { |v| v.sample.present? }
+                         do_total_filtered_query(total_types).find_each.lazy
+                                                             .count { |v| v.sample.present? }
                        end
 
         { total_subscriptions: subscription_count, total_samples: sample_count }
+      end
+
+      def do_total_filtered_query(total_types)
+        VisualizationQueryBuilder.new
+                                 .with_types(total_types)
+                                 .with_user_id(current_user.id)
+                                 .filtered_query
+                                 .includes(map: { user_table: :data_import })
       end
 
       def log_context

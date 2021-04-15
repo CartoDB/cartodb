@@ -1251,8 +1251,7 @@ class User < Sequel::Model
   end
 
   def created_with_invitation?
-    user_creation = get_user_creation
-    user_creation && user_creation.invitation_token
+    user_creation&.invitation_token
   end
 
   def destroy_cascade
@@ -1297,14 +1296,7 @@ class User < Sequel::Model
   end
 
   def get_invitation_token_from_user_creation
-    user_creation = get_user_creation
-    if !user_creation.nil? && user_creation.has_valid_invitation?
-      user_creation.invitation_token
-    end
-  end
-
-  def get_user_creation
-    @user_creation ||= Carto::UserCreation.find_by_user_id(id)
+    user_creation.invitation_token if user_creation&.has_valid_invitation?
   end
 
   def quota_dates(options)
@@ -1382,10 +1374,6 @@ class User < Sequel::Model
     end
 
     Carto::EmailDomainValidator.validate_domain(email, organization.whitelisted_email_domains)
-  end
-
-  def created_via
-    @created_via || get_user_creation.try(:created_via)
   end
 
   def sync_master_key

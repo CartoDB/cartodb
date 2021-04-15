@@ -90,7 +90,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    saml_authentication? && saml_service.try(:logout_url_configured?) ? saml_logout : do_logout
+    saml_authentication? && saml_service.try(:logout_url_configured?) && saml_user? ? saml_logout : do_logout
   end
 
   def show
@@ -299,6 +299,12 @@ class SessionsController < ApplicationController
                                             invitation_token: params[:invitation_token],
                                             organization_name: @organization.try(:name))
     end
+  end
+
+  def saml_user?
+    subdomain = CartoDB.extract_subdomain(request)
+    user = Carto::User.find_by(username: subdomain)
+    user.created_via == Carto::UserCreation::CREATED_VIA_SAML unless user.nil?
   end
 
   private

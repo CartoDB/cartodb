@@ -120,19 +120,27 @@ export default {
       }
     },
     tilesetSampleId () {
-      const isStaging = window.location.host.includes('staging');
       const TILESET_SAMPLE_PROJECT_MAP = {
-        ...(!isStaging && {
+        ...(!this.isStaging && {
           'do-sample-prod': 'do-tileset-sample',
           'do-public-sample': 'do-public-tileset-sample'
         }),
-        ...(isStaging && {
+        ...(this.isStaging && {
           'do-sample-prod': 'do-tileset-sample-stag',
           'do-public-sample': 'do-public-tileset-sample-stag'
         })
       };
       const [project, dataset, table] = this.dataset.sample_info.id.split('.');
       return [TILESET_SAMPLE_PROJECT_MAP[project], dataset, table].join('.');
+    },
+    mapUrl () {
+      if (!this.maps_api_v2_template && this.isStaging) {
+        return 'https://maps-api-v2.carto-staging.com/user/{user}';
+      }
+      return this.maps_api_v2_template;
+    },
+    isStaging () {
+      return window.location.hostname.includes('staging');
     }
   },
   created () {
@@ -191,9 +199,7 @@ export default {
           credentials: {
             username: this.username || 'public',
             apiKey: 'default_public',
-            ...(this.maps_api_v2_template && { mapsUrl: this.maps_api_v2_template })
-            // To test in staging:
-            // mapsUrl: 'https://maps-api-v2.carto-staging.com/user/{user}'
+            ...(this.mapUrl && { mapsUrl: this.mapUrl })
           },
           ...styleProps.deck,
           lineWidthUnits: 'pixels',

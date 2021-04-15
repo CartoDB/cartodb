@@ -5,10 +5,12 @@ Development
 - None yet
 
 ### Features
-- None yet
+* Bump cartodb-common to v1.1.2
 
 ### Bug fixes / enhancements
+- Support staging hostname in the catalog [#16258](https://github.com/CartoDB/cartodb/pull/16258)
 - Fix subscription/sample filter for datasets [#16254](https://github.com/CartoDB/cartodb/pull/16254)
+- Use fully qualified table name while creating a new map from a shared dataset [#16241](https://github.com/CartoDB/cartodb/pull/16241)
 
 4.45.0 (2021-04-14)
 -------------------

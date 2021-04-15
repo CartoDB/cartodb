@@ -198,7 +198,7 @@ export default {
     async createMap () {
       if (this.mode === 'map') {
         this.creeatingMapOrLayer = true;
-        const id = await this.$store.dispatch('maps/createVisualizationFromDataset', this.selectedDatasets.map(d => d.name));
+        const id = await this.$store.dispatch('maps/createVisualizationFromDataset', this.selectedDatasets.map(d => d.table.name));
         window.location.replace(`${this.baseUrl}/builder/${id}`);
       }
     },

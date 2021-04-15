@@ -384,6 +384,7 @@ describe 'UserMigration' do
     end
 
     it 'api keys are in redis and db roles are created' do
+      pending('TODO: flacky spec. Pending to fix.')
       user_attributes = @carto_user.attributes
       export = Carto::UserMigrationExport.create(
         user: @carto_user,

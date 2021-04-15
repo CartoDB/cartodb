@@ -88,6 +88,7 @@ module Carto
     after_save :register_table_dependencies, if: :data_layer?
 
     ALLOWED_KINDS = %w{carto tiled background gmapsbase torque wms}.freeze
+
     validates :kind, inclusion: { in: ALLOWED_KINDS }
     validate :validate_not_viewer
 

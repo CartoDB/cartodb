@@ -153,6 +153,25 @@ class Carto::VisualizationQueryFilterer
       )
     end
 
+    # NOTE: The information about DO v2 subscriptions is stored in redis, so keep these filters as
+    #       the last ones, to use 'select' with the least number of records
+
+    if params[:with_subscription]
+      query = query.where(
+        id: query.includes(map: { user_table: :data_import })
+                 .find_each.lazy.select { |v| v.subscription.present? }
+                 .map(&:id).force
+      )
+    end
+
+    if params[:with_sample]
+      query = query.where(
+        id: query.includes(map: { user_table: :data_import })
+                 .find_each.lazy.select { |v| v.sample.present? }
+                 .map(&:id).force
+      )
+    end
+
     query
   end
 

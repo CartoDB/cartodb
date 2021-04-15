@@ -408,12 +408,14 @@ describe SessionsController do
 
       it 'calls SamlService#idp_logout_request if SAMLRequest is present' do
         # needs returning an url to do a redirection
+        Carto::SamlService.any_instance.stubs(:logout_url_configured?).returns(true)
         Carto::SamlService.any_instance.stubs(:idp_logout_request).returns('http://carto.com').once
         get logout_url(user_domain: user_domain, SAMLRequest: 'xx')
       end
 
       it 'calls SamlService#process_logout_response if SAMLResponse is present' do
         # needs returning an url to do a redirection
+        Carto::SamlService.any_instance.stubs(:logout_url_configured?).returns(true)
         Carto::SamlService.any_instance.stubs(:process_logout_response).returns('http://carto.com').once
         get logout_url(user_domain: user_domain, SAMLResponse: 'xx')
       end
@@ -456,11 +458,26 @@ describe SessionsController do
         factory_bot_context: { only_db_setup: true }
       )
     end
+    let(:saml_user) do
+      user = create(
+        :carto_user,
+        organization_id: organization.id,
+        password: password,
+        password_confirmation: password,
+        factory_bot_context: { only_db_setup: true }
+      )
+      create(
+        :user_creation,
+        user_id: user.id,
+        created_via: Carto::UserCreation::CREATED_VIA_SAML
+      )
+      user
+    end
 
     def setup_saml_organization
       @organization = organization
       @admin_user = @organization.owner
-      @user = user
+      @user = saml_user
     end
 
     def cleanup
@@ -488,43 +505,7 @@ describe SessionsController do
       admin_user
     end
 
-    describe 'domainful' do
-      it_behaves_like 'SAML'
-      it_behaves_like 'SAML no MFA'
-
-      let(:user_domain) { nil }
-
-      before(:each) do
-        stub_domainful(@organization.name)
-      end
-
-      before(:all) { setup_saml_organization }
-
-      after(:all) do
-        cleanup
-      end
-    end
-
-    describe 'subdomainless' do
-      it_behaves_like 'SAML'
-      it_behaves_like 'SAML no MFA'
-
-      let(:user_domain) { @organization.name }
-
-      before(:each) do
-        stub_subdomainless
-      end
-
-      before(:all) { setup_saml_organization }
-
-      after(:all) do
-        cleanup
-      end
-    end
-
     describe 'user with MFA' do
-      it_behaves_like 'SAML'
-
       it "redirects to multifactor_authentication" do
         # we use this to avoid generating the static assets in CI
         Admin::VisualizationsController.any_instance.stubs(:render).returns('')

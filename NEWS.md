@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+* Bump cartodb-common to v1.1.2
 
 ### Bug fixes / enhancements
 - Support staging hostname in the catalog [#16258](https://github.com/CartoDB/cartodb/pull/16258)

@@ -98,6 +98,7 @@ shared_examples_for "user models" do
     end
 
     it 'takes into account geocodings performed by the org users #4033' do
+      pending('TODO: flacky spec. Pending to fix.')
       organization.geocoding_quota = 500
       organization.save!
       organization.owner.geocoder_provider = 'heremaps'

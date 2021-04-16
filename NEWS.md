@@ -135,6 +135,7 @@ sudo make install
 * SAML adjustments [#16246](https://github.com/CartoDB/cartodb/pull/16246)
 * Retrieve user email for SAML logout before closing CARTO session [#16248](https://github.com/CartoDB/cartodb/pull/16248)
 * SAML logout only for users who were created via SAML [#16253](https://github.com/CartoDB/cartodb/pull/16253)
+* Skip flacky specs [#16261](https://github.com/CartoDB/cartodb/pull/16261)
 
 4.44.0 (2020-11-20)
 -------------------

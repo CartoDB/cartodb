@@ -120,6 +120,7 @@ describe Carto::RateLimit do
     end
 
     it 'is persisted correctly to redis' do
+      pending('TODO: flacky spec. Pending to fix.')
       map_prefix = "limits:rate:store:#{user.username}:maps:"
       sql_prefix = "limits:rate:store:#{user.username}:sql:"
 

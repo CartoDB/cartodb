@@ -8,6 +8,7 @@ Development
 * Bump cartodb-common to v1.1.2
 
 ### Bug fixes / enhancements
+- Guard code for Users and Visualizations [#16265](https://github.com/CartoDB/cartodb/pull/16265)
 - Limit start parameter of Dropbox connector [#16264](https://github.com/CartoDB/cartodb/pull/16264)
 - Support staging hostname in the catalog [#16258](https://github.com/CartoDB/cartodb/pull/16258)
 - Fix subscription/sample filter for datasets [#16254](https://github.com/CartoDB/cartodb/pull/16254)

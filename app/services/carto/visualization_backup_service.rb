@@ -7,6 +7,8 @@ module Carto
     include ::LoggerHelper
 
     def create_visualization_backup(visualization:, category:, with_mapcaps: true, with_password: true)
+      return unless Carto::Visualization.exists?(id: visualization.id)
+
       export_json = export_visualization_json_hash(
         visualization.id,
         visualization.user,

@@ -60,14 +60,23 @@ module Carto
     def notify_central_bq_connection_created
       message_broker = Carto::Common::MessageBroker.new(logger: logger)
       notifications_topic = message_broker.get_topic(:cartodb_central)
-      target_email = if connection_type == TYPE_OAUTH_SERVICE
-                       user.email
-                     elsif connection_type == TYPE_DB_CONNECTOR
-                       JSON.parse(parameters['service_account'])['client_email']
-                     else
-                       raise 'Unsuported connection_type'
-                     end
-      notifications_topic.publish(:grant_do_full_access, { username: user.username, target_email })
+      notifications_topic.publish(:grant_do_full_access, { username: user.username, target_email: bq_permissions_target_mail })
+    end
+
+    def notify_central_bq_connection_deleted
+      message_broker = Carto::Common::MessageBroker.new(logger: logger)
+      notifications_topic = message_broker.get_topic(:cartodb_central)
+      notifications_topic.publish(:revoke_do_full_access, { username: user.username, target_email: bq_permissions_target_mail })
+    end
+
+    def bq_permissions_target_mail
+      if connection_type == TYPE_OAUTH_SERVICE
+        user.email
+      elsif connection_type == TYPE_DB_CONNECTOR
+        JSON.parse(parameters['service_account'])['client_email']
+      else
+        raise 'Unsuported connection_type'
+      end
     end
 
     def check_type!(type, message)

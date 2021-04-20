@@ -1,6 +1,8 @@
 module Carto
   class Connection < ActiveRecord::Base
 
+    include ::MessageBrokerHelper
+
     TYPE_OAUTH_SERVICE = 'oauth-service'.freeze
     TYPE_DB_CONNECTOR = 'db-connector'.freeze
 
@@ -42,10 +44,10 @@ module Carto
 
     before_validation :manage_prevalidation
     after_create :manage_create
-    after_create :notify_central_bq_connection_created, if :bigquery_connector?
+    after_create :notify_central_bq_connection_created, if: :bigquery_connector?
     after_update :manage_update
     after_destroy :manage_destroy
-    after_destroy :notify_central_bq_connection_deleted, if :bigquery_connector?
+    after_destroy :notify_central_bq_connection_deleted, if: :bigquery_connector?
 
     def complete?
       connection_manager.complete?(self)
@@ -58,15 +60,11 @@ module Carto
     end
 
     def notify_central_bq_connection_created
-      message_broker = Carto::Common::MessageBroker.new(logger: logger)
-      notifications_topic = message_broker.get_topic(:cartodb_central)
-      notifications_topic.publish(:grant_do_full_access, { username: user.username, target_email: bq_permissions_target_mail })
+      cartodb_central_topic.publish(:grant_do_full_access, { username: user.username, target_email: bq_permissions_target_mail })
     end
 
     def notify_central_bq_connection_deleted
-      message_broker = Carto::Common::MessageBroker.new(logger: logger)
-      notifications_topic = message_broker.get_topic(:cartodb_central)
-      notifications_topic.publish(:revoke_do_full_access, { username: user.username, target_email: bq_permissions_target_mail })
+      cartodb_central_topic.publish(:revoke_do_full_access, { username: user.username, target_email: bq_permissions_target_mail })
     end
 
     def bq_permissions_target_mail

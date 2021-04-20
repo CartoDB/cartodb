@@ -42,14 +42,33 @@ module Carto
 
     before_validation :manage_prevalidation
     after_create :manage_create
+    after_create :notify_central_bq_connection_created, if :bigquery_connector?
     after_update :manage_update
     after_destroy :manage_destroy
+    after_destroy :notify_central_bq_connection_deleted, if :bigquery_connector?
 
     def complete?
       connection_manager.complete?(self)
     end
 
     private
+
+    def bigquery_connector?
+      connector == 'bigquery'
+    end
+
+    def notify_central_bq_connection_created
+      message_broker = Carto::Common::MessageBroker.new(logger: logger)
+      notifications_topic = message_broker.get_topic(:cartodb_central)
+      target_email = if connection_type == TYPE_OAUTH_SERVICE
+                       user.email
+                     elsif connection_type == TYPE_DB_CONNECTOR
+                       JSON.parse(parameters['service_account'])['client_email']
+                     else
+                       raise 'Unsuported connection_type'
+                     end
+      notifications_topic.publish(:grant_do_full_access, { username: user.username, target_email })
+    end
 
     def check_type!(type, message)
       raise message unless connection_type == type

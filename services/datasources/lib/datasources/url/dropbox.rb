@@ -128,6 +128,7 @@ module CartoDB
               end
               no_more_results = start == START_LIMIT || !response.has_more?
               break if no_more_results
+
               start += SEARCH_BATCH_SIZE
               start = START_LIMIT if start > START_LIMIT
             end

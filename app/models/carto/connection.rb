@@ -53,18 +53,24 @@ module Carto
       connection_manager.complete?(self)
     end
 
+    def notify_central_bq_connection_created
+      cartodb_central_topic.publish(
+        :grant_do_full_access,
+        { username: user.username, target_email: bq_permissions_target_mail }
+      )
+    end
+
+    def notify_central_bq_connection_deleted
+      cartodb_central_topic.publish(
+        :revoke_do_full_access,
+        { username: user.username, target_email: bq_permissions_target_mail }
+      )
+    end
+
     private
 
     def bigquery_connector?
       connector == 'bigquery'
-    end
-
-    def notify_central_bq_connection_created
-      cartodb_central_topic.publish(:grant_do_full_access, { username: user.username, target_email: bq_permissions_target_mail })
-    end
-
-    def notify_central_bq_connection_deleted
-      cartodb_central_topic.publish(:revoke_do_full_access, { username: user.username, target_email: bq_permissions_target_mail })
     end
 
     def bq_permissions_target_mail

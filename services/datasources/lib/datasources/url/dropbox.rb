@@ -30,6 +30,8 @@ module CartoDB
             FORMAT_COMPRESSED =>  %W( .zip )
         }
 
+        START_LIMIT = 9999
+
         # Constructor
         # @param config Array
         # [
@@ -124,8 +126,11 @@ module CartoDB
               response.matches.select { |item| item.resource.is_a?(DropboxApi::Metadata::File) }.each do |item|
                 all_results.push(format_item_data(item.resource))
               end
-              break unless response.has_more?
+              no_more_results = start == START_LIMIT || !response.has_more?
+              break if no_more_results
+
               start += SEARCH_BATCH_SIZE
+              start = START_LIMIT if start > START_LIMIT
             end
           end
           all_results

@@ -1,6 +1,8 @@
 module Carto
   class Connection < ActiveRecord::Base
 
+    include ::MessageBrokerHelper
+
     TYPE_OAUTH_SERVICE = 'oauth-service'.freeze
     TYPE_DB_CONNECTOR = 'db-connector'.freeze
 
@@ -42,14 +44,44 @@ module Carto
 
     before_validation :manage_prevalidation
     after_create :manage_create
+    after_create :notify_central_bq_connection_created, if: :bigquery_connector?
     after_update :manage_update
     after_destroy :manage_destroy
+    after_destroy :notify_central_bq_connection_deleted, if: :bigquery_connector?
 
     def complete?
       connection_manager.complete?(self)
     end
 
+    def notify_central_bq_connection_created
+      cartodb_central_topic.publish(
+        :grant_do_full_access,
+        { username: user.username, target_email: bq_permissions_target_mail }
+      )
+    end
+
+    def notify_central_bq_connection_deleted
+      cartodb_central_topic.publish(
+        :revoke_do_full_access,
+        { username: user.username, target_email: bq_permissions_target_mail }
+      )
+    end
+
     private
+
+    def bigquery_connector?
+      connector == 'bigquery'
+    end
+
+    def bq_permissions_target_mail
+      if connection_type == TYPE_OAUTH_SERVICE
+        user.email
+      elsif connection_type == TYPE_DB_CONNECTOR
+        JSON.parse(parameters['service_account'])['client_email']
+      else
+        raise 'Unsuported connection_type'
+      end
+    end
 
     def check_type!(type, message)
       raise message unless connection_type == type

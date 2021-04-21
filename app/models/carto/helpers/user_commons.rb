@@ -281,6 +281,9 @@ module Carto::UserCommons
     attrs.slice(*LOGGING_ATTRIBUTES)
   end
 
+  # SUBS: in the end a broker message :update_user with param
+  # do_subscription gets here and uses redis to store the subscription
+  # info
   def update_do_subscription(attributes)
     return if attributes.nil?
 

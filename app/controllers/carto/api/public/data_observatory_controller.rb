@@ -111,6 +111,9 @@ module Carto
         end
 
         def entity_info
+          # SUBS: this sync service refers to a special DO DB
+          # Connector. It is ultimately implemented in
+          # https://github.com/CartoDB/db-connectors
           doss = Carto::DoSyncServiceFactory.get_for_user(@user)
           info = doss.entity_info(params[:entity_id])
           raise Carto::EntityNotFoundError.new(params[:entity_id]) if info[:error].present?

@@ -71,7 +71,9 @@ module Carto
           render(json: response)
         end
 
+        # SUBS: entry point to a subscription request
         def subscribe
+          # Ask the DO API for metadata
           metadata = subscription_metadata(@id, @type)
 
           if metadata[:is_public_data] == true || instant_licensing_available?(metadata)
@@ -98,6 +100,7 @@ module Carto
         def regular_license(metadata)
           DataObservatoryMailer.carto_request(@user, metadata[:id], metadata[:estimated_delivery_days]).deliver_now
           licensing_service = Carto::DoLicensingService.new(@user.username)
+          # SUBS: send a request to Central about the subscription, hence 'requested'
           licensing_service.subscribe(license_info(metadata, 'requested'))
         end
 

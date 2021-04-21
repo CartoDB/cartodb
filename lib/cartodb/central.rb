@@ -141,6 +141,9 @@ module Cartodb
     end
 
     def create_do_datasets(username:, datasets:)
+      # SUBS: send a request to create a subscription. In general it
+      # will only be 1 subscription, metadata coming from the DO API,
+      # and the status = 'requested'
       body = { datasets: datasets }
       send_request("api/users/#{username}/do/datasets", body, :post, [201])
     end

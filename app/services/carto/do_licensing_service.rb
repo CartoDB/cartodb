@@ -13,7 +13,10 @@ module Carto
     end
 
     def subscribe(dataset)
+      # SUBS: send a request to Central. Mind it does a lot of stuff
+      # before sending a response back.
       Cartodb::Central.new.create_do_datasets(username: @user.username, datasets: [dataset])
+      # It then adds all the subscription metadata to redis
       add_to_redis(dataset)
     end
 

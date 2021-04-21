@@ -77,6 +77,7 @@ module Carto
           expires_at: dataset[:expires_at].to_s,
           status: dataset[:status],
           available_in: dataset[:available_in],
+          license_type: dataset[:license_type] || nil,
           type: dataset[:type],
           estimated_size: entity_info[:estimated_size].to_i || 0,
           estimated_row_count: entity_info[:estimated_row_count].to_i || 0,

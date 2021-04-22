@@ -67,7 +67,9 @@ module Carto
         end
 
         def load_google_maps_query_string
-          @google_maps_query_string = @visualization.user.google_maps_query_string
+          unless @visualization.user.nil?
+            @google_maps_query_string = @visualization.user.google_maps_query_string
+          end
         end
 
         def load_vizjson

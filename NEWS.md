@@ -8,6 +8,7 @@ Development
 * Bump cartodb-common to v1.1.2
 
 ### Bug fixes / enhancements
+- Guard code for vizjson users [#16267](https://github.com/CartoDB/cartodb/pull/16267)
 - Guard code for Users and Visualizations [#16265](https://github.com/CartoDB/cartodb/pull/16265)
 - Limit start parameter of Dropbox connector [#16264](https://github.com/CartoDB/cartodb/pull/16264)
 - Support staging hostname in the catalog [#16258](https://github.com/CartoDB/cartodb/pull/16258)

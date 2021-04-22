@@ -56,6 +56,7 @@ sudo make install
 * Catalog fixes: show products only, fix the legend formatting [#16219](https://github.com/CartoDB/cartodb/pull/16219)
 * Migrate spec/models/carto to the new CI [#16228](https://github.com/CartoDB/cartodb/pull/16228)
 * Add OAuth BigQuery connection [#16218](https://github.com/CartoDB/cartodb/pull/16218)
+* Notify about new BigQuery connections to Central [#16266](https://github.com/CartoDB/cartodb/pull/16266)
 * Remove Data Observatory v1 [#16207](https://github.com/CartoDB/cartodb/pull/16207)
 * Add new static page for tilesets viewer [#16232](https://github.com/CartoDB/cartodb/pull/16232)
 

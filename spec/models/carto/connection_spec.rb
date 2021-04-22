@@ -2,6 +2,8 @@ require 'spec_helper_unit'
 require_relative '../../../services/importer/spec/doubles/connector'
 
 describe Carto::Connection do
+  include_context 'with MessageBroker stubs'
+
   let(:user) { create(:carto_user_light) }
   let(:fake_log) { CartoDB::Importer2::Doubles::Log.new(user) }
 
@@ -227,6 +229,35 @@ describe Carto::Connection do
             parameters: { table: 't', req1: 'r1', req2: 'r2' }
           )
         end.to raise_exception(ActiveRecord::RecordInvalid, /BAD CONNECTOR/)
+      end
+    end
+  end
+
+  context 'with message broker' do
+    let(:topic) { MessageBrokerDouble.instance.get_topic(:cartodb_central) }
+    let(:connection) do
+      build(:connection,
+            name: 'dumb', connector: 'bigquery',
+            connection_type: Carto::Connection::TYPE_OAUTH_SERVICE, user: user)
+    end
+
+    describe '#notify_central_bq_connection_created' do
+      it 'notifies central about BQ created to grant access to DO' do
+        topic.expects(:publish).once.with(
+          :grant_do_full_access,
+          { username: user.username, target_email: user.email }
+        )
+        connection.notify_central_bq_connection_created
+      end
+    end
+
+    describe '#notify_central_bq_connection_deleted' do
+      it 'notifies central about BQ deleted to revoke access from DO' do
+        topic.expects(:publish).once.with(
+          :revoke_do_full_access,
+          { username: user.username, target_email: user.email }
+        )
+        connection.notify_central_bq_connection_deleted
       end
     end
   end

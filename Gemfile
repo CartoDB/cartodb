@@ -16,7 +16,7 @@ gem 'protected_attributes'
 gem 'responders', '~> 2.0'
 
 gem 'rails_warden',            '0.5.8' # Auth via the Warden Rack framework
-gem 'ruby-saml',               '1.7.0'
+gem 'ruby-saml',               '1.12.2'
 gem 'oauth',                   '0.4.7'
 gem 'oauth-plugin',            git: 'https://github.com/CartoDB/oauth-plugin.git', :branch => 'cartodb'
 

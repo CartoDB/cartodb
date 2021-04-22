@@ -5,6 +5,7 @@ Development
 - None yet
 
 ### Features
+* Bump ruby-saml to v1.12.2 [#16273](https://github.com/CartoDB/cartodb/pull/16273)
 * Bump cartodb-common to v1.1.2
 
 ### Bug fixes / enhancements

@@ -428,8 +428,9 @@ GEM
     ruby-ole (1.2.12.2)
     ruby-prof (1.4.1)
     ruby-progressbar (1.11.0)
-    ruby-saml (1.7.0)
-      nokogiri (>= 1.5.10)
+    ruby-saml (1.12.2)
+      nokogiri (>= 1.10.5)
+      rexml
     ruby2_keywords (0.0.4)
     rubyzip (2.3.0)
     sass (3.4.25)
@@ -594,7 +595,7 @@ DEPENDENCIES
   rubocop-rails
   rubocop-rspec
   ruby-prof (= 1.4.1)
-  ruby-saml (= 1.7.0)
+  ruby-saml (= 1.12.2)
   rubyzip (>= 2.0.0)
   selenium-webdriver (>= 2.5.0)
   sequel (~> 4.45.0)

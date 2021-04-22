@@ -181,6 +181,8 @@ module Carto
       end
 
       def user_info_vizjson(user)
+        return {} if user.nil?
+
         {
           fullname: user.name_or_username,
           avatar_url: user.avatar_url,

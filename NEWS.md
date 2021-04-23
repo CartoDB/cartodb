@@ -14,6 +14,7 @@ Development
 - Limit start parameter of Dropbox connector [#16264](https://github.com/CartoDB/cartodb/pull/16264)
 - Support staging hostname in the catalog [#16258](https://github.com/CartoDB/cartodb/pull/16258)
 - Allow the usage of WMTS URLs with parameters to create custom basemaps [#16271](https://github.com/CartoDB/cartodb/pull/16271)
+- Sync license_type in redis with the values coming from Central [#16270](https://github.com/CartoDB/cartodb/pull/16270)
 - Fix subscription/sample filter for datasets [#16254](https://github.com/CartoDB/cartodb/pull/16254)
 - Use fully qualified table name while creating a new map from a shared dataset [#16241](https://github.com/CartoDB/cartodb/pull/16241)
 

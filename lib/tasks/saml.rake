@@ -29,24 +29,24 @@ namespace :cartodb do
                         settings = idp_metadata_parser.parse_remote(ENV['SAML_IDP_METADATA_FILE'])
 
                         {
-                          idp_sso_target_url: settings.idp_sso_target_url,
-                          idp_slo_target_url: settings.idp_slo_target_url,
+                          idp_sso_service_url: settings.idp_sso_service_url,
+                          idp_slo_service_url: settings.idp_slo_service_url,
                           idp_cert_fingerprint: settings.idp_cert_fingerprint,
                           name_identifier_format: settings.name_identifier_format
                         }
                       else
                         config = {
-                          idp_sso_target_url: ENV['SAML_IDP_SSO_TARGET_URL'],
+                          idp_sso_service_url: ENV['SAML_IDP_SSO_TARGET_URL'],
                           idp_cert_fingerprint: ENV['SAML_IDP_CERT_FINGERPRINT'],
                           name_identifier_format: ENV['SAML_NAME_IDENTIFIER_FORMAT']
                         }
-                        config[:idp_slo_target_url] = ENV['SAML_IDP_SLO_TARGET_URL'] if ENV['SAML_IDP_SLO_TARGET_URL'].present?
+                        config[:idp_slo_service_url] = ENV['SAML_IDP_SLO_TARGET_URL'] if ENV['SAML_IDP_SLO_TARGET_URL'].present?
 
                         config
                       end
 
       if ENV['SAML_SP_PRIVATE_KEY_FILE'].present? && ENV['SAML_SP_CERTIFICATE_FILE'].present? &&
-        configuration[:name_identifier_format].present? && configuration[:idp_slo_target_url].present?
+        configuration[:name_identifier_format].present? && configuration[:idp_slo_service_url].present?
         configuration[:security] = {
           logout_requests_signed: true,
           logout_responses_signed: true,
@@ -59,7 +59,7 @@ namespace :cartodb do
       end
 
       base_url = CartoDB.base_url(organization.name)
-      configuration[:issuer] = ENV['SAML_ISSUER'] || base_url + '/saml/metadata'
+      configuration[:sp_entity_id] = ENV['SAML_ISSUER'] || base_url + '/saml/metadata'
       configuration[:email_attribute] = ENV['SAML_EMAIL_ATTRIBUTE']
       configuration[:assertion_consumer_service_url] = ENV['SAML_ASSERTION_CONSUMER_SERVICE_URL'] || base_url + '/saml/finalize'
       configuration[:single_logout_service_url] = ENV['SAML_SINGLE_LOGOUT_SERVICE_URL'] || base_url + '/logout'

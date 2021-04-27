@@ -46,7 +46,7 @@ module Carto
           public_visualization_count: @user.public_visualization_count,
           all_visualization_count:    @user.all_visualization_count,
           org_user:                   @user.organization_id.present?,
-          remove_logo:                @user.remove_logo?
+          remove_logo:                @user.remove_logo?,
         }
 
         if fetch_groups
@@ -243,7 +243,9 @@ module Carto
           location: @user.location,
           mfa_configured: @user.multifactor_authentication_configured?,
           is_enterprise: @user.enterprise?,
-          do_enabled: @user.do_enabled?
+          do_enabled: @user.do_enabled?,
+          do_bq_project: @user&.gcloud_settings&.[](:bq_project),
+          do_bq_dataset: @user&.gcloud_settings&.[](:bq_dataset),
         }
 
         if @user.google_maps_geocoder_enabled? && (!@user.organization.present? || @user.organization_owner?)

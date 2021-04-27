@@ -145,6 +145,11 @@ module Cartodb
       send_request("api/users/#{username}/do/datasets", body, :post, [201])
     end
 
+    def update_do_subscription(username:, subscription_id:, subscription_params:)
+      body = { subscription_params: subscription_params }
+      send_request("api/users/#{username}/do/datasets/#{subscription_id}", body, :put, [204])
+    end
+
     def remove_do_dataset(username:, id:)
       send_request("api/users/#{username}/do/datasets/#{id}", nil, :delete, [204])
     end

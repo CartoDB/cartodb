@@ -18,8 +18,7 @@ module Carto
     end
 
     def update(subscription_id, params)
-      # TODO: update it in central
-      #Cartodb::Central.new.update_do_subscription(username: @user.username, subscription_idL subscription_id, params: params)
+      Cartodb::Central.new.update_do_subscription(username: @user.username, subscription_id: subscription_id,  subscription_params: params)
       updated_subscription = subscription(subscription_id).merge(params)
       add_to_redis(updated_subscription)
       updated_subscription

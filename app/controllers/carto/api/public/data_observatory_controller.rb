@@ -20,11 +20,11 @@ module Carto
 
         before_action :load_user
         before_action :load_filters, only: [:subscriptions]
-        before_action :load_id, only: [:subscription, :subscription_info, :subscribe, :unsubscribe]
-        before_action :load_type, only: [:subscription, :subscription_info, :subscribe]
+        before_action :load_id, only: [:subscription, :update_subscription, :subscription_info, :subscribe, :unsubscribe]
+        before_action :load_type, only: [:subscription, :update_subscription, :subscription_info, :subscribe]
         before_action :load_http_client, only: [:subscription_info, :subscribe]
         before_action :check_api_key_permissions
-        before_action :check_do_enabled, only: [:subscription, :subscription_info, :subscriptions]
+        before_action :check_do_enabled, only: [:subscription, :update_subscription, :subscription_info, :subscriptions]
 
         setup_default_rescues
         rescue_from Carto::SubscriptionNotFoundError, with: :rescue_from_subscription_not_found
@@ -63,6 +63,15 @@ module Carto
         def subscription
           bq_subscription = Carto::DoLicensingService.new(@user.username).subscription(@id)
           render(json: bq_subscription)
+        end
+
+        def update_subscription
+          licensing_service = Carto::DoLicensingService.new(@user.username)
+          bq_subscription = licensing_service.subscription(@id)
+          allowed_params = params.slice(:full_access_status_bq, :full_access_status_azure, :full_access_status_aws)
+          updated_subscription = bq_subscription.merge(allowed_params)
+          licensing_service.update(updated_subscription)
+          render(json: updated_subscription)
         end
 
         def subscription_info

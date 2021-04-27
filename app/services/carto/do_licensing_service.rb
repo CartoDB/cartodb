@@ -17,6 +17,12 @@ module Carto
       add_to_redis(dataset)
     end
 
+    def update(dataset)
+      # TODO: update it in central
+      #Cartodb::Central.new.update_do_datasets(username: @user.username, datasets: [dataset])
+      add_to_redis(dataset)
+    end
+
     def unsubscribe(dataset_id)
       Cartodb::Central.new.remove_do_dataset(username: @user.username, id: dataset_id)
       remove_from_redis(dataset_id)

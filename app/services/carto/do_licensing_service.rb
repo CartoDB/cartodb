@@ -17,10 +17,12 @@ module Carto
       add_to_redis(dataset)
     end
 
-    def update(dataset)
+    def update(subscription_id, params)
       # TODO: update it in central
-      #Cartodb::Central.new.update_do_datasets(username: @user.username, datasets: [dataset])
-      add_to_redis(dataset)
+      #Cartodb::Central.new.update_do_subscription(username: @user.username, subscription_idL subscription_id, params: params)
+      updated_subscription = subscription(subscription_id).merge(params)
+      add_to_redis(updated_subscription)
+      updated_subscription
     end
 
     def unsubscribe(dataset_id)

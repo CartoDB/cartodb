@@ -66,11 +66,9 @@ module Carto
         end
 
         def update_subscription
-          licensing_service = Carto::DoLicensingService.new(@user.username)
-          bq_subscription = licensing_service.subscription(@id)
           allowed_params = params.slice(:full_access_status_bq, :full_access_status_azure, :full_access_status_aws)
-          updated_subscription = bq_subscription.merge(allowed_params)
-          licensing_service.update(updated_subscription)
+          updated_subscription = Carto::DoLicensingService.new(@user.username).update(@id, allowed_params)
+          # TODO: send mail here
           render(json: updated_subscription)
         end
 

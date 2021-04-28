@@ -51,15 +51,16 @@ describe Carto::DoLicensingService do
           dataset_id: 'carto.abc.dataset1', created_at: '2020-09-27 07:59:00 +0000', expires_at: '2021-09-27 08:00:00 +0000',
           status: 'active', available_in: ['bq', 'bigtable'], license_type: nil, type: nil, estimated_size: 0, estimated_row_count: 0,
           estimated_columns_count: 0, num_bytes: 0, sync_status: 'unsynced', unsyncable_reason: nil,
-          unsynced_errors: nil, sync_table: nil, sync_table_id: nil, synchronization_id: nil
-        }
-      ].to_json
+          unsynced_errors: nil, sync_table: nil, sync_table_id: nil, synchronization_id: nil,
+          full_access_status_bq: nil, full_access_status_azure: nil, full_access_status_aws: nil,
+        }.stringify_keys
+      ]
 
       bigtable_redis = bq_redis
 
       @service.subscribe(@dataset)
-      $users_metadata.hget(@redis_key, 'bq').should eq bq_redis
-      $users_metadata.hget(@redis_key, 'bigtable').should eq bigtable_redis
+      JSON.parse($users_metadata.hget(@redis_key, 'bq')).should eq bq_redis
+      JSON.parse($users_metadata.hget(@redis_key, 'bigtable')).should eq bigtable_redis
     end
 
     it 'allows to add more data in the same Redis key' do

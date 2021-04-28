@@ -277,6 +277,8 @@ describe Carto::Api::UserPresenter do
     new_poro[:next_billing_period] = Time.parse('2018-02-01')
     new_poro[:is_enterprise] = true
     new_poro[:do_enabled] = false
+    new_poro[:do_bq_project] = nil
+    new_poro[:do_bq_dataset] = nil
     new_poro
   end
 

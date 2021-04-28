@@ -51,7 +51,7 @@ module Carto
       expires_at = Time.parse(subscription['expires_at']) if subscription['expires_at'].present?
       subscription_data = subscription.merge(parsed_entity_id).merge({
         id: subscription['dataset_id'],
-        status: (expires_at && (Time.now >= expires_at)) ? 'expired' : subscription['status']
+        status: (expires_at && (Time.now >= expires_at)) ? 'expired' : subscription['status'],
       })
       subscription_data.with_indifferent_access
     end
@@ -77,6 +77,7 @@ module Carto
           expires_at: dataset[:expires_at].to_s,
           status: dataset[:status],
           available_in: dataset[:available_in],
+          license_type: dataset[:license_type],
           type: dataset[:type],
           estimated_size: entity_info[:estimated_size].to_i || 0,
           estimated_row_count: entity_info[:estimated_row_count].to_i || 0,

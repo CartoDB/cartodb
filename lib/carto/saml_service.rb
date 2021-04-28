@@ -27,7 +27,7 @@ module Carto
     end
 
     def logout_url_configured?
-      saml_settings.idp_slo_target_url.present?
+      saml_settings.idp_slo_service_url.present?
     end
 
     # SLO (Single Log Out) request initiated from CARTO

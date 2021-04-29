@@ -26,4 +26,15 @@ class DataObservatoryMailer < ActionMailer::Base
       mail to: CARTO_REQUEST_RECIPIENT, subject: subject
     end
   end
+
+  def carto_full_access_request(user, dataset_id)
+    subject = 'DO Full Access request'
+    @user_name = user.name
+    @user_email = user.email
+    @dataset_id = dataset_id
+
+    unless Rails.env.staging? || EXCLUDED_ORGS.include?(user.organization&.name)
+      mail to: CARTO_REQUEST_RECIPIENT, subject: subject
+    end
+  end
 end

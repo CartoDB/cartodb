@@ -67,8 +67,10 @@ module Carto
 
         def update_subscription
           allowed_params = params.slice(:full_access_status_bq, :full_access_status_azure, :full_access_status_aws)
+          return render_jsonp({ errors: 'Unexpected params received' }, 400) if allowed_params.empty?
+
           updated_subscription = Carto::DoLicensingService.new(@user.username).update(@id, allowed_params)
-          # TODO: send mail here
+          DataObservatoryMailer.carto_full_access_request(@user, @id).deliver_now
           render(json: updated_subscription)
         end
 

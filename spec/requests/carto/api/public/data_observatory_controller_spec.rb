@@ -666,11 +666,6 @@ describe Carto::Api::Public::DataObservatoryController do
       dataset_id = 'carto.abc.geography1'
       dataset_name = 'CARTO geography 1'
       provider_name = 'CARTO'
-      DataObservatoryMailer.expects(:user_request).with(
-        @carto_user1,
-        dataset_name,
-        provider_name
-      ).never
       DataObservatoryMailer.expects(:carto_request).with(
         @carto_user1,
         dataset_id,
@@ -758,11 +753,6 @@ describe Carto::Api::Public::DataObservatoryController do
         dataset_id = 'carto.abc.deliver_1day'
         dataset_name = 'CARTO dataset 1'
         provider_name = 'CARTO'
-        DataObservatoryMailer.expects(:user_request).with(
-          @carto_user1,
-          dataset_name,
-          provider_name
-        ).never
         DataObservatoryMailer.expects(:carto_request).with(
           @carto_user1,
           dataset_id,

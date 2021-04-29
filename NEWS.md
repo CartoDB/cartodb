@@ -17,6 +17,7 @@ Development
 - Allow the usage of WMTS URLs with parameters to create custom basemaps [#16271](https://github.com/CartoDB/cartodb/pull/16271)
 - Sync license_type in redis with the values coming from Central [#16270](https://github.com/CartoDB/cartodb/pull/16270)
 - Add `do_bq_project` and `do_bq_dataset` to `api/v3/me` endpoint [#16276](https://github.com/CartoDB/cartodb/pull/16276)
+- Add endpoint to update DO subscriptions and manage status of full access requests [#16277](https://github.com/CartoDB/cartodb/pull/16277)
 - Fix subscription/sample filter for datasets [#16254](https://github.com/CartoDB/cartodb/pull/16254)
 - Use fully qualified table name while creating a new map from a shared dataset [#16241](https://github.com/CartoDB/cartodb/pull/16241)
 

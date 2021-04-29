@@ -17,6 +17,13 @@ module Carto
       add_to_redis(dataset)
     end
 
+    def update(subscription_id, params)
+      Cartodb::Central.new.update_do_subscription(username: @user.username, subscription_id: subscription_id,  subscription_params: params)
+      updated_subscription = subscription(subscription_id).merge(params)
+      add_to_redis(updated_subscription)
+      updated_subscription
+    end
+
     def unsubscribe(dataset_id)
       Cartodb::Central.new.remove_do_dataset(username: @user.username, id: dataset_id)
       remove_from_redis(dataset_id)
@@ -78,6 +85,9 @@ module Carto
           status: dataset[:status],
           available_in: dataset[:available_in],
           license_type: dataset[:license_type],
+          full_access_status_bq: dataset[:full_access_status_bq],
+          full_access_status_azure: dataset[:full_access_status_azure],
+          full_access_status_aws: dataset[:full_access_status_aws],
           type: dataset[:type],
           estimated_size: entity_info[:estimated_size].to_i || 0,
           estimated_row_count: entity_info[:estimated_row_count].to_i || 0,

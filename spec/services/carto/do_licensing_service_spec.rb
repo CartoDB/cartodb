@@ -53,6 +53,7 @@ describe Carto::DoLicensingService do
           estimated_columns_count: 0, num_bytes: 0, sync_status: 'unsynced', unsyncable_reason: nil,
           unsynced_errors: nil, sync_table: nil, sync_table_id: nil, synchronization_id: nil,
           full_access_status_bq: nil, full_access_status_azure: nil, full_access_status_aws: nil,
+          full_access_aws_info: nil, full_access_azure_info: nil,
         }.stringify_keys
       ]
 

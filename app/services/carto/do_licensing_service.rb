@@ -88,6 +88,8 @@ module Carto
           full_access_status_bq: dataset[:full_access_status_bq],
           full_access_status_azure: dataset[:full_access_status_azure],
           full_access_status_aws: dataset[:full_access_status_aws],
+          full_access_aws_info: dataset[:full_access_aws_info],
+          full_access_azure_info: dataset[:full_access_azure_info],
           type: dataset[:type],
           estimated_size: entity_info[:estimated_size].to_i || 0,
           estimated_row_count: entity_info[:estimated_row_count].to_i || 0,

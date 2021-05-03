@@ -3,11 +3,11 @@
 <% end %>
 <%= content_for(:js) do %>
   <script type="text/javascript">
-    var username = "<%= current_user.username %>";
+    var username = "<%= @user.username %>";
     var authenticity_token = "<%= form_authenticity_token %>";
     var config = <%= safe_js_object frontend_config %>;
-    var user_data = <%= safe_js_object current_user.data.to_json.html_safe %>;
-    var mobile_enabled = "<%= current_user.mobile_sdk_enabled? %>"
+    var user_data = <%= safe_js_object @user.data.to_json.html_safe %>;
+    var mobile_enabled = "<%= @user.mobile_sdk_enabled? %>"
   </script>
   <%= javascript_include_tag 'common', 'common_vendor', 'organization' %>
 <% end %>

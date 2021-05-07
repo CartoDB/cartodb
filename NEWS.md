@@ -12,6 +12,7 @@ Development
 ### Bug fixes / enhancements
 - Guard code for vizjson users [#16267](https://github.com/CartoDB/cartodb/pull/16267)
 - Guard code for Users and Visualizations [#16265](https://github.com/CartoDB/cartodb/pull/16265)
+- Use the organization user's data while editing a user from organization settings [#16280](https://github.com/CartoDB/cartodb/pull/16280)
 - Limit start parameter of Dropbox connector [#16264](https://github.com/CartoDB/cartodb/pull/16264)
 - Support staging hostname in the catalog [#16258](https://github.com/CartoDB/cartodb/pull/16258)
 - Allow the usage of WMTS URLs with parameters to create custom basemaps [#16271](https://github.com/CartoDB/cartodb/pull/16271)

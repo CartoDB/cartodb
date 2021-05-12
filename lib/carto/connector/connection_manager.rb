@@ -77,7 +77,11 @@ module Carto
 
     def create_db_connection(name:, provider:, parameters:)
       check_db_provider!(provider)
-      @user.connections.create!(name: name, connector: provider, parameters: parameters)
+
+      @user.connections.send(
+        @user.new_record? ? :build : :create!,
+        name: name, connector: provider, parameters: parameters
+      )
     end
 
     def find_or_create_db_connection(provider, parameters)
@@ -120,22 +124,13 @@ module Carto
       oauth_connection_url(service)
     end
 
-    def create_oauth_connection(service:, token:)
+    def create_oauth_connection(service:, token:, parameters: nil)
       check_oauth_service!(service)
 
-      if @user.new_record?
-        @user.connections.build(
-          name: service,
-          connector: service,
-          token: token
-        )
-      else
-        @user.connections.create!(
-          name: service,
-          connector: service,
-          token: token
-        )
-      end
+      @user.connections.send(
+        @user.new_record? ? :build : :create!,
+        name: service, connector: service, token: token, parameters: parameters
+      )
     end
 
     # for dual connection only (BigQuery): after fetching a valid oauth connection,

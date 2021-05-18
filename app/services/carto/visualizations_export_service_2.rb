@@ -20,9 +20,10 @@ require_dependency 'carto/export/data_import_exporter'
 # 2.1.1: export vizjson2 mark
 # 2.1.2: export locked and password
 # 2.1.3: export synchronization id
+# 2.1.4: link synchronizations with connections
 module Carto
   module VisualizationsExportService2Configuration
-    CURRENT_VERSION = '2.1.3'.freeze
+    CURRENT_VERSION = '2.1.4'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
@@ -117,6 +118,7 @@ module Carto
       user_table = build_user_table_from_hash(exported_visualization[:user_table])
       visualization.map.user_table = user_table if user_table
       visualization.synchronization = build_synchronization_from_hash(exported_visualization[:synchronization])
+      link_synchronization_with_connection(visualization.synchronization, visualization.user)
 
       visualization.id = exported_visualization[:id] if exported_visualization[:id]
       visualization
@@ -201,6 +203,26 @@ module Carto
 
       sync.id = exported_synchronization[:id]
       sync
+    end
+
+    def link_synchronization_with_connection(synchronization, user)
+      return if user.blank? || synchronization.blank? || synchronization.service_name != 'connector'
+
+      parameters = JSON.parse(synchronization.service_item_id)
+      return if parameters['connector_name'].blank?
+
+      parameters['connector_id'] =
+        user.db_connectors.find_by(name: parameters['connector_name']).id
+      parameters.delete('connector_name')
+
+      synchronization.service_item_id = parameters.to_json
+    rescue ActiveRecord::RecordNotFound => e
+      Rails.logger.error(
+        message: 'Error linking synchronization with a user DB connection',
+        exception: e,
+        username: user.username,
+        synchronization: synchronization.name
+      )
     end
 
     def build_user_table_from_hash(exported_user_table)
@@ -302,7 +324,7 @@ module Carto
         user: export_user(visualization.user),
         state: export_state(visualization.state),
         permission: export_permission(visualization.permission),
-        synchronization: export_syncronization(visualization.synchronization),
+        synchronization: export_synchronization(visualization.synchronization),
         user_table: export_user_table(visualization.map.try(:user_table)),
         uses_vizjson2: visualization.uses_vizjson2?,
         mapcap: with_mapcaps ? export_mapcap(visualization.latest_mapcap) : nil,
@@ -369,7 +391,7 @@ module Carto
       { access_control_list: access_control_list }
     end
 
-    def export_syncronization(synchronization)
+    def export_synchronization(synchronization)
       return nil unless synchronization
       {
         id: synchronization.id,
@@ -389,11 +411,22 @@ module Carto
         etag: synchronization.etag,
         checksum: synchronization.checksum,
         service_name: synchronization.service_name,
-        service_item_id: synchronization.service_item_id,
+        service_item_id: export_synchronization_service_item_id(synchronization),
         type_guessing: synchronization.type_guessing,
         quoted_fields_guessing: synchronization.quoted_fields_guessing,
         content_guessing: synchronization.content_guessing
       }
+    end
+
+    def export_synchronization_service_item_id(synchronization)
+      return synchronization.service_item_id if synchronization.service_name != 'connector'
+
+      parameters = JSON.parse(synchronization.service_item_id)
+      return synchronization.service_item_id if parameters['connector_id'].blank?
+
+      parameters['connector_name'] =
+        synchronization.user.db_connectors.find_by(id: parameters['connector_id']).try(:name)
+      parameters.to_json
     end
 
     def export_user_table(user_table)

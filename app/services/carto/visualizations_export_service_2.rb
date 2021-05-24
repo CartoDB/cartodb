@@ -118,7 +118,10 @@ module Carto
       user_table = build_user_table_from_hash(exported_visualization[:user_table])
       visualization.map.user_table = user_table if user_table
       visualization.synchronization = build_synchronization_from_hash(exported_visualization[:synchronization])
-      link_synchronization_with_connection(visualization.synchronization, visualization.user)
+      link_synchronization_with_connection(
+        visualization.synchronization,
+        exported_visualization[:user]
+      )
 
       visualization.id = exported_visualization[:id] if exported_visualization[:id]
       visualization
@@ -205,15 +208,18 @@ module Carto
       sync
     end
 
-    def link_synchronization_with_connection(synchronization, user)
-      return if user.blank? || synchronization.blank? || synchronization.service_name != 'connector'
+    def link_synchronization_with_connection(synchronization, user_data)
+      return if synchronization.blank? || synchronization.service_name != 'connector'
+
+      user = Carto::User.find_by(username: user_data.try(:[], :username))
+      return if user.blank?
 
       parameters = JSON.parse(synchronization.service_item_id)
-      return if parameters['connector_name'].blank?
+      return if parameters['connection_name'].blank?
 
-      parameters['connector_id'] =
-        user.db_connectors.find_by(name: parameters['connector_name']).id
-      parameters.delete('connector_name')
+      parameters['connection_id'] =
+        user.db_connections.find_by(name: parameters['connection_name']).id
+      parameters.delete('connection_name')
 
       synchronization.service_item_id = parameters.to_json
     rescue ActiveRecord::RecordNotFound => e
@@ -422,10 +428,10 @@ module Carto
       return synchronization.service_item_id if synchronization.service_name != 'connector'
 
       parameters = JSON.parse(synchronization.service_item_id)
-      return synchronization.service_item_id if parameters['connector_id'].blank?
+      return synchronization.service_item_id if parameters['connection_id'].blank?
 
-      parameters['connector_name'] =
-        synchronization.user.db_connectors.find_by(id: parameters['connector_id']).try(:name)
+      parameters['connection_name'] =
+        Carto::Connection.find_by(id: parameters['connection_id']).try(:name)
       parameters.to_json
     end
 

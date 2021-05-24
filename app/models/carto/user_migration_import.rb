@@ -51,6 +51,7 @@ module Carto
       update_attributes(state: STATE_FAILURE)
       false
     ensure
+      log.store
       package.try(:cleanup)
     end
 

@@ -480,6 +480,28 @@ module Carto
         end
       end
 
+      class DoFullAccessAttempt < Event
+        include Carto::Tracking::Services::PubSub
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :dataset_id, :db_type, :license_type
+
+        def pubsub_name
+          'do_full_access_attempt'
+        end
+      end
+
+      class DoFullAccessRequest < Event
+        include Carto::Tracking::Services::PubSub
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :dataset_id, :db_type
+
+        def pubsub_name
+          'do_full_access_request'
+        end
+      end
+
       # Models a generic event for segment.
       class SegmentEvent < Event
         include Carto::Tracking::Services::Segment

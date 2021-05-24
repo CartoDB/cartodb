@@ -73,6 +73,8 @@ module Carto
           check_no_extra_properties!
           authorize!
 
+          # NOTE: beware of this metaprogramming piece when browsing
+          # the code
           report_to_methods = methods.select do |method_name|
             method_name.to_s.start_with?('report_to')
           end

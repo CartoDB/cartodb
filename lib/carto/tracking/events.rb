@@ -24,7 +24,7 @@ module Carto
           properties.merge!({event_version: event_version})
 
           @format = Carto::Tracking::Formats::Internal.new(properties)
-          @reporter = Carto::User.find(reporter_id)
+          @reporter = Carto::User.find(reporter_id || properties[:user_id])
         end
 
         def name

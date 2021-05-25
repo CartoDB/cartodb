@@ -71,7 +71,27 @@ module Carto
 
           updated_subscription = Carto::DoLicensingService.new(@user.username).update(@id, allowed_params)
           DataObservatoryMailer.carto_full_access_request(@user, @id).deliver_now
+          db_type_requested = to_db_type_requested(params)
+          properties = {
+            user_id: current_viewer.id,
+            dataset_id: @id,
+            db_type: db_type_requested
+          }
+          Carto::Tracking::Events::DoFullAccessRequest.new(current_viewer.id, properties).report
           render(json: updated_subscription)
+        end
+
+        def to_db_type_requested(params)
+          db_type_requested = case
+                              when params[:full_access_status_bq] == 'requested'
+                                'bq'
+                              when params[:full_access_status_azure] == 'requested'
+                                'azure'
+                              when params[:full_access_status_aws] == 'requested'
+                                'aws'
+                              else
+                                nil
+                              end
         end
 
         def subscription_info

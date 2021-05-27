@@ -24,7 +24,7 @@ module Carto
           properties.merge!({event_version: event_version})
 
           @format = Carto::Tracking::Formats::Internal.new(properties)
-          @reporter = Carto::User.find(reporter_id)
+          @reporter = Carto::User.find(reporter_id || properties[:user_id])
         end
 
         def name
@@ -73,6 +73,8 @@ module Carto
           check_no_extra_properties!
           authorize!
 
+          # NOTE: beware of this metaprogramming piece when browsing
+          # the code
           report_to_methods = methods.select do |method_name|
             method_name.to_s.start_with?('report_to')
           end
@@ -477,6 +479,28 @@ module Carto
 
         def pubsub_name
           'feature_flag_updated'
+        end
+      end
+
+      class DoFullAccessAttempt < Event
+        include Carto::Tracking::Services::PubSub
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :dataset_id, :db_type, :license_type
+
+        def pubsub_name
+          'do_full_access_attempt'
+        end
+      end
+
+      class DoFullAccessRequest < Event
+        include Carto::Tracking::Services::PubSub
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :dataset_id, :db_type
+
+        def pubsub_name
+          'do_full_access_request'
         end
       end
 

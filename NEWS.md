@@ -8,6 +8,7 @@ Development
 * Adapt rake SAML parameters for the new version ruby-saml v1.12.2 [#16274](https://github.com/CartoDB/cartodb/pull/16274), [#16275](https://github.com/CartoDB/cartodb/pull/16275/)
 * Bump ruby-saml to v1.12.2 [#16273](https://github.com/CartoDB/cartodb/pull/16273)
 * Bump cartodb-common to v1.1.2
+* Include DB connections, all parameters for Oauth connections, and the relationship between synchronizations and connections, in User migrations [#16287](https://github.com/CartoDB/cartodb/pull/16287)
 
 ### Bug fixes / enhancements
 - Guard code for vizjson users [#16267](https://github.com/CartoDB/cartodb/pull/16267)

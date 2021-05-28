@@ -1,5 +1,5 @@
 <template>
-  <div class="u-flex" :class="{'u-flex__direction--column': mode === 'column', 'u-flex__align--center': mode !== 'column'}">
+  <div class="u-flex actions" :class="{'u-flex__direction--column': mode === 'column', 'u-flex__align--center': mode !== 'column'}">
     <div v-if="dataset.sync_status !== 'syncing'" class="u-flex u-flex__align--center"
       :class="{ disabled: dataset.status !== 'active' || dataset.sync_status !== 'synced' }">
       <SubscriptionButtonTooltip v-if="dataset.sync_status === 'unsynced' && (dataset.unsynced_errors && dataset.unsynced_errors.length > 0)">
@@ -54,11 +54,14 @@
       </span>
     </div>
     <div v-if="mode !== 'column'" class="white-separator u-ml--12 u-mr--12"></div>
-    <div :class="{ 'u-mt--12': mode === 'column', disabled: dataset.status !== 'active' }">
+    <div :class="{ 'u-mt--12': mode === 'column', disabled: dataset.status !== 'active', 'u-flex u-flex__align--center': true }">
       <a class="text is-caption" :class="smallClass" href="#" @click="downloadNotebook">
         Explore with CARTOFrames
       </a>
+      <span class="u-ml--8 u-mr--8">|</span>
+      <SubscriptionsQuickActions @onAccess="openAccess"></SubscriptionsQuickActions>
     </div>
+    {{dataset.license_type}}
   </div>
 </template>
 
@@ -66,11 +69,13 @@
 
 import { mapState } from 'vuex';
 import SubscriptionButtonTooltip from './SubscriptionButtonTooltip';
+import SubscriptionsQuickActions from './SubscriptionsQuickActions';
 
 export default {
   name: 'SubscriptionActions',
   components: {
-    SubscriptionButtonTooltip
+    SubscriptionButtonTooltip,
+    SubscriptionsQuickActions
   },
   props: {
     mode: {
@@ -96,6 +101,10 @@ export default {
     }
   },
   methods: {
+    openAccess (platform) {
+      this.$store.commit('catalog/setCurrentSubscription', this.dataset);
+      this.$store.commit('catalog/setCurrentAccessPlatform', platform);
+    },
     downloadNotebook (e) {
       e.preventDefault();
       this.$store.dispatch('catalog/downloadNotebook', { id: this.dataset.slug, type: this.dataset.type });
@@ -110,6 +119,9 @@ export default {
 
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
+.actions {
+  position: relative
+}
 .disabled {
   >a {
     opacity: 0.4;

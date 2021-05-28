@@ -45,6 +45,7 @@
         </template>
       </div>
     </div>
+    <SubscriptionAccess v-if="showAccessModal"></SubscriptionAccess>
   </section>
 </template>
 
@@ -57,6 +58,7 @@ import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
 import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
 import DatasetListItem from 'new-dashboard/components/Catalog/browser/DatasetListItem';
 import Pager from 'new-dashboard/components/Catalog/browser/Pager';
+import SubscriptionAccess from '../../components/Subscriptions/SubscriptionAccess.vue';
 
 export default {
   name: 'SubscriptionsPage',
@@ -64,6 +66,7 @@ export default {
     EmptyState,
     SectionTitle,
     VisualizationsTitle,
+    SubscriptionAccess,
     SettingsDropdown,
     DatasetListItem,
     Pager
@@ -77,8 +80,12 @@ export default {
   },
   computed: {
     ...mapState({
-      subscriptions: state => state.catalog.subscriptionsList
+      subscriptions: state => state.catalog.subscriptionsList,
+      currentSubscription: state => state.catalog.currentSubscription
     }),
+    showAccessModal () {
+      return !!this.currentSubscription;
+    },
     pageSize () {
       return process.env.VUE_APP_PAGE_SIZE || 10;
     },

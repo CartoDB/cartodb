@@ -26,14 +26,17 @@
                 </div>
               </template>
               <template v-else-if="needRequestAccess">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ac dui sem. Ut dui dolor, viverra nec lectus sed, laoreet hendrerit leo. Phasellus consequat suscipit iaculis. Maecenas tempus purus ipsum, in fringilla nulla laoreet eget.</p>
+                <p>Please confirm your request to access your Data Observatory subscription in Azure and we will get back to you shortly. Access details will be displayed on this page as soon as your request has been fulfilled.</p>
                 <div class="u-flex u-flex__justify--center u-mt--32">
                   <button v-if="!hasBeenRequested" @click="requestAccess" class="CDB-Button CDB-Button--primary CDB-Button--big">Request access</button>
                   <SubscriptionRequestSuccess v-else />
                 </div>
               </template>
               <template v-else>
-                <p>Have a look to the documentation on CARTO's Data Observatory to learn how to access and work with this dataset directly on your data warehouse</p>
+                <BigQueryAccessParameters v-if="currentAccessPlatform === 'bigquery'" :subscription="currentSubscription"/>
+                <OtherAccessParameters v-else :subscription="currentSubscription"/>
+                <div>
+                </div>
               </template>
             </div>
           </div>
@@ -50,6 +53,8 @@ import { mapState } from 'vuex';
 import exportedScssVars from 'new-dashboard/styles/helpers/_assetsDir.scss';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import SubscriptionRequestSuccess from './SubscriptionRequestSuccess.vue';
+import BigQueryAccessParameters from './BigQueryAccessParameters.vue';
+import OtherAccessParameters from './OtherAccessParameters.vue';
 
 const PLATFORMS = {
   'bigquery': {
@@ -76,6 +81,8 @@ export default {
   name: 'SubscriptionAccess',
   components: {
     Dialog,
+    BigQueryAccessParameters,
+    OtherAccessParameters,
     SubscriptionRequestSuccess
   },
   props: {
@@ -85,7 +92,8 @@ export default {
   },
   data () {
     return {
-      connectionsSuccessfullId: null
+      connectionsSuccessfullId: null,
+      test: 'asdasd'
     };
   },
   computed: {
@@ -146,7 +154,6 @@ export default {
       this.$store.dispatch('catalog/requestExtendedLicense', this.currentSubscription.id);
     },
     requestAccess () {
-      debugger
       this.$store.dispatch('catalog/requestAccess', {
         subscriptionId: this.currentSubscription.id,
         requestedPlatformProperty: PLATFORMS[this.currentAccessPlatform].full_access
@@ -167,5 +174,18 @@ h3.title {
 }
 .main {
   width: 620px;
+}
+.code-block-wrapper {
+  label {
+    flex: 1;
+    text-align: right;
+    text-transform: capitalize;
+  }
+
+  /deep/ .CodeMirror {
+    border-radius: 4px;
+    width: 512px;
+    margin: 0;
+  }
 }
 </style>

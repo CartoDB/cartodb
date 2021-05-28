@@ -7,6 +7,7 @@
 
 <script>
 import QuickActions from 'new-dashboard/components/QuickActions/QuickActions';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'SubscriptionsQuickActions',
@@ -16,11 +17,15 @@ export default {
   props: {
   },
   computed: {
+    ...mapGetters({
+      hasBigqueryConnection: 'connectors/hasBigqueryConnection'
+    }),
     actions () {
       return [
         {
           name: this.$t('QuickActions.accessInBigquery'),
-          event: 'accessBigQuery'
+          event: 'accessBigQuery',
+          shouldBeDisabled: !this.hasBigqueryConnection
         },
         {
           name: this.$t('QuickActions.accessInAWS'),

@@ -47,7 +47,8 @@ export default {
     },
     backRoute: {
       default: null
-    }
+    },
+    emitOnClose: Boolean
   },
   mounted () {
     document.body.classList.add('u-overflow-hidden');
@@ -64,10 +65,14 @@ export default {
   computed: {},
   methods: {
     closePopup () {
-      const mathed = this.$route.matched;
-      const route = mathed[mathed.length - 1];
-      if (route && route.parent) {
-        this.$router.push({ name: route.parent.name });
+      if (!this.emitOnClose) {
+        const mathed = this.$route.matched;
+        const route = mathed[mathed.length - 1];
+        if (route && route.parent) {
+          this.$router.push({ name: route.parent.name });
+        }
+      } else {
+        this.$emit('onClose');
       }
     },
     goBack () {

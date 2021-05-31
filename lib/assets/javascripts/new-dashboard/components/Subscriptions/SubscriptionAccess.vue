@@ -24,12 +24,18 @@
                   <button v-if="!hasBeenRequested" @click="requestExtendedLicense" class="CDB-Button CDB-Button--primary CDB-Button--big">Request extended license</button>
                   <SubscriptionRequestSuccess v-else />
                 </div>
+                <div v-if="requestError" class="is-txtAlert u-flex u-flex__justify--center u-mt--8">
+                  <p>An error has occurred: {{requestError}}</p>
+                </div>
               </template>
               <template v-else-if="needRequestAccess">
                 <p>Please confirm your request to access your Data Observatory subscription in Azure and we will get back to you shortly. Access details will be displayed on this page as soon as your request has been fulfilled.</p>
                 <div class="u-flex u-flex__justify--center u-mt--32">
                   <button v-if="!hasBeenRequested" @click="requestAccess" class="CDB-Button CDB-Button--primary CDB-Button--big">Request access</button>
                   <SubscriptionRequestSuccess v-else />
+                </div>
+                <div v-if="requestError" class="is-txtAlert u-flex u-flex__justify--center u-mt--8">
+                  <p>An error has occurred: {{requestError}}</p>
                 </div>
               </template>
               <template v-else>
@@ -96,7 +102,8 @@ export default {
   computed: {
     ...mapState({
       currentSubscription: state => state.catalog.currentSubscription,
-      currentAccessPlatform: state => state.catalog.currentAccessPlatform
+      currentAccessPlatform: state => state.catalog.currentAccessPlatform,
+      requestError: state => state.catalog.requestError
     }),
     title () {
       let title = '';
@@ -158,15 +165,21 @@ export default {
   },
   methods: {
     requestExtendedLicense () {
+      this.cleanErrors();
       this.$store.dispatch('catalog/requestExtendedLicense', this.currentSubscription.id);
     },
     requestAccess () {
+      this.cleanErrors();
       this.$store.dispatch('catalog/requestAccess', {
         subscriptionId: this.currentSubscription.id,
         requestedPlatformProperty: PLATFORMS[this.currentAccessPlatform].full_access
       });
     },
+    cleanErrors () {
+      this.$store.commit('catalog/setRequestError', null);
+    },
     handleClose () {
+      this.cleanErrors();
       this.$store.commit('catalog/setCurrentSubscription', null);
       this.$store.commit('catalog/setCurrentAccessPlatform', null);
     }

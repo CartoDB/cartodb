@@ -176,7 +176,6 @@ CartoDB::Application.routes.draw do
     # Datasets for new dashboard
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets'                              => 'visualizations#index', as: :datasets_index
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/subscriptions'                => 'visualizations#index', as: :datasets_subscriptions_index
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/subscriptions/access/:type'                => 'visualizations#index', as: :datasets_subscriptions_access
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/catalog'                      => 'visualizations#index', as: :datasets_catalog_index
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/catalog/:id'                  => 'visualizations#index', as: :ddatasets_catalog_show
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/spatial-data-catalog'         => 'visualizations#index', as: :datasets_docatalog_index

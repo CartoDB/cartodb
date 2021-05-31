@@ -25,7 +25,8 @@ export default {
         {
           name: this.$t('QuickActions.accessInBigquery'),
           event: 'accessBigQuery',
-          shouldBeDisabled: !this.hasBigqueryConnection
+          shouldBeDisabled: !this.hasBigqueryConnection,
+          disableInfo: 'Please create a BigQuery connection to enable this option.'
         },
         {
           name: this.$t('QuickActions.accessInAWS'),

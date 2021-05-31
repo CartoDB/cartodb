@@ -8,8 +8,13 @@
       <ul>
         <template v-for="action in actions">
           <li class="action__item" :key="action.name" v-if="!action.shouldBeHidden">
-            <div class="action__badge" v-if="action.shouldBeDisabled">
+            <div class="action__badge" v-if="action.shouldBeDisabled && !action.disableInfo">
               <div @click="goToUpgrade" v-html="$t('QuickActions.upgrade', { path: upgradeUrl })"></div>
+            </div>
+            <div class="action__info" v-else-if="action.shouldBeDisabled && action.disableInfo">
+              <Tooltip :text="action.disableInfo" :multiline="true" position="top-right" class="text is-small u-flex u-flex__align-center">
+                <img svg-inline src="new-dashboard/assets/icons/common/info-icon.svg" width="20" height="20" />
+              </Tooltip>
             </div>
             <a href="#" class="action__text text is-caption" :class="{'is-txtPrimary': !action.isDestructive, 'is-txtAlert': action.isDestructive, 'u-is-disabled': action.shouldBeDisabled}" @click="emitEvent(action.event)">{{action.name}}</a>
           </li>
@@ -20,6 +25,7 @@
 </template>
 
 <script>
+import Tooltip from 'new-dashboard/components/Tooltip/Tooltip';
 
 export default {
   name: 'QuickActions',
@@ -27,6 +33,9 @@ export default {
     return {
       isOpen: false
     };
+  },
+  components: {
+    Tooltip
   },
   props: {
     actions: Array,
@@ -139,6 +148,17 @@ export default {
     border-radius: 30px;
     background-color: rgba($info__bg-color, 0.2);
     font-size: 12px;
+  }
+
+  &__info {
+    position: absolute;
+    top: 16px;
+    right: 24px;
+    font-size: 12px;
+
+    path {
+      fill: $neutral--600;
+    }
   }
 }
 </style>

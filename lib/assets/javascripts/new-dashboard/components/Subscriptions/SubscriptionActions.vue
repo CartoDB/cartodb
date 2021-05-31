@@ -61,7 +61,6 @@
       <span class="u-ml--8 u-mr--8">|</span>
       <SubscriptionsQuickActions @onAccess="openAccess"></SubscriptionsQuickActions>
     </div>
-    {{dataset.license_type}}
   </div>
 </template>
 
@@ -123,7 +122,8 @@ export default {
   position: relative
 }
 .disabled {
-  >a {
+  >a,
+  >.quick-actions {
     opacity: 0.4;
     pointer-events: none;
   }

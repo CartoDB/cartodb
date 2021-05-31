@@ -34,7 +34,7 @@
               </template>
               <template v-else>
                 <BigQueryAccessParameters v-if="currentAccessPlatform === 'bigquery'" :subscription="currentSubscription"/>
-                <OtherAccessParameters v-else :subscription="currentSubscription"/>
+                <OtherAccessParameters v-else :platform="currentAccessPlatform" :subscription="currentSubscription"/>
                 <div>
                 </div>
               </template>
@@ -42,7 +42,6 @@
           </div>
         </div>
       </div>
-      {{currentSubscription}}
     </template>
   </Dialog>
 </template>

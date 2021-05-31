@@ -2,7 +2,7 @@
 <div>
   <p>Find below the instructions to access your Data Observatory subscription directly in Amazon S3.</p>
   <div class="textarea-wrapper">
-    <textarea ref="textarea" class="u-mt--24" v-model="subscription.full_access_aws_info" readonly />
+    <textarea ref="textarea" class="u-mt--24" v-model="accessInfo" readonly />
     <div class="u-flex u-flex__justify--end">
         <button @click="copy"  class="copy-btn u-flex u-flex__align--center text is-small is-semibold is-txtPrimary">
           <img svg-inline class="copy-icon" src="../../assets/icons/catalog/copy.svg">
@@ -26,6 +26,9 @@ export default {
     CopyTextInput
   },
   props: {
+    platform: {
+      require: true
+    },
     subscription: {
       require: true
     }
@@ -39,21 +42,12 @@ export default {
     ...mapState({
       user: state => state.user
     }),
-    dataTable () {
-      return `${this.user.do_bq_project}.${this.user.do_bq_dataset}.view_${this.subscription.id.split('.')[2]}`;
-    },
-    geographyTable () {
-      return !this.subscription.is_geography
-        ? `${this.user.do_bq_project}.${this.user.do_bq_dataset}.view_${this.subscription.geography_id.split('.')[2]}`
-        : this.dataTable;
-    },
-    query () {
-      let query = `SELECT * FROM \`${this.geographyTable}\``;
-      if (!this.subscription.is_geography) {
-        query =
-          `SELECT\n\tdo_data.*, do_geo.geom, do_geo.name AS geom_name\nFROM \`${this.dataTable}\` do_data\nINNER JOIN \`${this.geographyTable}\` do_geo \nON do_data.geoid=do_geo.geoid `;
+    accessInfo () {
+      if (this.platform === 'aws') {
+        return this.subscription.full_access_aws_info;
+      } else {
+        return this.subscription.full_access_azure_info;
       }
-      return query;
     }
   },
   methods: {

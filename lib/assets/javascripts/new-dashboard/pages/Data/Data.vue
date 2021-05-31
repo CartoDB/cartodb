@@ -47,7 +47,7 @@ export default {
       return isAllowed(this.$route.params.filter);
     },
     isDOEnabled () {
-      return this.$store.state.user.do_enabled || true;
+      return this.$store.state.user.do_enabled;
     }
   },
   mounted () {

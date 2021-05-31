@@ -29,7 +29,6 @@ export default {
   },
   data () {
     return {
-      connectionsSuccessfullId: null
     };
   },
   computed: {

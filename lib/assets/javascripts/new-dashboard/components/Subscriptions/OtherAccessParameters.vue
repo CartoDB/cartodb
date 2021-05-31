@@ -15,16 +15,10 @@
 
 <script>
 
-import CodeBlock from 'new-dashboard/components/Code/CodeBlock.vue';
-import CopyTextInput from './CopyTextInput.vue';
 import { mapState } from 'vuex';
 
 export default {
   name: 'OtherAccessParameters',
-  components: {
-    CodeBlock,
-    CopyTextInput
-  },
   props: {
     platform: {
       require: true

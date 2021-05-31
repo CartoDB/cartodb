@@ -101,14 +101,18 @@ export default {
       currentAccessPlatform: state => state.catalog.currentAccessPlatform
     }),
     title () {
+      let title = '';
       if (this.currentAccessPlatform) {
-        return PLATFORMS[this.currentAccessPlatform].name;
+        title = PLATFORMS[this.currentAccessPlatform].name;
       }
+      return title;
     },
     logo () {
+      let logo = '';
       if (this.currentAccessPlatform) {
-        return `${exportedScssVars.assetsDir && exportedScssVars.assetsDir.replace(/\"/g, '')}/images/layout/platforms/${this.currentAccessPlatform}.svg`;
+        logo = `${exportedScssVars.assetsDir && exportedScssVars.assetsDir.replace(/\"/g, '')}/images/layout/platforms/${this.currentAccessPlatform}.svg`;
       }
+      return logo;
     },
     hasBeenRequested () {
       let field = 'full_access_status_bq';

@@ -40,7 +40,6 @@ export default {
   },
   data () {
     return {
-      connectionsSuccessfullId: null
     };
   },
   computed: {
@@ -48,12 +47,16 @@ export default {
       user: state => state.user
     }),
     dataTable () {
-      return `${this.user.do_bq_project}.${this.user.do_bq_dataset}.view_${this.subscription.id.split('.')[2]}`;
+      const tableName = this.subscription.id.split('.')[2];
+      return `${this.user.do_bq_project}.${this.user.do_bq_dataset}.view_${tableName}`;
     },
     geographyTable () {
-      return !this.subscription.is_geography
-        ? `${this.user.do_bq_project}.${this.user.do_bq_dataset}.view_${this.subscription.geography_id.split('.')[2]}`
-        : this.dataTable;
+      if (this.subscription.is_geography) {
+        return this.dataTable;
+      } else {
+        const tableName = this.subscription.geography_id.split('.')[2];
+        return `${this.user.do_bq_project}.${this.user.do_bq_dataset}.view_${tableName}`;
+      }
     },
     query () {
       let query = `SELECT * FROM \`${this.geographyTable}\``;

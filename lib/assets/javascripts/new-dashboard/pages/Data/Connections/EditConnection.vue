@@ -1,12 +1,12 @@
 <template>
   <Dialog ref="dialog"
-    :headerTitle="connectionsSuccessfullId ?
+    :headerTitle="connectionsSuccessfulId ?
       $t('ConnectorsPage.successConnection') :
       (editing ? $t('ConnectorsPage.editConnection', {connector: title}) : $t('ConnectorsPage.addConnection'))"
-    :headerImage="connectionsSuccessfullId ?
+    :headerImage="connectionsSuccessfulId ?
       require('../../../assets/icons/datasets/conected.svg') :
       (editing ? require('../../../assets/icons/datasets/edit-connection.svg') : require('../../../assets/icons/datasets/add-connection.svg'))"
-    :showSubHeader="!editing && !connectionsSuccessfullId"
+    :showSubHeader="!editing && !connectionsSuccessfulId"
     :backRoute="{name: backNamedRoute}"
   >
     <template slot="sub-header">
@@ -17,7 +17,7 @@
     </template>
     <template #default>
 
-      <template v-if="!connectionsSuccessfullId">
+      <template v-if="!connectionsSuccessfulId">
         <DatabaseConnectionForm v-if="type === 'database' && !isBigQuery"
           :connector="importOption"
           :connection="connection"
@@ -29,7 +29,7 @@
           :connection="connection" @connectionSuccess="connectionSuccess"></OAuthConnectionForm>
       </template>
 
-      <div v-else-if="connectionsSuccessfullId" class="connections-successfull u-flex u-flex__direction--column u-flex__align--center">
+      <div v-else-if="connectionsSuccessfulId" class="connections-successfull u-flex u-flex__direction--column u-flex__align--center">
         <h3 class="is-semibold u-mt--16">{{ $t('DataPage.connectionsSuccessfull') }}</h3>
         <h4 class="is-caption u-mt--16 is-regular">{{$t('DataPage.imports.database.successTitle', { brand: title })}}</h4>
         <div class="u-mt--48 u-flex u-flex__align--center">
@@ -72,7 +72,7 @@ export default {
   },
   data () {
     return {
-      connectionsSuccessfullId: null
+      connectionsSuccessfulId: null
     };
   },
   computed: {
@@ -105,7 +105,7 @@ export default {
   },
   methods: {
     connectionSuccess (id) {
-      this.connectionsSuccessfullId = id;
+      this.connectionsSuccessfulId = id;
       this.$store.dispatch('connectors/fetchConnectionsList');
     },
     onCancel () {
@@ -113,7 +113,7 @@ export default {
     },
     navigateNext () {
       const routeNamePrefix = !this.editing ? this.$route.name.replace('connector-selected', '') : 'new-connection-';
-      this.$router.push({ name: `${routeNamePrefix}connection-dataset`, params: { id: this.connectionsSuccessfullId } });
+      this.$router.push({ name: `${routeNamePrefix}connection-dataset`, params: { id: this.connectionsSuccessfulId } });
     }
   }
 };

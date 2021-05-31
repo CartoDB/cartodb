@@ -91,8 +91,6 @@ export default {
   },
   data () {
     return {
-      connectionsSuccessfullId: null,
-      test: 'asdasd'
     };
   },
   computed: {
@@ -123,18 +121,24 @@ export default {
     },
     needExtendedLicense () {
       let need = true;
-      if (this.currentSubscription && this.currentAccessPlatform) {
-        if (this.currentSubscription.license_type !== LICENSE_TYPE.carto) need = false;
+      if (
+        this.currentSubscription &&
+        this.currentAccessPlatform &&
+        this.currentSubscription.license_type !== LICENSE_TYPE.carto
+      ) {
+        need = false;
       }
       return need;
     },
     needRequestAccess () {
       let need = false;
-      if (this.currentSubscription && this.currentAccessPlatform) {
-        if (this.currentSubscription.license_type !== LICENSE_TYPE.carto) {
-          const status = this.currentSubscription[PLATFORMS[this.currentAccessPlatform].full_access];
-          if (status !== 'granted' && this.currentAccessPlatform !== 'bigquery') need = true;
-        }
+      if (
+        this.currentSubscription &&
+        this.currentAccessPlatform &&
+        this.currentSubscription.license_type !== LICENSE_TYPE.carto
+      ) {
+        const status = this.currentSubscription[PLATFORMS[this.currentAccessPlatform].full_access];
+        if (status !== 'granted' && this.currentAccessPlatform !== 'bigquery') need = true;
       }
       return need;
     },

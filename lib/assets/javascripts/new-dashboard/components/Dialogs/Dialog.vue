@@ -66,8 +66,8 @@ export default {
   methods: {
     closePopup () {
       if (!this.emitOnClose) {
-        const mathed = this.$route.matched;
-        const route = mathed[mathed.length - 1];
+        const matched = this.$route.matched;
+        const route = matched[matched.length - 1];
         if (route && route.parent) {
           this.$router.push({ name: route.parent.name });
         }

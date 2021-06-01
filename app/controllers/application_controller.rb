@@ -501,7 +501,7 @@ class ApplicationController < ActionController::Base
   def json_formatted_request?
     format = request.format
 
-    format.json? if format
+    format.json? || (format.nil? && request.accepts.first.json?)
   end
 
   private

@@ -15,7 +15,7 @@
       <div class="u-flex u-flex__justify--center">
         <div class="main u-flex u-flex__direction--column">
           <div class="u-flex u-flex__direction--column u-mb--32">
-            <span class="is-small is-semibold u-mb--8"> {{ subtitle }}</span>
+            <span class="is-small is-semibold u-mb--8" :class="{'alert': needExtendedLicense || needRequestAccess}"> {{ subtitle }}</span>
             <div class="text is-small is-txtMidGrey">
               <template v-if="needExtendedLicense">
                 <p>Your current license only allows you to access this dataset within CARTO. In order to access this dataset directly from your data warehouse (e.g. BigQuery, Snowflake, etc.) you need an extended license.</p>
@@ -29,7 +29,7 @@
                 </div>
               </template>
               <template v-else-if="needRequestAccess">
-                <p>Please confirm your request to access your Data Observatory subscription in Azure and we will get back to you shortly. Access details will be displayed on this page as soon as your request has been fulfilled.</p>
+                <p>Please confirm your request to access your Data Observatory subscription in {{platform}} and we will get back to you shortly. Access details will be displayed on this page as soon as your request has been fulfilled.</p>
                 <div class="u-flex u-flex__justify--center u-mt--32">
                   <button v-if="!hasBeenRequested" @click="requestAccess" class="CDB-Button CDB-Button--primary CDB-Button--big">Request access</button>
                   <SubscriptionRequestSuccess v-else />
@@ -119,6 +119,9 @@ export default {
       }
       return logo;
     },
+    platform () {
+      return PLATFORMS[this.currentAccessPlatform].name;
+    },
     hasBeenRequested () {
       let field = 'full_access_status_bq';
       if (this.needRequestAccess) {
@@ -155,7 +158,7 @@ export default {
       if (this.needExtendedLicense) {
         subtitle = 'You need an extended license for this functionality';
       } else if (this.needRequestAccess) {
-        subtitle = 'Access not fulfilled yet';
+        subtitle = 'Please request access first';
       } else {
         subtitle = 'Access details';
       }
@@ -194,6 +197,23 @@ h3.title {
 }
 .main {
   width: 620px;
+}
+
+.alert {
+  position: relative;
+  &:before {
+    content: '';
+    position: absolute;
+    display: block;
+    top: -4px;
+    left: -32px;
+    height: 24px;
+    width: 24px;
+    background-image: url('../../assets/icons/common/alert.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 24px;
+  }
 }
 .code-block-wrapper {
   label {

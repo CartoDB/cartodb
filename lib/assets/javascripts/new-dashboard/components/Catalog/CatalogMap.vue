@@ -292,7 +292,7 @@ export default {
       };
       return { html, style };
     },
-    formatValue(value) {
+    formatValue (value) {
       if (value !== undefined && value !== null) {
         if (typeof value === 'number') {
           return formatNumber(value);

@@ -40,7 +40,7 @@
               </template>
               <template v-else>
                 <BigQueryAccessParameters v-if="currentAccessPlatform === 'bigquery'" :subscription="currentSubscription"/>
-                <OtherAccessParameters v-else :platform="currentAccessPlatform" :subscription="currentSubscription"/>
+                <OtherAccessParameters v-else :platformName="platform" :platform="currentAccessPlatform" :subscription="currentSubscription"/>
                 <div>
                 </div>
               </template>
@@ -170,6 +170,7 @@ export default {
     requestExtendedLicense () {
       this.cleanErrors();
       this.$store.dispatch('catalog/requestExtendedLicense', this.currentSubscription.id);
+      this.sendRequestExtendedMetrics();
     },
     requestAccess () {
       this.cleanErrors();
@@ -177,6 +178,26 @@ export default {
         subscriptionId: this.currentSubscription.id,
         requestedPlatformProperty: PLATFORMS[this.currentAccessPlatform].full_access
       });
+      this.sendRequestAccessMetrics();
+    },
+    sendRequestExtendedMetrics () {
+      this.$store.dispatch(
+        'catalog/sendRequestExtendedMetrics',
+        {
+          datasetId: this.currentSubscription.id,
+          licenseType: this.currentSubscription.license_type
+        });
+    },
+    sendRequestAccessMetrics () {
+      let platform = this.currentAccessPlatform;
+      if (platform === 'bigquery') platform = 'bq';
+      this.$store.dispatch(
+        'catalog/sendRequestAccessMetrics',
+        {
+          datasetId: this.currentSubscription.id,
+          platform,
+          licenseType: this.currentSubscription.license_type
+        });
     },
     cleanErrors () {
       this.$store.commit('catalog/setRequestError', null);

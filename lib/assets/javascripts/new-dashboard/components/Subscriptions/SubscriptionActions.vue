@@ -103,7 +103,7 @@ export default {
     openAccess (platform) {
       this.$store.commit('catalog/setCurrentSubscription', this.dataset);
       this.$store.commit('catalog/setCurrentAccessPlatform', platform);
-      this.sendMetrics();
+      this.sendMetrics(platform);
     },
     sendMetrics (platform) {
       if (platform === 'bigquery') platform = 'bq';

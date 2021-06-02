@@ -287,6 +287,7 @@ class ApplicationController < ActionController::Base
   end
 
   def login_required_any_user
+    log_info(message: "current_viewer: #{current_viewer.nil?}")
     current_viewer ? Carto::AuthenticationManager.validate_session(warden, request, current_viewer) : not_authorized
   end
 

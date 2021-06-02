@@ -218,13 +218,13 @@ module Carto
       return if parameters['connection_name'].blank?
 
       parameters['connection_id'] =
-        user.db_connections.find_by(name: parameters['connection_name']).id
+        user.connections.find_by(name: parameters['connection_name']).id
       parameters.delete('connection_name')
 
       synchronization.service_item_id = parameters.to_json
     rescue ActiveRecord::RecordNotFound => e
       Rails.logger.error(
-        message: 'Error linking synchronization with a user DB connection',
+        message: 'Error linking synchronization with a user connection',
         exception: e,
         username: user.username,
         synchronization: synchronization.name

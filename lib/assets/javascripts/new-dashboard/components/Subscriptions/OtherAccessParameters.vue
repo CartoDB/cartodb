@@ -1,6 +1,6 @@
 <template>
 <div>
-  <p>Find below the instructions to access your Data Observatory subscription directly in Amazon S3.</p>
+  <p>Find below the instructions to access your Data Observatory subscription directly in {{platformName}}.</p>
   <div class="textarea-wrapper">
     <textarea ref="textarea" class="u-mt--24" v-model="accessInfo" readonly />
     <div class="u-flex u-flex__justify--end">
@@ -20,6 +20,9 @@ import { mapState } from 'vuex';
 export default {
   name: 'OtherAccessParameters',
   props: {
+    platformName: {
+      require: true
+    },
     platform: {
       require: true
     },

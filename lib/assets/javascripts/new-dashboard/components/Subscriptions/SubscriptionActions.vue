@@ -103,6 +103,17 @@ export default {
     openAccess (platform) {
       this.$store.commit('catalog/setCurrentSubscription', this.dataset);
       this.$store.commit('catalog/setCurrentAccessPlatform', platform);
+      this.sendMetrics();
+    },
+    sendMetrics (platform) {
+      if (platform === 'bigquery') platform = 'bq';
+      this.$store.dispatch(
+        'catalog/sendAccessAttemptMetrics',
+        {
+          datasetId: this.dataset.id,
+          platform,
+          licenseType: this.dataset.license_type
+        });
     },
     downloadNotebook (e) {
       e.preventDefault();

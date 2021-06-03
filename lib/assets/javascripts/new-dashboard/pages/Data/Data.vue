@@ -15,7 +15,7 @@
           <span>{{ $t('DataPage.tabs.subscriptions') }}</span>
         </router-link>
       </div>
-      <router-link :to="{ name: 'spatial-data-catalog' }" class="tabs__item title is-small u-flex u-flex__align--center right" exact active-class="is-active">
+      <router-link v-if="!isOnPremise" :to="{ name: 'spatial-data-catalog' }" class="tabs__item title is-small u-flex u-flex__align--center right" exact active-class="is-active">
         <span>{{ $t('DataPage.tabs.catalog') }}</span>
       </router-link>
     </SecondaryNavigation>
@@ -40,7 +40,8 @@ export default {
       connections: state => state.connectors.connections
     }),
     ...mapGetters({
-      hasBigqueryConnection: 'connectors/hasBigqueryConnection'
+      hasBigqueryConnection: 'connectors/hasBigqueryConnection',
+      isOnPremise: 'config/isOnPremise'
     }),
     isDatasetPage () {
       return isAllowed(this.$route.params.filter);

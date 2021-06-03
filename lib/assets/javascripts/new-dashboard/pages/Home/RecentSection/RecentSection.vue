@@ -63,7 +63,13 @@ export default {
       isFetching: state => {
         return state.recentContent.isFetching;
       },
-      recentContent: state => state.recentContent.list
+      recentContent: state => {
+        if (state.config.cartodb_com_hosted) {
+          return state.recentContent.list.filter(l => l.type !== 'keplergl');
+        } else {
+          return state.recentContent.list;
+        }
+      }
     })
   },
   methods: {

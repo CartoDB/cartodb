@@ -205,7 +205,7 @@ steps:
           docker push ${_DOCKER_IMAGE_NAME}-resque:${TAG_NAME}
           docker push ${_DOCKER_IMAGE_NAME}-subscriber:${TAG_NAME}
       fi
-  waitFor: ['build-cartodb-onprem', 'build-cartodb']
+  waitFor: ['build-cartodb-onprem', 'build-cartodb', 'build-cartodb-onprem-cron']
 
 timeout: 1800s
 substitutions:

@@ -146,7 +146,7 @@ steps:
 # Build onprem cron image
 - name: gcr.io/cloud-builders/docker
   id: build-cartodb-onprem-cron
-  dir: /workspace/cartodb-onprem
+  dir: /workspace/cartodb
   entrypoint: /bin/bash
   args:
     - -cex

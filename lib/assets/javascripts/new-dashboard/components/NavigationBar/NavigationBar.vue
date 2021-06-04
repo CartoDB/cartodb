@@ -45,13 +45,13 @@
           :message="$t('FeedbackMessage.message')"
           @click.native.stop.prevent="toggleDropdown"/>
 
-        <NotificationPopup
-          v-if="!popupWasShown('popups.DataObservatorySamples')"
+        <!-- <NotificationPopup
+          v-if="!popupWasShown('popups.DataObservatorySamples') && !isOnPremise"
           class="notification-popup"
           :title="$t('DataObservatorySamples.title')"
           :message="$t('DataObservatorySamples.message', { path: this.$router.resolve({ name: 'spatial-data-catalog' }).href })"
           :messageHasHTML="true"
-          @click.native="markPopupAsRead('popups.DataObservatorySamples')"/>
+          @click.native="markPopupAsRead('popups.DataObservatorySamples')"/> -->
 
         <!-- <NotificationPopup
           v-if="!popupWasShown('popups.directDBConnection') && hasDBFFActive"

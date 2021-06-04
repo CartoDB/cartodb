@@ -140,8 +140,19 @@ steps:
   args:
     - -cex
     - |
-      docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} --build-arg GRUNT_ENV=production --build-arg COMPILE_ASSETS=true --build-arg BUNDLE_JOBS=4 -t ${_DOCKER_IMAGE_NAME}-onprem:latest -t ${_DOCKER_IMAGE_NAME}-onprem:${_BRANCH_TAG} -t ${_DOCKER_IMAGE_NAME}-onprem:${SHORT_SHA} -t ${_DOCKER_IMAGE_NAME}-onprem:${_BRANCH_TAG}--${SHORT_SHA} --cache-from ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG} --cache-from ${_DOCKER_IMAGE_NAME}:latest .
+      docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} --build-arg GRUNT_ENV=production --build-arg COMPILE_ASSETS=true --build-arg CARTO_MAPS_API_V2_EXTERNAL_URL_TEMPLATE="/maps-v2/user/{user}" --build-arg BUNDLE_JOBS=4 -t ${_DOCKER_IMAGE_NAME}-onprem:latest -t ${_DOCKER_IMAGE_NAME}-onprem:${_BRANCH_TAG} -t ${_DOCKER_IMAGE_NAME}-onprem:${SHORT_SHA} -t ${_DOCKER_IMAGE_NAME}-onprem:${_BRANCH_TAG}--${SHORT_SHA} --cache-from ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG} --cache-from ${_DOCKER_IMAGE_NAME}:latest .
   waitFor: ['checkout-licensing-gear']
+
+# Build onprem cron image
+- name: gcr.io/cloud-builders/docker
+  id: build-cartodb-onprem-cron
+  dir: /workspace/cartodb
+  entrypoint: /bin/bash
+  args:
+    - -cex
+    - |
+      docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} -t ${_DOCKER_IMAGE_NAME}-onprem-cron:latest -t ${_DOCKER_IMAGE_NAME}-onprem-cron:${_BRANCH_TAG} -t ${_DOCKER_IMAGE_NAME}-onprem-cron:${SHORT_SHA} -t ${_DOCKER_IMAGE_NAME}-onprem-cron:${_BRANCH_TAG}--${SHORT_SHA}  -f Dockerfile.cron .        
+  waitFor: ['build-cartodb-onprem']
 
 timeout: 1800s
 images:
@@ -151,6 +162,9 @@ images:
     - ${_DOCKER_IMAGE_NAME}-onprem:${_BRANCH_TAG}--${SHORT_SHA} 
     - ${_DOCKER_IMAGE_NAME}-onprem:${_BRANCH_TAG} 
     - ${_DOCKER_IMAGE_NAME}-onprem:${SHORT_SHA}
+    - ${_DOCKER_IMAGE_NAME}-onprem-cron:${_BRANCH_TAG}--${SHORT_SHA} 
+    - ${_DOCKER_IMAGE_NAME}-onprem-cron:${_BRANCH_TAG} 
+    - ${_DOCKER_IMAGE_NAME}-onprem-cron:${SHORT_SHA}
     - ${_DOCKER_IMAGE_NAME}-resque:${_BRANCH_TAG}--${SHORT_SHA} 
     - ${_DOCKER_IMAGE_NAME}-resque:${_BRANCH_TAG} 
     - ${_DOCKER_IMAGE_NAME}-resque:${SHORT_SHA}

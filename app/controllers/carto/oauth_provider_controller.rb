@@ -35,7 +35,7 @@ module Carto
     before_action :set_redirection_error_handling, :set_state, only: [:consent, :authorize]
     before_action :ensure_required_token_params, only: [:token]
     before_action :load_oauth_app, :verify_redirect_uri
-    before_action :login_required_any_user, only: [:consent, :authorize]
+    before_action :login_required_cloud_user, only: [:consent, :authorize]
     before_action :validate_prompt_request, only: [:consent]
     before_action :reject_client_secret, only: [:consent, :authorize]
     before_action :ensure_required_authorize_params, only: [:consent, :authorize]
@@ -48,6 +48,8 @@ module Carto
     rescue_from OauthProvider::Errors::BaseError, with: :rescue_oauth_errors
 
     def consent
+      raise OauthProvider::Errors::AccessDenied.new if current_viewer.nil?
+
       return create_authorization_code if @oauth_app_user.try(:authorized?, @scopes)
       raise OauthProvider::Errors::AccessDenied.new if silent_flow?
 
@@ -60,7 +62,7 @@ module Carto
     end
 
     def authorize
-      raise OauthProvider::Errors::AccessDenied.new unless params[:accept]
+      raise OauthProvider::Errors::AccessDenied.new unless params[:accept] ||current_viewer.present?
 
       if @oauth_app_user
         @oauth_app_user.upgrade!(@scopes)

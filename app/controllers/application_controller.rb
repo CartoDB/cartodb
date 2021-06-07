@@ -288,16 +288,6 @@ class ApplicationController < ActionController::Base
     current_viewer ? Carto::AuthenticationManager.validate_session(warden, request, current_viewer) : not_authorized
   end
 
-  # login required only for users in this cloud
-  def login_required_cloud_user
-    session_username = session_usernames.first
-    user_in_cloud = Carto::User.exists?(username: session_username)
-
-    return true unless user_in_cloud
-
-    login_required_any_user
-  end
-
   def api_authorization_required
     authenticate!(:auth_api, :api_authentication, scope: CartoDB.extract_subdomain(request))
     Carto::AuthenticationManager.validate_session(warden, request, current_user)

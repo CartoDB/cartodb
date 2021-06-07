@@ -37,7 +37,8 @@ module Carto
     before_action :set_redirection_error_handling, :set_state, only: [:consent, :authorize]
     before_action :ensure_required_token_params, only: [:token]
     before_action :load_oauth_app, :verify_redirect_uri
-    before_action :login_required_cloud_user, only: [:consent, :authorize]
+    before_action :ensure_user_exists, only: [:consent, :authorize]
+    before_action :login_required_any_user, only: [:consent, :authorize]
     before_action :validate_prompt_request, only: [:consent]
     before_action :reject_client_secret, only: [:consent, :authorize]
     before_action :ensure_required_authorize_params, only: [:consent, :authorize]
@@ -230,6 +231,14 @@ module Carto
         app_name: @oauth_app_user.oauth_app.name
       }
       Carto::Tracking::Events::CreatedOauthAppUser.new(current_viewer.id, properties).report
+    end
+
+    # OAuth apps were supposed to work cross-cloud, but the current code is not yet ready
+    # because it requires the OAuthAppUser & User to be created in the cloud
+    def ensure_user_exists
+      unless Carto::User.exists?(username: session_usernames.first)
+        raise(OauthProvider::Errors::AccessDenied.new, 'User does not exist in this CARTO cloud')
+      end
     end
   end
 end

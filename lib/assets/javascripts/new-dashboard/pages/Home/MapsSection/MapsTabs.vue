@@ -3,13 +3,14 @@
     <li class="MapsTabs__item">
       <button class="button button--ghost MapsTabs__link" :class="{'is-active': cartoMapsVisible}" @click="showCartoMaps">{{ $t('MapsPage.tabs.carto') }}</button>
     </li>
-    <li class="MapsTabs__item">
+    <li v-if="!isOnPremise" class="MapsTabs__item">
       <button class="button button--ghost MapsTabs__link" :class="{'is-active': keplerMapsVisible}" @click="showKeplerMaps">{{ $t('MapsPage.tabs.external') }}</button>
     </li>
   </ul>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 export default {
   name: 'MapTabs',
   props: {
@@ -21,6 +22,11 @@ export default {
       type: Boolean,
       default: false
     }
+  },
+  computed: {
+    ...mapGetters({
+      isOnPremise: 'config/isOnPremise'
+    })
   },
   methods: {
     showCartoMaps () {

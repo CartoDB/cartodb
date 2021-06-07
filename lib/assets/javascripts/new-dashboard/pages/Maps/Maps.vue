@@ -5,7 +5,7 @@
         <router-link :to="{ name: 'maps' }" class="tabs__item title is-small" exact active-class="is-active" :class="{'is-active': isCartoPage }">
           <span>{{ $t('MapsPage.tabs.carto') }}</span>
         </router-link>
-        <router-link :to="{ name: 'external' }" class="tabs__item title is-small" active-class="is-active">
+        <router-link v-if="!isOnPremise" :to="{ name: 'external' }" class="tabs__item title is-small" active-class="is-active">
           <span>{{ $t('MapsPage.tabs.external') }}</span>
         </router-link>
       </div>
@@ -18,6 +18,7 @@
 
 import Page from 'new-dashboard/components/Page';
 import SecondaryNavigation from 'new-dashboard/components/SecondaryNavigation';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'MapsPage',
@@ -26,6 +27,9 @@ export default {
     SecondaryNavigation
   },
   computed: {
+    ...mapGetters({
+      isOnPremise: 'config/isOnPremise'
+    }),
     isCartoPage () {
       return (this.$route || {}).name === 'maps';
     }

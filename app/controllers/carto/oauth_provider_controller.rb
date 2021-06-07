@@ -24,6 +24,8 @@ module Carto
 
     SILENT_PROMPT_VALUE = 'none'.freeze
 
+    UNAUTHORIZED_ERROR_MESSAGE = 'Unauthorized user'.freeze
+
     ssl_required
 
     layout 'frontend'
@@ -48,7 +50,7 @@ module Carto
     rescue_from OauthProvider::Errors::BaseError, with: :rescue_oauth_errors
 
     def consent
-      raise OauthProvider::Errors::AccessDenied.new if current_viewer.nil?
+      raise OauthProvider::Errors::AccessDenied.new(UNAUTHORIZED_ERROR_MESSAGE) if current_viewer.nil?
 
       return create_authorization_code if @oauth_app_user.try(:authorized?, @scopes)
       raise OauthProvider::Errors::AccessDenied.new if silent_flow?
@@ -62,7 +64,8 @@ module Carto
     end
 
     def authorize
-      raise OauthProvider::Errors::AccessDenied.new unless params[:accept] ||current_viewer.present?
+      raise OauthProvider::Errors::AccessDenied.new unless params[:accept]
+      raise OauthProvider::Errors::AccessDenied.new(UNAUTHORIZED_ERROR_MESSAGE) unless current_viewer.present?
 
       if @oauth_app_user
         @oauth_app_user.upgrade!(@scopes)

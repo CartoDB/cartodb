@@ -21,6 +21,8 @@ module CartoDB
       SCHEMA_GEOCODING = 'cdb'.freeze
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
+
+      # WARNING: Do not forget about updating dependencies in cartodb-platform and carto-postgres-artifacts
       CDB_DATASERVICES_CLIENT_VERSION = '0.31.0'.freeze
 
       attr_accessor :user
@@ -661,6 +663,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
+          # WARNING: Do not forget about updating dependencies in cartodb-platform and carto-postgres-artifacts
           cdb_extension_target_version = '0.37.1'
         end
 

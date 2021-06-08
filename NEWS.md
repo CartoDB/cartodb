@@ -10,6 +10,7 @@ Development
 * Bump cartodb-common to v1.1.2
 
 ### Bug fixes / enhancements
+- Hide sharing tab from viewer in on-premises [#16299](https://github.com/CartoDB/cartodb/pull/16299)
 - Remove all references to Spatial Data Catalog and Kepler GL maps in on-premises [#16293](https://github.com/CartoDB/cartodb/pull/16293)
 - Guard code for vizjson users [#16267](https://github.com/CartoDB/cartodb/pull/16267)
 - Guard code for Users and Visualizations [#16265](https://github.com/CartoDB/cartodb/pull/16265)
@@ -27,6 +28,7 @@ Development
 - Use fully qualified table name while creating a new map from a shared dataset [#16241](https://github.com/CartoDB/cartodb/pull/16241)
 - Add new events for DO full access [#16290](https://github.com/CartoDB/cartodb/pull/16290)
 - Fix an issue that prevents API OPTIONS from succeeding because of undue CSRF check [#16292](https://github.com/CartoDB/cartodb/pull/16292)
+- Fix a regression test and add some warnings to source code [#16297](https://github.com/CartoDB/cartodb/pull/16297)
 
 4.45.0 (2021-04-14)
 -------------------

@@ -412,7 +412,7 @@ describe DataImport do
 
     data_import = DataImport.create(
       user_id: @user.id,
-      data_source: "http://mydatasource.cartodb.wadus.com/foo.csv",
+      data_source: "http://localhost/foo.csv",
       synchronization_id: sync_job.id,
       updated_at: Time.now
     ).run_import!

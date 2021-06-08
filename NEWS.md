@@ -11,6 +11,7 @@ Development
 * Include DB connections, all parameters for Oauth connections, and the relationship between synchronizations and connections, in User migrations [#16287](https://github.com/CartoDB/cartodb/pull/16287)
 
 ### Bug fixes / enhancements
+- Remove all references to Spatial Data Catalog and Kepler GL maps in on-premises [#16293](https://github.com/CartoDB/cartodb/pull/16293)
 - Guard code for vizjson users [#16267](https://github.com/CartoDB/cartodb/pull/16267)
 - Guard code for Users and Visualizations [#16265](https://github.com/CartoDB/cartodb/pull/16265)
 - Use the organization user's data while editing a user from organization settings [#16280](https://github.com/CartoDB/cartodb/pull/16280)

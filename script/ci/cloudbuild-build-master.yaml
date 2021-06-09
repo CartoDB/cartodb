@@ -82,14 +82,15 @@ steps:
   dir: /workspace/cartodb
   entrypoint: /bin/bash
   args:
-    - -c
+    - -cx
     - |
       cp private/Dockerfil* .
       cp config/unicorn.conf.rb.sample config/unicorn.conf.rb
       cp config/app_config.yml.sample config/app_config.yml
       cp config/database.yml.sample config/database.yml
       cp lib/assets/javascripts/cdb/secrets.example.json lib/assets/javascripts/cdb/secrets.json
-      cp config/grunt_production.json.sample config/grunt_production.json
+      cp config/grunt_development.json config/grunt_production.json
+      sed -i 's|false|true|g' config/grunt_production.json
   waitFor: ['checkout-db-connectors']
 
 # Copy repo folder to isolate onprem build context

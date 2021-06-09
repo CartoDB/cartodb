@@ -61,6 +61,7 @@ module Carto
 
       false
     ensure
+      log.store
       package.try(:cleanup)
     end
 

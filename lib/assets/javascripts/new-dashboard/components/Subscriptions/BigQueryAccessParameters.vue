@@ -47,27 +47,29 @@ export default {
       user: state => state.user
     }),
     dataTable () {
-      const tableName = this.subscription.id.split('.')[2];
-      return `${this.user.do_bq_project}.${this.user.do_bq_dataset}.view_${tableName}`;
+      return this.buildDatasetPath(this.subscription.id);
     },
     geographyTable () {
       if (this.subscription.is_geography) {
         return this.dataTable;
       } else {
-        const tableName = this.subscription.geography_id.split('.')[2];
-        return `${this.user.do_bq_project}.${this.user.do_bq_dataset}.view_${tableName}`;
+        return this.buildDatasetPath(this.subscription.geography_id);
       }
     },
     query () {
       let query = `SELECT * FROM \`${this.geographyTable}\``;
       if (!this.subscription.is_geography) {
         query =
-          `SELECT\n\tdo_data.*, do_geo.geom, do_geo.name AS geom_name\nFROM \`${this.dataTable}\` do_data\nINNER JOIN \`${this.geographyTable}\` do_geo \nON do_data.geoid=do_geo.geoid `;
+          `SELECT\n\tdo_data.*, do_geo.geom\nFROM \`${this.dataTable}\` do_data\nINNER JOIN \`${this.geographyTable}\` do_geo \nON do_data.geoid=do_geo.geoid `;
       }
       return query;
     }
   },
   methods: {
+    buildDatasetPath (table) {
+      const tableName = table.split('.')[2];
+      return `${this.user.do_bq_project}.${this.user.do_bq_dataset}.view_${this.subscription.provider_id}_${tableName}`;
+    },
     copy () {
       this.$refs.codeBlock.select();
       document.execCommand('copy');

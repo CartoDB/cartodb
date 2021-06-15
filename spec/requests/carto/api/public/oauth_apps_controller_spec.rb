@@ -164,9 +164,6 @@ describe Carto::Api::Public::OauthAppsController do
       @app2 = create(:oauth_app, user_id: @carto_org_user_2.id, name: 'ABC', restricted: true)
       @app3 = create(:oauth_app, user_id: @carto_org_user_2.id)
 
-      @app1.oauth_app_organizations.create!(organization: @carto_organization, seats: 1)
-      @app2.oauth_app_organizations.create!(organization: @carto_organization, seats: 1)
-
       Carto::OauthAppUser.create!(user: @carto_org_user_1, oauth_app: @app1, scopes: ['user:profile'])
       Carto::OauthAppUser.create!(user: @carto_org_user_1, oauth_app: @app2)
     end
@@ -684,7 +681,6 @@ describe Carto::Api::Public::OauthAppsController do
   describe 'revoke' do
     before(:each) do
       @app = create(:oauth_app, user_id: @carto_org_user_2.id)
-      @app.oauth_app_organizations.create!(organization: @carto_organization, seats: 1)
       @oauth_app_user = Carto::OauthAppUser.create!(user: @carto_org_user_1, oauth_app: @app)
 
       @params = { id: @app.id, api_key: @carto_org_user_1.api_key }

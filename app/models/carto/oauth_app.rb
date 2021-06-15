@@ -24,7 +24,7 @@ module Carto
 
     before_validation :ensure_keys_generated
 
-    before_create :restrict_app_to_organization_users, if: ->(app) { app.user.organization_user? }
+    before_create :restrict_app_to_organization_users, if: ->(app) { app.user.try(:organization_user?) }
     after_create :create_central, if: :sync_with_central?
     after_update :update_central, if: :sync_with_central?
     after_destroy :delete_central, if: :sync_with_central?

@@ -16,6 +16,7 @@ Development
 - Guard code for Users and Visualizations [#16265](https://github.com/CartoDB/cartodb/pull/16265)
 - Use the organization user's data while editing a user from organization settings [#16280](https://github.com/CartoDB/cartodb/pull/16280)
 - Limit start parameter of Dropbox connector [#16264](https://github.com/CartoDB/cartodb/pull/16264)
+- OauthApps restricted by default [#16304](https://github.com/CartoDB/cartodb/pull/16304)
 - Support staging hostname in the catalog [#16258](https://github.com/CartoDB/cartodb/pull/16258)
 - Fix user migration export/import logs [#16298](https://github.com/CartoDB/cartodb/pull/16298)
 - Allow the usage of WMTS URLs with parameters to create custom basemaps [#16271](https://github.com/CartoDB/cartodb/pull/16271)

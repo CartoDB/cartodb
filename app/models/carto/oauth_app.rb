@@ -24,6 +24,7 @@ module Carto
 
     before_validation :ensure_keys_generated
 
+    before_create :restrict_app_to_organization_users, if: ->(app) { app.user.organization_user? }
     after_create :create_central, if: :sync_with_central?
     after_update :update_central, if: :sync_with_central?
     after_destroy :delete_central, if: :sync_with_central?
@@ -86,6 +87,14 @@ module Carto
       errors.add(:redirect_uris, "must not contain a fragment") unless uri.fragment.nil?
     rescue URI::InvalidURIError
       errors.add(:redirect_uris, "must be valid")
+    end
+
+    def restrict_app_to_organization_users
+      self.restricted = true
+      self.oauth_app_organizations.new(
+        organization: user.organization,
+        seats: user.organization.seats
+      )
     end
 
     def create_central

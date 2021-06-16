@@ -32,17 +32,16 @@ module Carto
       end
 
       describe 'restriction' do
-        before(:all) do
-          @organization_owner = create(:carto_user)
-          @organization = create(:organization, :with_owner, owner: @organization_owner)
-          @organization_owner.reload
+        let(:organization_owner) do
+          create(:organization, :with_owner, owner: @user)
+          @user.reload
         end
 
         it 'restrict the access to the user\'s organization if it exists' do
-          app = OauthApp.new(user: @organization_owner,
-                             name: 'name',
-                             redirect_uris: ['https://re.dir'],
-                             website_url: 'http://localhost')
+          app = described_class.new(user: organization_owner,
+                                    name: 'name',
+                                    redirect_uris: ['https://re.dir'],
+                                    website_url: 'http://localhost')
           expect(app).to(be_valid)
 
           app.save!
@@ -52,15 +51,15 @@ module Carto
 
           oauth_app_organization = app.oauth_app_organizations.take
 
-          expect(oauth_app_organization.organization_id).to eq(@organization_owner.organization_id)
-          expect(oauth_app_organization.seats).to eq(@organization_owner.organization.seats)
+          expect(oauth_app_organization.organization_id).to eq(organization_owner.organization_id)
+          expect(oauth_app_organization.seats).to eq(organization_owner.organization.seats)
         end
 
         it 'doesn\'t add restrictions if the user has no organization' do
-          app = OauthApp.new(user: @user,
-                             name: 'name',
-                             redirect_uris: ['https://re.dir'],
-                             website_url: 'http://localhost')
+          app = described_class.new(user: @user,
+                                    name: 'name',
+                                    redirect_uris: ['https://re.dir'],
+                                    website_url: 'http://localhost')
           expect(app).to(be_valid)
 
           app.save!

@@ -91,7 +91,7 @@ module Carto
 
     def restrict_app_to_organization_users
       self.restricted = true
-      self.oauth_app_organizations.new(
+      oauth_app_organizations.new(
         organization: user.organization,
         seats: user.organization.seats
       )

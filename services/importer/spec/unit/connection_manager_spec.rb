@@ -88,9 +88,9 @@ describe Carto::ConnectionManager do
       expect(connection.id).not_to eq(connection1.id)
     end
 
-    it "builds new connection if user not saved" do
+    it 'builds new connection if user not saved' do
       unsaved_user = build(:carto_user_light)
-      connection_manager = Carto::ConnectionManager.new(unsaved_user)
+      connection_manager = described_class.new(unsaved_user)
       connection = connection_manager.create_db_connection(
         name: 'new_connection',
         provider: connection1.connector,
@@ -156,12 +156,12 @@ describe Carto::ConnectionManager do
       expect(user.oauth_connections.find_by(connector: 'dropbox')).to eq(connection)
     end
 
-    it "creates new connections with optional parameters" do
-      Carto::ConnectionManager.any_instance.stubs(:oauth_connection_valid?).returns(true)
+    it 'creates new connections with optional parameters' do
+      described_class.any_instance.stubs(:oauth_connection_valid?).returns(true)
       connection = connection_manager.create_oauth_connection(
         service: 'bigquery',
         token: 'the-token',
-        parameters: { billing_project: 'billing-project'}
+        parameters: { billing_project: 'billing-project' }
       )
       expect(user.oauth_connections.find_by(connector: 'bigquery')).to eq(connection)
     end

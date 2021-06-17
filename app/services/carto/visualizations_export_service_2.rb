@@ -23,6 +23,7 @@ require_dependency 'carto/export/data_import_exporter'
 # 2.1.4: link synchronizations with connections
 module Carto
   module VisualizationsExportService2Configuration
+
     CURRENT_VERSION = '2.1.4'.freeze
 
     def compatible_version?(version)

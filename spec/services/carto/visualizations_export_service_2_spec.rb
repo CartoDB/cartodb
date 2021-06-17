@@ -737,7 +737,7 @@ describe Carto::VisualizationsExportService2 do
         layer_with_table.user_tables.first.id.should eq user_table.id
       end
 
-      it "links synchronizations with connections" do
+      it 'links synchronizations with connections' do
         connection_data = {
           name: 'AWS', connector: 'postgres',
           parameters: {
@@ -747,12 +747,12 @@ describe Carto::VisualizationsExportService2 do
         }
         connection = create(:db_connection, connection_data.merge(user: @user))
         exported_user = create(:carto_user, username: base_visualization_export[:user][:username])
-        exported_connection = create(:db_connection, connection_data.merge(user: exported_user))
+        create(:db_connection, connection_data.merge(user: exported_user))
 
         visualization_with_sync_and_db_connection = export[:visualization]
         visualization_with_sync_and_db_connection[:synchronization].merge!(
           service_name: 'connector',
-          service_item_id:{
+          service_item_id: {
             sql_query: 'SELECT * FROM world_borders_hd',
             import_as: 'world_borders_hd',
             connection_id: connection.id,
@@ -760,10 +760,9 @@ describe Carto::VisualizationsExportService2 do
           }.to_json
         )
 
-        visualization =
-          Carto::VisualizationsExportService2.new.build_visualization_from_json_export(
-            export.merge(visualization: visualization_with_sync_and_db_connection).to_json
-          )
+        visualization = described_class.new.build_visualization_from_json_export(
+          export.merge(visualization: visualization_with_sync_and_db_connection).to_json
+        )
         verify_visualization_vs_export(visualization, export[:visualization])
       end
 
@@ -1079,8 +1078,10 @@ describe Carto::VisualizationsExportService2 do
           }.to_json
         )
 
-        export = Carto::VisualizationsExportService2.new.export_visualization_json_hash(@table_visualization.id, @user)
-        expect(JSON.parse(export[:visualization][:synchronization][:service_item_id])['connection_name']).to eq(connection.name)
+        export = described_class.new.export_visualization_json_hash(@table_visualization.id, @user)
+        expect(
+          JSON.parse(export[:visualization][:synchronization][:service_item_id])['connection_name']
+        ).to eq(connection.name)
 
         synchronization.destroy
       end

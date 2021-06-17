@@ -52,6 +52,8 @@ export default {
     geographyTable () {
       if (this.subscription.is_geography) {
         return this.dataTable;
+      } else if (this.subscription.geography_id.includes('carto-do-public-data')) {
+        return this.subscription.geography_id;
       } else {
         return this.buildDatasetPath(this.subscription.geography_id);
       }

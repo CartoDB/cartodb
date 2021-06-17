@@ -31,6 +31,44 @@ module Carto
         expect(app.errors[:icon_url]).to(include("must be a valid URL"))
       end
 
+      describe 'restriction' do
+        let(:organization_owner) do
+          create(:organization, :with_owner, owner: @user)
+          @user.reload
+        end
+
+        it 'restrict the access to the user\'s organization if it exists' do
+          app = described_class.new(user: organization_owner,
+                                    name: 'name',
+                                    redirect_uris: ['https://re.dir'],
+                                    website_url: 'http://localhost')
+          expect(app).to(be_valid)
+
+          app.save!
+
+          expect(app.restricted).to(be_true)
+          expect(app.oauth_app_organizations).not_to(be_empty)
+
+          oauth_app_organization = app.oauth_app_organizations.take
+
+          expect(oauth_app_organization.organization_id).to eq(organization_owner.organization_id)
+          expect(oauth_app_organization.seats).to eq(organization_owner.organization.seats)
+        end
+
+        it 'doesn\'t add restrictions if the user has no organization' do
+          app = described_class.new(user: @user,
+                                    name: 'name',
+                                    redirect_uris: ['https://re.dir'],
+                                    website_url: 'http://localhost')
+          expect(app).to(be_valid)
+
+          app.save!
+
+          expect(app.restricted).to(be_false)
+          expect(app.oauth_app_organizations).to(be_empty)
+        end
+      end
+
       describe 'redirection uri' do
         it 'rejects if empty' do
           app = OauthApp.new

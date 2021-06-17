@@ -64,8 +64,17 @@ export default {
         return state.recentContent.isFetching;
       },
       recentContent: state => {
-        if (state.config.cartodb_com_hosted) {
-          return state.recentContent.list.filter(l => l.type !== 'keplergl');
+        if (
+          state.config.cartodb_com_hosted &&
+          state.recentContent.list
+        ) {
+          const recentContent = {};
+          Object.entries(state.recentContent.list).forEach(([key, value]) => {
+            if (value.type !== 'keplergl') {
+              recentContent[key] = value;
+            }
+          });
+          return recentContent;
         } else {
           return state.recentContent.list;
         }

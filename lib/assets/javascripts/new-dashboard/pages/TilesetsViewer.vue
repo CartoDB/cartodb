@@ -31,7 +31,8 @@ export default {
       region: state => state.config.region
     }),
     ...mapGetters({
-      bqConnection: 'connectors/getBigqueryConnection'
+      bqConnection: 'connectors/getBigqueryConnection',
+      isOnPremise: 'config/isOnPremise'
     }),
     source () {
       return 'bigquery';
@@ -73,7 +74,8 @@ export default {
           shareOptions: {
             baseUrl: `${this.base_url.replace(/\/(u|user)\/.*/, '')}/viewer`,
             privacy: tileset.privacy,
-            setPrivacy: this.setPrivacy
+            setPrivacy: this.setPrivacy,
+            hide: this.isOnPremise
           }
         };
         init(element, this.props);

@@ -15,6 +15,7 @@ Development
 - Guard code for vizjson users [#16267](https://github.com/CartoDB/cartodb/pull/16267)
 - Guard code for Users and Visualizations [#16265](https://github.com/CartoDB/cartodb/pull/16265)
 - Use the organization user's data while editing a user from organization settings [#16280](https://github.com/CartoDB/cartodb/pull/16280)
+- Fix schema name in layers created by free users [#16307](https://github.com/CartoDB/cartodb/pull/16307)
 - Limit start parameter of Dropbox connector [#16264](https://github.com/CartoDB/cartodb/pull/16264)
 - OauthApps restricted by default [#16304](https://github.com/CartoDB/cartodb/pull/16304)
 - Support staging hostname in the catalog [#16258](https://github.com/CartoDB/cartodb/pull/16258)

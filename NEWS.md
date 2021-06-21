@@ -31,7 +31,7 @@ Development
 - Bump Rubocop to v1.12.1 to fix the CI hook [#16305](https://github.com/CartoDB/cartodb/pull/16305)
 - Fix an issue that prevents API OPTIONS from succeeding because of undue CSRF check [#16292](https://github.com/CartoDB/cartodb/pull/16292)
 - Fix a regression test and add some warnings to source code [#16297](https://github.com/CartoDB/cartodb/pull/16297)
-- Fix broken links on the footer [#16300](https://github.com/CartoDB/cartodb/pull/16300)
+- Fix broken links on the footer for Builder: mobile & jobs [#16300](https://github.com/CartoDB/cartodb/pull/16300)
 
 4.45.0 (2021-04-14)
 -------------------

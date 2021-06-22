@@ -75,6 +75,7 @@
     </section>
 
     <script v-if="publicWebsite" v-html="jsonld" type="application/ld+json"/>
+    <SubscriptionAccess v-if="subscription && showAccessModal"></SubscriptionAccess>
   </Page>
 </template>
 
@@ -86,6 +87,7 @@ import DatasetActionsBar from 'new-dashboard/components/Catalog/DatasetActionsBa
 import DatasetHeader from 'new-dashboard/components/Catalog/DatasetHeader';
 import NavigationTabs from 'new-dashboard/components/Catalog/NavigationTabs';
 import GoUpButton from 'new-dashboard/components/Catalog/GoUpButton';
+import SubscriptionAccess from 'new-dashboard/components/Subscriptions/SubscriptionAccess.vue';
 
 export default {
   name: 'CatalogDataset',
@@ -98,7 +100,8 @@ export default {
     DatasetActionsBar,
     DatasetHeader,
     NavigationTabs,
-    GoUpButton
+    GoUpButton,
+    SubscriptionAccess
   },
   data () {
     return {
@@ -110,10 +113,14 @@ export default {
     ...mapState({
       dataset: state => state.catalog.dataset,
       keyVariables: state => state.catalog.keyVariables,
+      currentSubscription: state => state.catalog.currentSubscription,
       entity_type () {
         return this.$route.params.entity_type;
       }
     }),
+    showAccessModal () {
+      return !!this.currentSubscription;
+    },
     subscription () {
       return this.$store.getters['catalog/getSubscriptionByDataset'](
         this.dataset.id
@@ -217,6 +224,11 @@ export default {
     },
     $route: function (to, from) {
       this.updateTitle();
+    }
+  },
+  mounted () {
+    if (!this.publicWebsite) {
+      this.$store.dispatch('connectors/fetchConnectionsList');
     }
   },
   destroyed () {

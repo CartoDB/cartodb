@@ -68,3 +68,12 @@ export default {
   }
 };
 </script>
+<style scoped lang="scss">
+.quick-actions {
+  /deep/ .quick-actions-select {
+    &:not(.is-active) {
+      background: transparent
+    }
+  }
+}
+</style>

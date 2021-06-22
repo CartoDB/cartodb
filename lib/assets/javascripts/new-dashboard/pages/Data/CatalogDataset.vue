@@ -122,9 +122,11 @@ export default {
       return !!this.currentSubscription;
     },
     subscription () {
-      return this.$store.getters['catalog/getSubscriptionByDataset'](
-        this.dataset.id
-      );
+      return {
+        ...this.dataset,
+        ...this.$store.getters['catalog/getSubscriptionByDataset'](
+          this.dataset.id
+        )};
     },
     isGeography () {
       return this.$route.params.entity_type === 'geography';

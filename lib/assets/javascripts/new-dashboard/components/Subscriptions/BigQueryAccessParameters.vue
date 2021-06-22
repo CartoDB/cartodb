@@ -1,8 +1,8 @@
 <template>
 <div>
-  <p v-if="!subscription.is_geography">Your Data Observatory subscription is composed of a data and a geography table. Find below the location of these tables in BigQuery and a sample query to join them.</p>
+  <p v-if="!isGeography">Your Data Observatory subscription is composed of a data and a geography table. Find below the location of these tables in BigQuery and a sample query to join them.</p>
   <p v-else>Find below the location of your Data Observatory subscription in BigQuery and a sample query.</p>
-  <CopyTextInput v-if="!subscription.is_geography" label="Data table" :value="dataTable" />
+  <CopyTextInput v-if="!isGeography" label="Data table" :value="dataTable" />
   <CopyTextInput label="Geography table" :value="geographyTable" />
   <div class="u-flex u-flex__align--start u-flex__justify--between u-mt--24 code-block-wrapper">
     <label class="is-small u-mt--8 u-mr--16">Sample query</label>
@@ -49,8 +49,11 @@ export default {
     dataTable () {
       return this.buildDatasetPath(this.subscription.id);
     },
+    isGeography () {
+      return this.subscription.is_geography || !this.subscription.geography_id;
+    },
     geographyTable () {
-      if (this.subscription.is_geography) {
+      if (this.isGeography) {
         return this.dataTable;
       } else if (this.subscription.geography_id.includes('carto-do-public-data')) {
         return this.subscription.geography_id;
@@ -60,7 +63,7 @@ export default {
     },
     query () {
       let query = `SELECT * FROM \`${this.geographyTable}\``;
-      if (!this.subscription.is_geography) {
+      if (!this.isGeography) {
         query =
           `SELECT\n\tdo_data.*, do_geo.geom\nFROM \`${this.dataTable}\` do_data\nINNER JOIN \`${this.geographyTable}\` do_geo \nON do_data.geoid=do_geo.geoid `;
       }

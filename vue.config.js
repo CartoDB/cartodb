@@ -1,4 +1,5 @@
 const path = require('path');
+const { http_path_prefix } = require(`./config/grunt_${process.env.NODE_ENV}.json`);
 const { version } = require('./package.json');
 
 module.exports = {
@@ -24,7 +25,10 @@ module.exports = {
     extract: false,
     loaderOptions: {
       scss: {
-        data: `@import 'do-catalog/main.scss';`
+        data: `
+          @import 'do-catalog/main.scss';
+          $assetsDir: "${http_path_prefix}/assets/${version}";
+        `
       }
     }
   },

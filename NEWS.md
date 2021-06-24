@@ -5,10 +5,10 @@ Development
 - None yet
 
 ### Features
+* Request access to datasets directly from DO Catalog [#16291](https://github.com/CartoDB/cartodb/pull/16291)
 * Adapt rake SAML parameters for the new version ruby-saml v1.12.2 [#16274](https://github.com/CartoDB/cartodb/pull/16274), [#16275](https://github.com/CartoDB/cartodb/pull/16275/)
 * Bump ruby-saml to v1.12.2 [#16273](https://github.com/CartoDB/cartodb/pull/16273)
 * Bump cartodb-common to v1.1.2
-* Request access to datasets directly from DO Catalog [#16291](https://github.com/CartoDB/cartodb/pull/16291)
 
 ### Bug fixes / enhancements
 - Hide sharing tab from viewer in on-premises [#16299](https://github.com/CartoDB/cartodb/pull/16299)

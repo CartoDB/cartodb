@@ -45,7 +45,10 @@
     "unlock": "Unlock",
     "delete": "Delete",
     "shareViaURL": "Share via URL",
-    "upgrade": "<a class='is-bold' href='{path}'>Upgrade</a>"
+    "upgrade": "<a class='is-bold' href='{path}'>Upgrade</a>",
+    "accessInBigquery": "Access in BigQuery",
+    "accessInAWS": "Access in AWS",
+    "accessInAzure": "Access in Azure"
   },
   "BulkActions": {
     "selected": "{count} selected",
@@ -129,6 +132,7 @@
     "deleteConnection": "Delete your connection",
     "connectionThroughtOauth": "Connection through oAuth",
     "connectionParameters": "Parameters",
+    "accessIn": "Access in",
     "connectWith": "Connect with",
     "gettingConnected": "Getting connected",
     "connectInfo": "To ensure CARTO has access to your {connector} database, please make sure your firewall is configured to allow the connections from these IP addresses:",

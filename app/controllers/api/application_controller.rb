@@ -1,7 +1,7 @@
 require_relative '../../../lib/cartodb/stats/editor_apis'
 
 class Api::ApplicationController < ApplicationController
-  protect_from_forgery with: :null_session
+  protect_from_forgery with: :null_session, except: :options
 
   # Don't force org urls
   skip_before_filter :ensure_org_url_if_org_user, :browser_is_html5_compliant?

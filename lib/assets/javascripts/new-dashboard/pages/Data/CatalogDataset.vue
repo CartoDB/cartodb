@@ -122,12 +122,21 @@ export default {
       return !!this.currentSubscription;
     },
     subscription () {
-      return {
-        ...this.dataset,
-        ...this.$store.getters['catalog/getSubscriptionByDataset'](
-          this.dataset.id
-        )
-      };
+      const { slug, ...copyDataset } = this.dataset;
+      const subscriptionByDataset = this.$store.getters['catalog/getSubscriptionByDataset'](
+        this.dataset.id
+      );
+
+      let subscription;
+
+      if (subscriptionByDataset) {
+        subscription = {
+          ...copyDataset,
+          ...subscriptionByDataset
+        };
+      }
+
+      return subscription;
     },
     isGeography () {
       return this.$route.params.entity_type === 'geography';

@@ -65,7 +65,7 @@ export default {
       let query = `SELECT * FROM \`${this.geographyTable}\``;
       if (!this.isGeography) {
         query =
-          `SELECT\n\tdo_data.*, do_geo.geom\nFROM \`${this.dataTable}\` do_data\nINNER JOIN \`${this.geographyTable}\` do_geo \nON do_data.geoid=do_geo.geoid `;
+          `SELECT \n\tdo_data.*, do_geo.geom \nFROM \`${this.dataTable}\` do_data \nINNER JOIN \`${this.geographyTable}\` do_geo \nON do_data.geoid=do_geo.geoid `;
       }
       return query;
     }

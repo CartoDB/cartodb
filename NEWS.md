@@ -5,6 +5,7 @@ Development
 - None yet
 
 ### Features
+* Request access to datasets directly from DO Catalog [#16291](https://github.com/CartoDB/cartodb/pull/16291)
 * Adapt rake SAML parameters for the new version ruby-saml v1.12.2 [#16274](https://github.com/CartoDB/cartodb/pull/16274), [#16275](https://github.com/CartoDB/cartodb/pull/16275/)
 * Bump ruby-saml to v1.12.2 [#16273](https://github.com/CartoDB/cartodb/pull/16273)
 * Bump cartodb-common to v1.1.2
@@ -16,20 +17,23 @@ Development
 - Guard code for Users and Visualizations [#16265](https://github.com/CartoDB/cartodb/pull/16265)
 - Use the organization user's data while editing a user from organization settings [#16280](https://github.com/CartoDB/cartodb/pull/16280)
 - Limit start parameter of Dropbox connector [#16264](https://github.com/CartoDB/cartodb/pull/16264)
+- OauthApps restricted by default [#16304](https://github.com/CartoDB/cartodb/pull/16304)
 - Support staging hostname in the catalog [#16258](https://github.com/CartoDB/cartodb/pull/16258)
 - Fix user migration export/import logs [#16298](https://github.com/CartoDB/cartodb/pull/16298)
 - Allow the usage of WMTS URLs with parameters to create custom basemaps [#16271](https://github.com/CartoDB/cartodb/pull/16271)
 - Sync license_type in redis with the values coming from Central [#16270](https://github.com/CartoDB/cartodb/pull/16270)
 - Add `do_bq_project` and `do_bq_dataset` to `api/v3/me` endpoint [#16276](https://github.com/CartoDB/cartodb/pull/16276)
+- Avoid updating the same layer more than once when reordering widgets in Builder [#16303](https://github.com/CartoDB/cartodb/pull/16303)
 - Add endpoint to update DO subscriptions and manage status of full access requests [#16277](https://github.com/CartoDB/cartodb/pull/16277)
 - Add new fields `full_access_[aws|azure]_info` to DO subscriptions [#16278](https://github.com/CartoDB/cartodb/pull/16278)
 - Avoid updating analysis nodes more than once when moving layers in Builder [#16279](https://github.com/CartoDB/cartodb/pull/16279)
 - Fix subscription/sample filter for datasets [#16254](https://github.com/CartoDB/cartodb/pull/16254)
 - Use fully qualified table name while creating a new map from a shared dataset [#16241](https://github.com/CartoDB/cartodb/pull/16241)
 - Add new events for DO full access [#16290](https://github.com/CartoDB/cartodb/pull/16290)
-- Avoid updating the same layer more than once when reordering widgets in Builder [#16303](https://github.com/CartoDB/cartodb/pull/16303)
+- Bump Rubocop to v1.12.1 to fix the CI hook [#16305](https://github.com/CartoDB/cartodb/pull/16305)
 - Fix an issue that prevents API OPTIONS from succeeding because of undue CSRF check [#16292](https://github.com/CartoDB/cartodb/pull/16292)
 - Fix a regression test and add some warnings to source code [#16297](https://github.com/CartoDB/cartodb/pull/16297)
+- Fix broken links on the public footer [#16308](https://github.com/CartoDB/cartodb/pull/16308)
 
 4.45.0 (2021-04-14)
 -------------------

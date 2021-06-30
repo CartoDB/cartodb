@@ -10,7 +10,7 @@ describe Carto::VisualizationsExportService2 do
   let(:export) do
     {
       visualization: visualization_sync_export,
-      version: '2.1.3'
+      version: '2.1.4'
     }
   end
 
@@ -42,7 +42,7 @@ describe Carto::VisualizationsExportService2 do
       from_external_source: false
     }
 
-    mapcapped_visualization_export[:mapcap][:export_json][:version] = '2.1.3'
+    mapcapped_visualization_export[:mapcap][:export_json][:version] = '2.1.4'
     mapcapped_visualization_export.merge(synchronization: sync)
   end
 
@@ -372,12 +372,27 @@ describe Carto::VisualizationsExportService2 do
     sync.etag.should eq sync_export[:etag]
     sync.checksum.should eq sync_export[:checksum]
     sync.service_name.should eq sync_export[:service_name]
-    sync.service_item_id.should eq sync_export[:service_item_id]
     sync.type_guessing.should eq sync_export[:type_guessing]
     sync.quoted_fields_guessing.should eq sync_export[:quoted_fields_guessing]
     sync.content_guessing.should eq sync_export[:content_guessing]
     sync.visualization_id.should eq sync_export[:visualization_id] if full_restore
     sync.from_external_source?.should eq sync_export[:from_external_source]
+
+    verify_sync_service_item_id_vs_export(sync, sync_export)
+  end
+
+  def verify_sync_service_item_id_vs_export(sync, sync_export)
+    if sync.service_name == 'connector' &&
+       JSON.parse(sync_export[:service_item_id])['connection_id'].present?
+      parameters = JSON.parse(sync_export[:service_item_id])
+      parameters['connection_id'] = Carto::User.find_by(
+        username: base_visualization_export[:user][:username]
+      ).db_connections.find_by(name: 'AWS').id
+
+      sync.service_item_id.should eq parameters.except('connection_name').to_json
+    else
+      sync.service_item_id.should eq sync_export[:service_item_id]
+    end
   end
 
   def deep_symbolize(h)
@@ -722,6 +737,35 @@ describe Carto::VisualizationsExportService2 do
         layer_with_table.user_tables.first.id.should eq user_table.id
       end
 
+      it 'links synchronizations with connections' do
+        connection_data = {
+          name: 'AWS', connector: 'postgres',
+          parameters: {
+            server: '0.0.0.0', port: '5432', database: 'postgres', username: 'postgres',
+            password: 'postgres'
+          }
+        }
+        connection = create(:db_connection, connection_data.merge(user: @user))
+        exported_user = create(:carto_user, username: base_visualization_export[:user][:username])
+        create(:db_connection, connection_data.merge(user: exported_user))
+
+        visualization_with_sync_and_db_connection = export[:visualization]
+        visualization_with_sync_and_db_connection[:synchronization].merge!(
+          service_name: 'connector',
+          service_item_id: {
+            sql_query: 'SELECT * FROM world_borders_hd',
+            import_as: 'world_borders_hd',
+            connection_id: connection.id,
+            connection_name: connection.name
+          }.to_json
+        )
+
+        visualization = described_class.new.build_visualization_from_json_export(
+          export.merge(visualization: visualization_with_sync_and_db_connection).to_json
+        )
+        verify_visualization_vs_export(visualization, export[:visualization])
+      end
+
       describe 'maintains backwards compatibility with' do
         describe '2.1.1' do
           it 'defaults to locked visualizations' do
@@ -1007,11 +1051,39 @@ describe Carto::VisualizationsExportService2 do
       end
 
       it 'truncates long sync logs' do
-        create(:carto_synchronization, visualization: @table_visualization)
+        synchronization = create(:carto_synchronization, visualization: @table_visualization)
         @table_visualization.reload
         @table_visualization.synchronization.log.update_attribute(:entries, 'X' * 15000)
         export = Carto::VisualizationsExportService2.new.export_visualization_json_hash(@table_visualization.id, @user)
         expect(export[:visualization][:synchronization][:log][:entries].length).to be < 10000
+        synchronization.destroy
+      end
+
+      it 'exports sync connections' do
+        connection = create(
+          :db_connection,
+          user: @user, name: 'AWS', connector: 'postgres',
+          parameters: {
+            server: '0.0.0.0', port: '5432', database: 'postgres', username: 'postgres',
+            password: 'postgres'
+          }
+        )
+        synchronization = create(
+          :carto_synchronization,
+          visualization: @table_visualization, service_name: 'connector',
+          service_item_id: {
+            sql_query: 'SELECT * FROM world_borders_hd',
+            import_as: 'world_borders_hd',
+            connection_id: connection.id
+          }.to_json
+        )
+
+        export = described_class.new.export_visualization_json_hash(@table_visualization.id, @user)
+        expect(
+          JSON.parse(export[:visualization][:synchronization][:service_item_id])['connection_name']
+        ).to eq(connection.name)
+
+        synchronization.destroy
       end
     end
 
@@ -1489,12 +1561,26 @@ describe Carto::VisualizationsExportService2 do
       imported_sync.checksum.should eq original_sync.checksum
       imported_sync.user_id.should eq importing_user.try(:id) || original_sync.user_id
       imported_sync.service_name.should eq original_sync.service_name
-      imported_sync.service_item_id.should eq original_sync.service_item_id
       imported_sync.type_guessing.should eq original_sync.type_guessing
       imported_sync.quoted_fields_guessing.should eq original_sync.quoted_fields_guessing
       imported_sync.content_guessing.should eq original_sync.content_guessing
       imported_sync.visualization_id.should eq original_sync.visualization_id if full_restore
       imported_sync.from_external_source?.should eq original_sync.from_external_source?
+
+      verify_sync_service_item_id_match(imported_sync, original_sync, importing_user)
+    end
+
+    def verify_sync_service_item_id_match(imported_sync, original_sync, importing_user)
+      if imported_sync.service_name == 'connector' &&
+         JSON.parse(imported_sync[:service_item_id])['connection_id'].present?
+
+        parameters = JSON.parse(imported_sync[:service_item_id])
+        parameters['connection_id'] = importing_user.db_connections.find_by(name: 'AWS').id
+
+        imported_sync.service_item_id.should eq parameters.to_json
+      else
+        imported_sync.service_item_id.should eq original_sync.service_item_id
+      end
     end
 
     def verify_data_import_match(imported_data_import, original_data_import)
@@ -1871,6 +1957,52 @@ describe Carto::VisualizationsExportService2 do
         sync = imported_viz.synchronization
         sync.should be
         sync.log.should be_nil
+
+        destroy_visualization(imported_viz.id)
+      end
+
+      it 'imports a connector synchronization should keep the link with the DB connection' do
+        connection_data = {
+          user: @user, name: 'AWS', connector: 'postgres',
+          parameters: {
+            server: '0.0.0.0', port: '5432', database: 'postgres', username: 'postgres',
+            password: 'postgres'
+          }
+        }
+        connection = create(:db_connection, connection_data.merge(user: @user))
+        create(
+          :carto_synchronization,
+          visualization: @table_visualization, service_name: 'connector',
+          service_item_id: {
+            sql_query: 'SELECT * FROM world_borders_hd',
+            import_as: 'world_borders_hd',
+            connection_id: connection.id
+          }.to_json
+        )
+        imported_connection = create(:db_connection, connection_data.merge(user: @user2))
+
+        exported_string = JSON.parse(
+          export_service.export_visualization_json_string(@table_visualization.id, @user)
+        )
+        exported_string['visualization']['user']['username'] = @user2.username
+        built_viz = export_service.build_visualization_from_json_export(exported_string.to_json)
+
+        # Create user db table (destroyed above)
+        @user2.in_database.execute("CREATE TABLE #{@table_visualization.name} (cartodb_id int)")
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+
+        imported_viz = Carto::Visualization.find(imported_viz.id)
+
+        verify_visualizations_match(imported_viz, @table_visualization, importing_user: @user2, full_restore: false)
+        sync = imported_viz.synchronization
+        sync.should be
+        sync.user_id.should eq @user2.id
+
+        service_item_id = JSON.parse(sync.service_item_id)
+        service_item_id.except('connection_id').should eq(
+          JSON.parse(@table_visualization.synchronization.service_item_id).except('connection_id')
+        )
+        service_item_id['connection_id'].should eq imported_connection.id
 
         destroy_visualization(imported_viz.id)
       end

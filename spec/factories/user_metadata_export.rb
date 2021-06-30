@@ -2,7 +2,7 @@ class UserMetadataExportFactory
 
   def self.full_export(params = {})
     {
-      version: '1.0.18',
+      version: '1.0.19',
       user: {
         email: "e00000002@d00000002.com",
         crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
@@ -289,10 +289,40 @@ class UserMetadataExportFactory
             updated_at: Time.zone.now
           }
         ],
+        db_connections: [
+          {
+            name: 'Bigquery',
+            provider: 'bigquery',
+            parameters: {
+              billing_project: 'carto-test-bq-project',
+              default_project: 'carto-test-bq-project',
+              service_account: {
+                type: 'service_account',
+                project_id: 'carto-test-bq-project',
+                private_key_id: 'private-key-id',
+                private_key: 'private-key',
+                client_email: 'email@cartodb.com',
+                client_id: 'client-id',
+                auth_uri: 'auth-uri',
+                token_uri: 'token-uri',
+                auth_provider_x509_cert_url: 'cert-url',
+                client_x509_cert_url: 'cert-url',
+                email: 'email'
+              }.to_json
+            }
+          }
+        ],
         oauth_connections: [
           {
             service: 'gdrive',
             token: '1234567890'
+          },
+          {
+            service: 'bigquery',
+            token: '1234567890',
+            parameters: {
+              billing_project: 'carto-test-bq-project'
+            }
           }
         ],
         connector_configurations: [

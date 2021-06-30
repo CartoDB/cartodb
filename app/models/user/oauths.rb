@@ -21,8 +21,8 @@ module CartoDB
       @owner.oauth_for_service(service)
     end #select
 
-    def add(service, token)
-      @owner.add_oauth(service, token)
+    def add(service, token, parameters = nil)
+      @owner.add_oauth(service, token, parameters)
       self
     end
 

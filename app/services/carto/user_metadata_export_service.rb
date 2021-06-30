@@ -28,11 +28,12 @@ require_dependency 'carto/export/connector_configuration_exporter'
 # 1.0.16: public_dataset_quota
 # 1.0.17: email_verification
 # 1.0.18: connections
+# 1.0.19: db connections and synchronizations
 
 module Carto
   module UserMetadataExportServiceConfiguration
 
-    CURRENT_VERSION = '1.0.18'.freeze
+    CURRENT_VERSION = '1.0.19'.freeze
     EXPORTED_USER_ATTRIBUTES = %i(
       email crypted_password database_name username admin enabled invite_token invite_token_date
       map_enabled quota_in_bytes table_quota public_map_quota regular_api_key_quota account_type private_tables_enabled
@@ -150,11 +151,22 @@ module Carto
         user.static_notifications = Carto::UserNotification.create(notifications: exported_user[:notifications])
       end
 
-      # TODO: all connections, not only oauth ones should be imported
+      db_connections = exported_user[:db_connections]
+      if db_connections.present?
+        connection_manager = Carto::ConnectionManager.new(user)
+        db_connections.each do |db_connection|
+          connection_manager.create_db_connection(db_connection)
+        end
+      end
+
       oauth_connections = exported_user[:oauth_connections] || exported_user[:synchronization_oauths]
       if oauth_connections.present?
         oauth_connections.each do |oauth_connection|
-          user.oauths.add(oauth_connection[:service], oauth_connection[:token])
+          user.oauths.add(
+            oauth_connection[:service],
+            oauth_connection[:token],
+            oauth_connection[:parameters]
+          )
         end
       end
 
@@ -344,7 +356,7 @@ module Carto
 
       user_hash[:notifications] = user.static_notifications.notifications
 
-      # TODO: all connections, not only oauth ones, should be exported!
+      user_hash[:db_connections] = user.db_connections.map { |dc| export_db_connection(dc) }
       user_hash[:oauth_connections] = user.oauth_connections.map { |oc| export_oauth_connection(oc) }
 
       user_hash[:connector_configurations] = user.connector_configurations.map do |cc|
@@ -440,11 +452,12 @@ module Carto
       }
     end
 
+    def export_db_connection(connection)
+      connection.slice(*%i(name provider parameters))
+    end
+
     def export_oauth_connection(connection)
-      {
-        service: connection.service,
-        token: connection.token
-      }
+      connection.slice(*%i(service token parameters))
     end
 
     def export_oauth_app_user(oau)

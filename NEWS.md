@@ -24,6 +24,7 @@ Development
 - Allow the usage of WMTS URLs with parameters to create custom basemaps [#16271](https://github.com/CartoDB/cartodb/pull/16271)
 - Sync license_type in redis with the values coming from Central [#16270](https://github.com/CartoDB/cartodb/pull/16270)
 - Add `do_bq_project` and `do_bq_dataset` to `api/v3/me` endpoint [#16276](https://github.com/CartoDB/cartodb/pull/16276)
+- Avoid updating the same layer more than once when reordering widgets in Builder [#16303](https://github.com/CartoDB/cartodb/pull/16303)
 - Add endpoint to update DO subscriptions and manage status of full access requests [#16277](https://github.com/CartoDB/cartodb/pull/16277)
 - Add new fields `full_access_[aws|azure]_info` to DO subscriptions [#16278](https://github.com/CartoDB/cartodb/pull/16278)
 - Avoid updating analysis nodes more than once when moving layers in Builder [#16279](https://github.com/CartoDB/cartodb/pull/16279)

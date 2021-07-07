@@ -194,8 +194,12 @@ class Carto::User < ActiveRecord::Base
     connection_manager.find_oauth_connection(service)
   end
 
-  def add_oauth(service, token)
-    connection_manager.create_oauth_connection(service: service, token: token)
+  def add_oauth(service, token, parameters = nil)
+    connection_manager.create_oauth_connection(
+      service: service,
+      token: token,
+      parameters: parameters
+    )
   end
 
   def get_geocoding_calls(options = {})

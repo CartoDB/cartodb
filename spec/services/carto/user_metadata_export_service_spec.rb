@@ -190,6 +190,13 @@ describe Carto::UserMetadataExportService do
     end
 
     it 'imports latest' do
+      Carto::Connection.any_instance.stubs(:validate_db_connection).returns(true)
+      Carto::Connection.any_instance.stubs(:notify_central_bq_connection_created).returns(true)
+
+      test_import_user_from_export(full_export)
+    end
+
+    it 'imports 1.0.18 (without db_connections)' do
       test_import_user_from_export(full_export_one_zero_eighteen)
     end
 
@@ -431,6 +438,14 @@ describe Carto::UserMetadataExportService do
       expect(user.search_tweets).to be_empty
     end
 
+    db_connections = export[:db_connections]
+    if db_connections.present?
+      expect(db_connections.count).to eq user.db_connections.size
+      db_connections.zip(user.db_connections).each do |exported_dc, dc|
+        expect_export_matches_db_connection(exported_dc, dc)
+      end
+    end
+
     oauth_connections = export[:oauth_connections] || export[:synchronization_oauths]
     if oauth_connections
       expect(oauth_connections.count).to eq user.oauth_connections.size
@@ -497,9 +512,18 @@ describe Carto::UserMetadataExportService do
     expect(exported_search_tweet[:updated_at].to_s).to eq search_tweet.updated_at.to_s
   end
 
+  def expect_export_matches_db_connection(exported_connection, connection)
+    expect(exported_connection[:name]).to eq connection.name
+    expect(exported_connection[:provider]).to eq connection.provider
+    expect(exported_connection[:parameters].with_indifferent_access).to eq connection.parameters
+  end
+
   def expect_export_matches_oauth_connection(exported_connection, connection)
     expect(exported_connection[:service]).to eq connection.service
     expect(exported_connection[:token]).to eq connection.token
+    if exported_connection[:parameters].present?
+      expect(exported_connection[:parameters].with_indifferent_access).to eq connection.parameters
+    end
   end
 
   def expect_export_matches_connector_configuration(exported_cc, cc)
@@ -790,53 +814,58 @@ describe Carto::UserMetadataExportService do
   end
 
   let(:full_export) do
-    UserMetadataExportFactory.full_export(connector_provider: @connector_provider, oauth_app: @oauth_app, service_item_id: service_item_id)
+    UserMetadataExportFactory.full_export(
+      connector_provider: @connector_provider,
+      oauth_app: @oauth_app,
+      service_item_id: service_item_id
+    )
   end
 
   let(:full_export_one_zero_eighteen) do
-    user_hash = full_export[:user].except!(:sinchronization_oauths)
+    user_hash = full_export[:user].except!(:db_connections)
+    user_hash[:oauth_connections].reject! { |oc| oc[:parameters].present? }
 
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_seventeen) do
-    user_hash = full_export[:user].except!(:oauth_connections)
+    user_hash = full_export_one_zero_eighteen[:user].except!(:oauth_connections)
 
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_sixteen) do
-    user_hash = full_export[:user].except!(:email_verification_token, :email_veritification_sent_at, :oauth_connections)
+    user_hash = full_export_one_zero_seventeen[:user].except!(:email_verification_token, :email_veritification_sent_at)
 
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_fifteen) do
-    user_hash = full_export[:user].except!(:public_dataset_quota, :oauth_connections)
+    user_hash = full_export_one_zero_sixteen[:user].except!(:public_dataset_quota)
 
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_fourteen) do
-    user_hash = full_export_one_zero_fifteen[:user].except!(:session_salt, :oauth_connections)
+    user_hash = full_export_one_zero_fifteen[:user].except!(:session_salt)
 
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_thirteen) do
-    user_hash = full_export_one_zero_fourteen[:user].except!(:private_map_quota, :oauth_connections)
+    user_hash = full_export_one_zero_fourteen[:user].except!(:private_map_quota)
 
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_twelve) do
-    user_hash = full_export_one_zero_thirteen[:user].except!(:use_case, :company_employees, :oauth_connections)
+    user_hash = full_export_one_zero_thirteen[:user].except!(:use_case, :company_employees)
 
     full_export[:user] = user_hash
     full_export
@@ -848,28 +877,28 @@ describe Carto::UserMetadataExportService do
   end
 
   let(:full_export_one_zero_ten) do
-    user_hash = full_export_one_zero_eleven[:user].except!(:regular_api_key_quota, :oauth_connections)
+    user_hash = full_export_one_zero_eleven[:user].except!(:regular_api_key_quota)
 
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_nine) do
-    user_hash = full_export_one_zero_ten[:user].except!(:public_map_quota, :oauth_connections)
+    user_hash = full_export_one_zero_ten[:user].except!(:public_map_quota)
 
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_eight) do
-    user_hash = full_export_one_zero_nine[:user].except!(:oauth_app_users, :oauth_connections)
+    user_hash = full_export_one_zero_nine[:user].except!(:oauth_app_users)
 
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_seven) do
-    user_hash = full_export_one_zero_eight[:user].except!(:user_multifactor_auths, :oauth_connections)
+    user_hash = full_export_one_zero_eight[:user].except!(:user_multifactor_auths)
 
     full_export[:user] = user_hash
     full_export
@@ -877,7 +906,7 @@ describe Carto::UserMetadataExportService do
 
   let(:full_export_one_zero_six) do
     user_hash = full_export_one_zero_seven[:user].except!(
-      :password_reset_token, :password_reset_sent_at, :oauth_connections
+      :password_reset_token, :password_reset_sent_at
     )
 
     full_export[:user] = user_hash
@@ -885,7 +914,7 @@ describe Carto::UserMetadataExportService do
   end
 
   let(:full_export_one_zero_five) do
-    user_hash = full_export_one_zero_six[:user].except!(:client_application, :oauth_connections)
+    user_hash = full_export_one_zero_six[:user].except!(:client_application)
     limits_hash = full_export[:user][:rate_limit][:limits]
     full_export[:user] = user_hash
     full_export[:user][:rate_limit][:limits] = limits_hash.except!(:sql_copy_from).except!(:sql_copy_to)
@@ -894,32 +923,32 @@ describe Carto::UserMetadataExportService do
 
   let(:full_export_one_zero_four) do
     user_hash = full_export_one_zero_five[:user].except!(
-      :synchronization_oauths, :connector_configurations, :oauth_connections
+      :synchronization_oauths, :connector_configurations
     )
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_three) do
-    user_hash = full_export_one_zero_four[:user].except!(:company).except!(:phone, :oauth_connections)
+    user_hash = full_export_one_zero_four[:user].except!(:company).except!(:phone)
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_two) do
-    user_hash = full_export_one_zero_three[:user].except!(:rate_limit, :oauth_connections)
+    user_hash = full_export_one_zero_three[:user].except!(:rate_limit)
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_one) do
-    user_hash = full_export_one_zero_two[:user].except!(:notifications, :oauth_connections)
+    user_hash = full_export_one_zero_two[:user].except!(:notifications)
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_zero) do
-    user_hash = full_export_one_zero_one[:user].except!(:search_tweets, :oauth_connections)
+    user_hash = full_export_one_zero_one[:user].except!(:search_tweets)
     full_export[:user] = user_hash
     full_export
   end

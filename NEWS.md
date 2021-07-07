@@ -35,6 +35,7 @@ Development
 - Fix an issue that prevents API OPTIONS from succeeding because of undue CSRF check [#16292](https://github.com/CartoDB/cartodb/pull/16292)
 - Fix a regression test and add some warnings to source code [#16297](https://github.com/CartoDB/cartodb/pull/16297)
 - Fix broken links on the public footer [#16308](https://github.com/CartoDB/cartodb/pull/16308)
+- Fix search in _Filter by Column Value_ analysis [#16310](https://github.com/CartoDB/cartodb/pull/16310)
 
 4.45.0 (2021-04-14)
 -------------------

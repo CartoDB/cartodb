@@ -290,11 +290,17 @@ module Carto::UserCommons
       license_srv.remove_from_redis(attributes[:do_dataset][:dataset_id])
     elsif attributes[:action] == 'add'
       license_srv.add_to_redis(attributes[:do_dataset])
+      create_do_sync!(attributes[:do_dataset][:dataset_id]) if attributes[:create_sync]
     else
       message = 'Error updating a DO subscription: unknown action'
       log_error(message: message)
       raise message
     end
+  end
+
+  def create_do_sync!(subscription_id)
+    Carto::DoSyncServiceFactory.get_for_user(self)
+                               .create_sync!(subscription_id, true)
   end
 
   def do_subscription(dataset_id)

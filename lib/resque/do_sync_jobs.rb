@@ -13,8 +13,11 @@ module Resque
         subscription_info = get_subscription_info(data_import)
 
         write_do_sync_status(subscription_info, data_import, licensing_service)
-        data_import.run_import!
-        write_do_sync_status(subscription_info, data_import, licensing_service)
+        begin
+          data_import.run_import!
+        ensure
+          write_do_sync_status(subscription_info, data_import, licensing_service)
+        end
       })
     end
 

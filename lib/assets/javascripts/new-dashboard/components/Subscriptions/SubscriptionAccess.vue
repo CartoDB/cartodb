@@ -64,14 +64,17 @@ import OtherAccessParameters from './OtherAccessParameters.vue';
 const PLATFORMS = {
   'bigquery': {
     name: 'BigQuery',
+    hubspot: 'BigQuery',
     full_access: 'full_access_status_bq'
   },
   'aws': {
     name: 'Amazon S3',
+    hubspot: 'AWS',
     full_access: 'full_access_status_aws'
   },
   'azure': {
     name: 'Azure',
+    hubspot: 'Azure',
     full_access: 'full_access_status_azure'
   }
 };
@@ -169,16 +172,32 @@ export default {
   methods: {
     requestExtendedLicense () {
       this.cleanErrors();
+      this.sendToHubspotExtended();
       this.$store.dispatch('catalog/requestExtendedLicense', this.currentSubscription.id);
       this.sendRequestExtendedMetrics();
     },
     requestAccess () {
       this.cleanErrors();
+      this.sendToHubspotAccess();
       this.$store.dispatch('catalog/requestAccess', {
         subscriptionId: this.currentSubscription.id,
         requestedPlatformProperty: PLATFORMS[this.currentAccessPlatform].full_access
       });
       this.sendRequestAccessMetrics();
+    },
+    sendToHubspotExtended () {
+      this.$store.dispatch('catalog/requestAccessHubspot', {
+        dataset: this.currentSubscription,
+        platform: PLATFORMS[this.currentAccessPlatform].hubspot,
+        type: 'License Extension'
+      });
+    },
+    sendToHubspotAccess () {
+      this.$store.dispatch('catalog/requestAccessHubspot', {
+        dataset: this.currentSubscription,
+        platform: PLATFORMS[this.currentAccessPlatform].hubspot,
+        type: 'New Request'
+      });
     },
     sendRequestExtendedMetrics () {
       this.$store.dispatch(

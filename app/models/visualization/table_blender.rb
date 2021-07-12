@@ -22,7 +22,7 @@ module CartoDB
           if base_layer.supports_labels_layer?
             destination_map.layers << Carto::LayerFactory.build_default_labels_layer(base_layer)
           end
-          destination_map.provider = 'googlemaps' if base_layer.gmapsbase?
+          destination_map.provider = base_layer.gmapsbase? ? 'googlemaps' : 'leaflet'
         else
           copier.copy_base_layer(maps.first, destination_map)
         end

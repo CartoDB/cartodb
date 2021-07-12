@@ -5,6 +5,7 @@ require 'json'
 # 1.0.1: add DO subscriptions
 module Carto
   module RedisExportServiceConfiguration
+
     CURRENT_VERSION = '1.0.1'.freeze
 
     def compatible_version?(version)
@@ -125,7 +126,7 @@ module Carto
       {
         users_metadata: export_dataservices("user:#{user.username}"),
         tables_metadata: export_named_maps(user),
-        do_subscriptions: export_do_subscriptions
+        do_subscriptions: export_do_subscriptions(user)
       }
     end
 
@@ -149,9 +150,12 @@ module Carto
 
     def export_do_subscriptions(user)
       do_subscriptions_key = "do:#{user.username}:datasets"
+      do_subscriptions =
+        $users_metadata.hget(do_subscriptions_key, Carto::DoLicensingService::PRESELECTED_STORAGE)
+      return {} if do_subscriptions.nil?
+
       {
-        do_subscriptions_key =>
-          $users_metadata.hget(redis_key, Carto::DoLicensingService::PRESELECTED_STORAGE)
+        do_subscriptions_key => do_subscriptions
       }
     end
 

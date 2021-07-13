@@ -13,6 +13,7 @@ Development
 * Include DB connections, all parameters for Oauth connections, and the relationship between synchronizations and connections, in User migrations [#16287](https://github.com/CartoDB/cartodb/pull/16287)
 
 ### Bug fixes / enhancements
+- Disable email validation in DO Premium Subscriptions [#16309](https://github.com/CartoDB/cartodb/pull/16309)
 - Hide sharing tab from viewer in on-premises [#16299](https://github.com/CartoDB/cartodb/pull/16299)
 - Remove all references to Spatial Data Catalog and Kepler GL maps in on-premises [#16293](https://github.com/CartoDB/cartodb/pull/16293)
 - Guard code for vizjson users [#16267](https://github.com/CartoDB/cartodb/pull/16267)
@@ -39,6 +40,7 @@ Development
 - Fix a regression test and add some warnings to source code [#16297](https://github.com/CartoDB/cartodb/pull/16297)
 - Fix broken links on the public footer [#16308](https://github.com/CartoDB/cartodb/pull/16308)
 - Fix search in _Filter by Column Value_ analysis [#16310](https://github.com/CartoDB/cartodb/pull/16310)
+- Use Google Maps provider if the base layer is Google [#16314](https://github.com/CartoDB/cartodb/pull/16314)
 
 4.45.0 (2021-04-14)
 -------------------

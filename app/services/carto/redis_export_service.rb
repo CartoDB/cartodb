@@ -16,18 +16,18 @@ module Carto
   module RedisExportServiceImporter
     include RedisExportServiceConfiguration
 
-    def restore_redis_from_json_export(exported_json_string, user = nil)
-      restore_redis_from_hash_export(JSON.parse(exported_json_string).deep_symbolize_keys, user)
+    def restore_redis_from_json_export(exported_json_string)
+      restore_redis_from_hash_export(JSON.parse(exported_json_string).deep_symbolize_keys)
     end
 
     def remove_redis_from_json_export(exported_json_string)
       remove_redis_from_hash_export(JSON.parse(exported_json_string).deep_symbolize_keys)
     end
 
-    def restore_redis_from_hash_export(exported_hash, user)
+    def restore_redis_from_hash_export(exported_hash)
       raise 'Wrong export version' unless compatible_version?(exported_hash[:version])
 
-      restore_redis(exported_hash[:redis], user)
+      restore_redis(exported_hash[:redis])
     end
 
     def remove_redis_from_hash_export(exported_hash)
@@ -36,12 +36,18 @@ module Carto
       remove_redis(exported_hash[:redis])
     end
 
+    def restore_redis_do_subscriptions_from_json_export(exported_json_string, user)
+      exported_hash = JSON.parse(exported_json_string).deep_symbolize_keys
+      raise 'Wrong export version' unless compatible_version?(exported_hash[:version])
+
+      restore_do_subscriptions($users_metadata, exported_hash[:redis][:do_subscriptions], user)
+    end
+
     private
 
-    def restore_redis(redis_export, user)
+    def restore_redis(redis_export)
       restore_keys($users_metadata, redis_export[:users_metadata])
       restore_named_maps($tables_metadata, redis_export[:tables_metadata])
-      restore_do_subscriptions($users_metadata, redis_export[:do_subscriptions], user)
     end
 
     def remove_redis(redis_export)

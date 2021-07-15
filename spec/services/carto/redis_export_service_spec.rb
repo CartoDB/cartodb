@@ -87,7 +87,9 @@ describe Carto::RedisExportService do
   def check_do_subscriptions(export, synchronization)
     expect(export[:redis][:do_subscriptions].keys).to eq(["do:#{@user.username}:datasets"])
     expect(
-      JSON.parse(export[:redis][:do_subscriptions]["do:#{@user.username}:datasets"])['synchronization_id']
+      JSON.parse(
+        export[:redis][:do_subscriptions]["do:#{@user.username}:datasets"]
+      ).first['synchronization_id']
     ).to eq(synchronization.id)
   end
 

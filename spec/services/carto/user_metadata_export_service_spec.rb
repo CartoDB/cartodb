@@ -103,6 +103,19 @@ describe Carto::UserMetadataExportService do
     create(:oauth_access_tokens, oauth_app_user: oauth_app_user, api_key: api_key)
     create(:oauth_refresh_tokens, oauth_app_user: oauth_app_user, scopes: ['offline'])
 
+    # DO subscriptions
+    $users_metadata.hset("do:#{@user.username}:datasets", 'bq', [{
+      dataset_id: 'dataset-id',
+      status: 'active',
+      available_in: ['bq', 'bq-sample'],
+      license_type: 'full-access',
+      type: 'dataset',
+      sync_status: 'synced',
+      sync_table: @table.name,
+      sync_table_id: @table.id,
+      synchronization_id: sync.id
+    }].to_json)
+
     @user.reload
   end
 
@@ -497,6 +510,12 @@ describe Carto::UserMetadataExportService do
 
   def expect_redis_restored(user)
     expect(CartoDB::GeocoderUsageMetrics.new(user.username).get(:geocoder_here, :success_responses)).to eq(1)
+
+    expect(user.subscriptions.count).to eq(1)
+    expect(user.subscriptions.first['sync_table']).to eq(@table.name)
+    if user.tables.exists?(name: user.subscriptions.first['sync_table'])
+      expect(user.subscriptions.first['sync_table_id']).not_to eq(@table.id)
+    end
   end
 
   def expect_export_matches_search_tweet(exported_search_tweet, search_tweet)
@@ -744,6 +763,9 @@ describe Carto::UserMetadataExportService do
     # Clean redis for vizjson2 marking
     $tables_metadata.del(Carto::Visualization::V2_VISUALIZATIONS_REDIS_KEY)
     expect(@visualization.uses_vizjson2?).to be_false
+
+    # Clean redis DO subscriptions
+    $tables_metadata.del("do:#{@user.username}:datasets", 'bq')
 
     @imported_user = service.import_from_directory(path)
     service.import_metadata_from_directory(@imported_user, path)

@@ -132,6 +132,8 @@ module CartoDB
 
           @ids = get_ids_list(@url)
 
+          return if @ids.empty?
+
           @ids_total = @ids.length
 
           first_item = get_by_ids(@url, [@ids.slice!(0)], @metadata[:fields])
@@ -390,8 +392,6 @@ module CartoDB
           rescue StandardError => exception
             raise ResponseError.new("Missing data: #{exception.to_s} #{request_url} #{exception.backtrace}")
           end
-
-          raise ResponseError.new("Empty ids list #{request_url}") if data.length == 0
 
           data
         end

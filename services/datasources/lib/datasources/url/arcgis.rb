@@ -132,7 +132,7 @@ module CartoDB
 
           @ids = get_ids_list(@url)
 
-          return if @ids.empty?
+          return [] if @ids.empty?
 
           @ids_total = @ids.length
 

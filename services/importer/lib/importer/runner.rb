@@ -156,7 +156,7 @@ module CartoDB
       def import(source_file, downloader, loader_object = nil)
         loader = loader_object || loader_for(source_file).new(@job, source_file)
 
-        raise EmptyFileError if source_file.empty?
+        raise EmptyFileError if source_file.empty? && !can_be_empty(downloader.datasource)
 
         loader.set_importer_stats(@importer_stats) if loader.respond_to?(:set_importer_stats)
         loader.options = @loader_options.merge(tracker: tracker, importer_config: @importer_config)
@@ -256,11 +256,9 @@ module CartoDB
           end
 
           @importer_stats.timing('unpack') do
-            if @downloader.source_file.present?
-              log.append "Unpacking #{@downloader.source_file.fullpath}"
-              tracker.call('unpacking')
-              unpacker.run(@downloader.source_file.fullpath)
-            end
+            log.append "Unpacking #{@downloader.source_file.fullpath}"
+            tracker.call('unpacking')
+            unpacker.run(@downloader.source_file.fullpath)
           end
 
           @importer_stats.timing('import') do
@@ -444,6 +442,10 @@ module CartoDB
 
       def delete_job_table
         @job.delete_job_table
+      end
+
+      def can_be_empty(datasource)
+        return datasource.present? && datasource.is_a?(Datasources::Url::ArcGIS)
       end
     end
   end

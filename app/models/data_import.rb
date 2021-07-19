@@ -827,6 +827,7 @@ class DataImport < Sequel::Model
       synchronization = CartoDB::Synchronization::Member.new(id: synchronization_id).fetch
       synchronization.name    = self.table_name
       synchronization.log_id  = log.id
+      byebug
       
       if importer.success?
         imported_table = ::Table.get_by_table_id(self.table_id)

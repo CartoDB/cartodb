@@ -13,6 +13,7 @@ module CartoDB
       end
 
       def run
+        byebug
         data = parse(filepath)
         return self if complex?(data)
         File.open(converted_filepath, 'w') { |file| file.write csv_from(data) }
@@ -54,7 +55,8 @@ module CartoDB
       def parse(filepath)
         return {} unless File.exists?(filepath)
         file  = File.open(filepath)
-        data  = ::JSON.parse(file.read.force_encoding('UTF-8'))
+        raw_content = file.read.force_encoding('UTF-8')
+        data  = raw_content.empty? ? {} : ::JSON.parse(raw_content)
         file.close
         data
       end

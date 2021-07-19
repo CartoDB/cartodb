@@ -256,9 +256,11 @@ module CartoDB
           end
 
           @importer_stats.timing('unpack') do
-            log.append "Unpacking #{@downloader.source_file.fullpath}"
-            tracker.call('unpacking')
-            unpacker.run(@downloader.source_file.fullpath)
+            if @downloader.source_file.present?
+              log.append "Unpacking #{@downloader.source_file.fullpath}"
+              tracker.call('unpacking')
+              unpacker.run(@downloader.source_file.fullpath)
+            end
           end
 
           @importer_stats.timing('import') do

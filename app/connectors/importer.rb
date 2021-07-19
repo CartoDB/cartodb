@@ -78,10 +78,27 @@ module CartoDB
           v.type == Carto::Visualization::TYPE_DERIVED && v.privacy == Carto::Visualization::PRIVACY_PRIVATE
         end
         quota_checker = CartoDB::QuotaChecker.new(data_import.user)
-        return unless quota_checker.will_be_over_public_map_quota?(public_maps.count) ||
-                      quota_checker.will_be_over_private_map_quota?(private_maps.count)
+        will_be_over_public_map_quota = quota_checker.will_be_over_public_map_quota?(public_maps.count)
+        will_be_over_private_map_quota = quota_checker.will_be_over_private_map_quota?(private_maps.count)
 
-        log('Results would set map overquota')
+        return unless will_be_over_public_map_quota || will_be_over_private_map_quota
+
+        # TODO: remove
+        # This is just for debugging https://app.clubhouse.io/cartoteam/story/166179/reef-admin-can-t-import-datasets-due-to-0-public-map-quota
+        # I use 2 log statements because otherwise the output is truncated
+        log(%{
+        Results would set map overquota
+          visualizations_count: #{visualizations.count}
+          public_maps_count: #{public_maps.count}
+          private_maps_count: #{private_maps.count}
+          will_be_over_public_map_quota: #{will_be_over_public_map_quota}
+          will_be_over_private_map_quota: #{will_be_over_private_map_quota}
+        })
+        log(%{
+          quota_checker.public_map_count: #{quota_checker.send(:public_map_count)}
+          quota_checker.private_map_count: #{quota_checker.send(:private_map_count)}
+        })
+
         raise CartoDB::Importer2::MapQuotaExceededError.new
       end
 

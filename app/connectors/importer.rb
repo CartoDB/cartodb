@@ -60,29 +60,12 @@ module CartoDB
           @aborted = true
           results.each { |result| drop(result.table_name) }
         else
-          check_map_quotas(runner.visualizations)
           check_dataset_quotas(runner.visualizations)
           log('Proceeding to register')
           register_results(results)
           create_visualization if data_import.create_visualization
         end
         self
-      end
-
-      def check_map_quotas(visualizations)
-        log('Checking public and private map quota')
-        public_maps = visualizations.select do |v|
-          v.type == Carto::Visualization::TYPE_DERIVED && v.privacy != Carto::Visualization::PRIVACY_PRIVATE
-        end
-        private_maps = visualizations.select do |v|
-          v.type == Carto::Visualization::TYPE_DERIVED && v.privacy == Carto::Visualization::PRIVACY_PRIVATE
-        end
-        quota_checker = CartoDB::QuotaChecker.new(data_import.user)
-        return unless quota_checker.will_be_over_public_map_quota?(public_maps.count) ||
-                      quota_checker.will_be_over_private_map_quota?(private_maps.count)
-
-        log('Results would set map overquota')
-        raise CartoDB::Importer2::MapQuotaExceededError.new
       end
 
       def check_dataset_quotas(visualizations)

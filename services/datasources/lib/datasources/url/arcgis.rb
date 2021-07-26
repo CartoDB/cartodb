@@ -123,6 +123,14 @@ module CartoDB
           end
         end
 
+        def build_empty_initial_stream
+          {
+            geometryType: @metadata[:geometry_type],
+            fields: @metadata[:fields],
+            features: []
+          }.to_json
+        end
+
         # Initial stream, to be used for container creation (table usually)
         # @param id string
         # @return String
@@ -131,6 +139,8 @@ module CartoDB
           @url = sanitize_id(id, sub_id)
 
           @ids = get_ids_list(@url)
+
+          return build_empty_initial_stream if @ids.empty?
 
           @ids_total = @ids.length
 
@@ -390,8 +400,6 @@ module CartoDB
           rescue StandardError => exception
             raise ResponseError.new("Missing data: #{exception.to_s} #{request_url} #{exception.backtrace}")
           end
-
-          raise ResponseError.new("Empty ids list #{request_url}") if data.length == 0
 
           data
         end

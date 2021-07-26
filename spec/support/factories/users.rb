@@ -193,7 +193,7 @@ module CartoDB
       end
 
       data_import.data_source = file_name
-      data_import.send :dispatch
+      data_import.run_import!
       data_import
     end
 

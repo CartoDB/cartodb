@@ -123,6 +123,8 @@ module CartoDB
       end
 
       def store_retrieved_data(filename, resource_data, available_quota_in_bytes)
+        return if resource_data.nil?
+
         if resource_data.is_a?(StringIO)
           return if resource_data.size.zero?
           data = resource_data

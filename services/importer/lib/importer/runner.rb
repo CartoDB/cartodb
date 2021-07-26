@@ -31,6 +31,8 @@ module CartoDB
       # Hard-limit on number of spawned tables (zip files, KMLs and so on)
       MAX_TABLES_PER_IMPORT = 10
 
+      attr_writer :success
+
       # @param options Hash
       # {
       #   :pg Hash { ... }
@@ -146,6 +148,10 @@ module CartoDB
         @tracker || lambda { |state| state }
       end
 
+      def success?
+        remote_data_updated? ? @success : true
+      end
+
       attr_reader :results, :log, :loader, :stats, :downloader, :warnings, :visualizations
 
       private
@@ -241,7 +247,13 @@ module CartoDB
       def single_resource_import
         @importer_stats.timing('resource') do
           @importer_stats.timing('download') do
-            @downloader.run(available_quota)
+            downloader_result = @downloader.run(available_quota)
+
+            if @downloader.datasource&.empty?
+              self.success = true
+              return
+            end
+
             return self unless remote_data_updated?
           end
 
@@ -286,6 +298,8 @@ module CartoDB
               @visualizations.push(visualization)
               log.store
             end
+
+            self.success = (results.count(&:success?) + @visualizations.size) > 0 || @collision_strategy == SKIP
           end
         end
       ensure

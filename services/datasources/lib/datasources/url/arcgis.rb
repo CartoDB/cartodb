@@ -132,6 +132,8 @@ module CartoDB
 
           @ids = get_ids_list(@url)
 
+          return if empty?
+
           @ids_total = @ids.length
 
           first_item = get_by_ids(@url, [@ids.slice!(0)], @metadata[:fields])
@@ -148,7 +150,7 @@ module CartoDB
         # @param id string
         # @return String|nil Nil if no more items
         def stream_resource(id)
-          return nil if @ids.empty?
+          return nil if empty?
 
           retries = 0
           begin
@@ -234,6 +236,10 @@ module CartoDB
         # @return Bool
         def multi_resource_import_supported?(id)
           is_multiresource?(id)
+        end
+
+        def empty?
+          @ids.empty?
         end
 
         private
@@ -390,8 +396,6 @@ module CartoDB
           rescue StandardError => exception
             raise ResponseError.new("Missing data: #{exception.to_s} #{request_url} #{exception.backtrace}")
           end
-
-          raise ResponseError.new("Empty ids list #{request_url}") if data.length == 0
 
           data
         end

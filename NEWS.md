@@ -41,6 +41,7 @@ Development
 - Fix broken links on the public footer [#16308](https://github.com/CartoDB/cartodb/pull/16308)
 - Fix search in _Filter by Column Value_ analysis [#16310](https://github.com/CartoDB/cartodb/pull/16310)
 - Use Google Maps provider if the base layer is Google [#16314](https://github.com/CartoDB/cartodb/pull/16314)
+- Fix empty ArcGIS imports [#16321](https://github.com/CartoDB/cartodb/pull/16321)
 
 4.45.0 (2021-04-14)
 -------------------

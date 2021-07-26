@@ -123,6 +123,14 @@ module CartoDB
           end
         end
 
+        def build_empty_initial_stream
+          {
+            geometryType: @metadata[:geometry_type],
+            fields: @metadata[:fields],
+            features: []
+          }.to_json
+        end
+
         # Initial stream, to be used for container creation (table usually)
         # @param id string
         # @return String
@@ -132,7 +140,7 @@ module CartoDB
 
           @ids = get_ids_list(@url)
 
-          return if empty?
+          return build_empty_initial_stream if empty?
 
           @ids_total = @ids.length
 

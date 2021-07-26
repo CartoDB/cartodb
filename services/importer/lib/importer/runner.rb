@@ -247,9 +247,9 @@ module CartoDB
       def single_resource_import
         @importer_stats.timing('resource') do
           @importer_stats.timing('download') do
-            downloader_result = @downloader.run(available_quota)
+            @downloader.run(available_quota)
 
-            if @downloader.datasource&.empty?
+            if @downloader.datasource.empty?
               self.success = true
               return
             end
@@ -299,7 +299,7 @@ module CartoDB
               log.store
             end
 
-            self.success = (results.count(&:success?) + @visualizations.size) > 0 || @collision_strategy == SKIP
+            self.success = (results.count(&:success?) + @visualizations.size).positive? || @collision_strategy == SKIP
           end
         end
       ensure

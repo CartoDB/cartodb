@@ -121,7 +121,7 @@ module CartoDB
         return true unless remote_data_updated?
 
         visualizations_count = @visualizations ? @visualizations.count : 0
-        (results.count(&:success?) + visualizations_count) > 0 || @collision_strategy == SKIP
+        (results.count(&:success?) + visualizations_count).positive? || @collision_strategy == SKIP
       end
 
       private

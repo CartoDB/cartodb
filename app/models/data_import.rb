@@ -134,7 +134,6 @@ class DataImport < Sequel::Model
                 else
                   !!execute_importer(*new_importer)
                 end
-
     rescue TokenExpiredOrInvalidError => ex
       success = false
       begin

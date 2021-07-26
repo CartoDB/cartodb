@@ -258,9 +258,13 @@ describe Url::ArcGIS do
       expect {
         arcgis.send(:get_ids_list, id)
       }.to raise_error ResponseError
+    end
 
-      # 'objectIds' empty
-      Typhoeus::Expectation.clear
+    it 'does not break when importing an empty feature list' do
+      arcgis = Url::ArcGIS.get_new(@user)
+
+      id = arcgis.send(:sanitize_id, @url)
+
       Typhoeus.stub(/\/arcgis\/rest\//) do
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_ids_list.json"))
 
@@ -273,10 +277,7 @@ describe Url::ArcGIS do
         )
       end
 
-      expect {
-        arcgis.send(:get_ids_list, id)
-      }.to raise_error ResponseError
-
+      arcgis.send(:get_ids_list, id)
     end
 
     it 'tests the get_ids_list() private method' do

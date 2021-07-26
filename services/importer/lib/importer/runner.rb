@@ -249,7 +249,7 @@ module CartoDB
           @importer_stats.timing('download') do
             @downloader.run(available_quota)
 
-            if @downloader.datasource.empty?
+            if @downloader.datasource && @downloader.datasource.empty?
               self.success = true
               return
             end

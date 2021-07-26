@@ -129,6 +129,7 @@ module CartoDB
           return if resource_data.size.zero?
           data = resource_data
         else
+          return if resource_data.empty?
           data = StringIO.new(resource_data)
         end
         name = filename

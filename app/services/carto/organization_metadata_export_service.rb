@@ -316,6 +316,13 @@ module Carto
         Carto::UserMetadataExportService.new.import_search_tweets_from_directory(user, "#{path}/user_#{user.id}")
       end
 
+      organization.users.each do |user|
+        Carto::UserMetadataExportService.new.import_redis_do_subscriptions(
+          user,
+          "#{path}/user_#{user.id}"
+        )
+      end
+
       organization
     end
   end

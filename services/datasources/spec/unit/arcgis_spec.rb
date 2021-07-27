@@ -8,16 +8,11 @@ require_relative '../doubles/user'
 include CartoDB::Datasources
 
 describe Url::ArcGIS do
+  let(:url) { 'http://myserver/arcgis/rest/services/MyFakeService/featurename' }
+  let(:invalid_url) { 'http://myserver/mysite/rest/myfakefolder/MyFakeService/featurename' }
+  let(:user) { CartoDB::Datasources::Doubles::User.new }
 
-  before(:all) do
-    @url = 'http://myserver/arcgis/rest/services/MyFakeService/featurename'
-    @invalid_url = 'http://myserver/mysite/rest/myfakefolder/MyFakeService/featurename'
-    @user = CartoDB::Datasources::Doubles::User.new
-  end
-
-  before(:each) do
-    Typhoeus::Expectation.clear
-  end
+  before { Typhoeus::Expectation.clear }
 
   describe '#set_data_from' do
     it 'tests preparing the correct url from the one given from the UI' do
@@ -39,7 +34,7 @@ describe Url::ArcGIS do
       test7   = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/2314/'
       valid_7 = 'http://myserver/arcgis/rest/services/MyFakeService/featurename/2314/'
 
-      arcgis = Url::ArcGIS.get_new(@user)
+      arcgis = described_class.get_new(user)
 
       expect {
         arcgis.send(:sanitize_id, invalid_1)
@@ -60,7 +55,7 @@ describe Url::ArcGIS do
 
   describe '#get_resource_metadata' do
     it 'tests error scenarios' do
-      arcgis = Url::ArcGIS.get_new(@user)
+      arcgis = described_class.get_new(user)
 
       sub_id = '0'
 
@@ -74,7 +69,7 @@ describe Url::ArcGIS do
       end
 
       expect {
-        arcgis.get_resource_metadata(@url)
+        arcgis.get_resource_metadata(url)
       }.to raise_error DataDownloadError
 
       # Stub layers request (so now works)
@@ -87,11 +82,11 @@ describe Url::ArcGIS do
         )
       end
 
-      layers_data = arcgis.get_resource_metadata(@url)
+      layers_data = arcgis.get_resource_metadata(url)
       layers_data_expected = {
-        id:           @url,
+        id: url,
         subresources: [{
-          id: "#{@url}/#{sub_id}",
+          id: "#{url}/#{sub_id}",
           title: 'first layer'
         }]
       }
@@ -111,7 +106,7 @@ describe Url::ArcGIS do
       end
 
       expect {
-        arcgis.send(:get_subresource_metadata, @url, sub_id)
+        arcgis.send(:get_subresource_metadata, url, sub_id)
       }.to raise_error ResponseError
 
       # Another required field
@@ -128,7 +123,7 @@ describe Url::ArcGIS do
       end
 
       expect {
-        arcgis.send(:get_subresource_metadata, @url, sub_id)
+        arcgis.send(:get_subresource_metadata, url, sub_id)
       }.to raise_error ResponseError
 
       # Invalid ArcGIS version
@@ -145,17 +140,17 @@ describe Url::ArcGIS do
       end
 
       expect {
-        arcgis.send(:get_subresource_metadata, @url, sub_id)
+        arcgis.send(:get_subresource_metadata, url, sub_id)
       }.to raise_error InvalidServiceError
 
       # Invalid ArcGIS URL
       expect {
-        arcgis.send(:get_resource_metadata, @invalid_url)
+        arcgis.send(:get_resource_metadata, invalid_url)
       }.to raise_error InvalidInputDataError
     end
 
     it 'tests metadata retrieval' do
-      arcgis = Url::ArcGIS.get_new(@user)
+      arcgis = described_class.get_new(user)
 
       # Stub layers request (so now works)
       Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/layers/) do |request|
@@ -203,7 +198,7 @@ describe Url::ArcGIS do
       }
 
       expected_metadata_response = {
-        id:       @url + '/0',
+        id: "#{url}/0",
         title:    'Test Feature',
         url:      nil,
         service:  Url::ArcGIS::DATASOURCE_NAME,
@@ -213,7 +208,7 @@ describe Url::ArcGIS do
       }
 
       # Multi-resource scenario already tested above
-      response = arcgis.get_resource_metadata(@url + '/0')
+      response = arcgis.get_resource_metadata("#{url}/0")
 
       response.nil?.should be false
       arcgis.metadata.should eq expected_metadata
@@ -224,9 +219,9 @@ describe Url::ArcGIS do
 
   describe '#get_resource' do
     it 'tests the get_ids_list() private method with error scenarios' do
-      arcgis = Url::ArcGIS.get_new(@user)
+      arcgis = described_class.get_new(user)
 
-      id = arcgis.send(:sanitize_id, @url)
+      id = arcgis.send(:sanitize_id, url)
 
       # 'general http error (non-200)'
       Typhoeus.stub(/\/arcgis\/rest\//) do
@@ -258,9 +253,13 @@ describe Url::ArcGIS do
       expect {
         arcgis.send(:get_ids_list, id)
       }.to raise_error ResponseError
+    end
 
-      # 'objectIds' empty
-      Typhoeus::Expectation.clear
+    it 'does not break when importing an empty feature list' do
+      arcgis = described_class.get_new(user)
+
+      id = arcgis.send(:sanitize_id, url)
+
       Typhoeus.stub(/\/arcgis\/rest\//) do
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_ids_list.json"))
 
@@ -273,16 +272,13 @@ describe Url::ArcGIS do
         )
       end
 
-      expect {
-        arcgis.send(:get_ids_list, id)
-      }.to raise_error ResponseError
-
+      arcgis.send(:get_ids_list, id)
     end
 
     it 'tests the get_ids_list() private method' do
-      arcgis = Url::ArcGIS.get_new(@user)
+      arcgis = described_class.get_new(user)
 
-      id = arcgis.send(:sanitize_id, @url)
+      id = arcgis.send(:sanitize_id, url)
 
       Typhoeus.stub(/\/arcgis\/rest\//) do |request|
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_ids_list.json"))
@@ -302,9 +298,9 @@ describe Url::ArcGIS do
     end
 
     it 'tests the get_ids_list() private method on out-of-order ids' do
-      arcgis = Url::ArcGIS.get_new(@user)
+      arcgis = described_class.get_new(user)
 
-      id = arcgis.send(:sanitize_id, @url)
+      id = arcgis.send(:sanitize_id, url)
 
       Typhoeus.stub(/\/arcgis\/rest\//) do |request|
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_unordered_ids_list.json"))
@@ -324,9 +320,9 @@ describe Url::ArcGIS do
     end
 
     it 'tests the get_by_ids() private method with error scenarios' do
-      arcgis = Url::ArcGIS.get_new(@user)
+      arcgis = described_class.get_new(user)
 
-      id = arcgis.send(:sanitize_id, @url)
+      id = arcgis.send(:sanitize_id, url)
 
       # Empty ids
       expect {
@@ -354,9 +350,9 @@ describe Url::ArcGIS do
     end
 
     it 'tests the get_by_ids() private method' do
-      arcgis = Url::ArcGIS.get_new(@user)
+      arcgis = described_class.get_new(user)
 
-      id = arcgis.send(:sanitize_id, @url)
+      id = arcgis.send(:sanitize_id, url)
 
       Typhoeus.stub(/\/arcgis\/rest\//) do
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_data_01.json"))
@@ -419,7 +415,7 @@ describe Url::ArcGIS do
     end
 
     it 'tests retrieval of data' do
-      arcgis = Url::ArcGIS.get_new(@user)
+      arcgis = described_class.get_new(user)
 
       feature_names = []
 
@@ -479,7 +475,7 @@ describe Url::ArcGIS do
       end
 
       # 1) Retrieve lists of layers
-      metadata = arcgis.get_resource_metadata(@url)
+      metadata = arcgis.get_resource_metadata(url)
 
       # 2) Retrieve metadata of a specific layer (doesn't adds much, but to replicate flow)
       item_metadata = arcgis.get_resource_metadata(metadata[:subresources].first[:id])

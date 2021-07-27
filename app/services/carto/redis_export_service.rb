@@ -39,7 +39,10 @@ module Carto
     def restore_redis_do_subscriptions_from_json_export(exported_json_string, user)
       exported_hash = JSON.parse(exported_json_string).deep_symbolize_keys
       raise 'Wrong export version' unless compatible_version?(exported_hash[:version])
-
+      Rollbar.info('Restore DO subscriptions', {
+        exported_hash: exported_hash,
+        do_subscriptions: exported_hash[:redis][:do_subscriptions]
+      })
       restore_do_subscriptions($users_metadata, exported_hash[:redis][:do_subscriptions], user)
     end
 
@@ -73,7 +76,11 @@ module Carto
     def restore_do_subscriptions(redis_db, redis_keys, user)
       redis_keys.each do |key, value|
         subscriptions = JSON.parse(value.presence || '[]')
-
+        Rollbar.info('Restore DO subscriptions - Key', {
+          key: key,
+          value: value,
+          subscriptions: subscriptions
+        })
         subscriptions.each do |sub|
           dataset = user.tables.find_by(name: sub['sync_table'])
           next if dataset.nil?

@@ -573,12 +573,21 @@ module Carto
       import_user_visualizations_from_directory(user, Carto::Visualization::TYPE_DERIVED, meta_path)
 
       import_search_tweets_from_directory(user, meta_path)
+
+      import_redis_do_subscriptions(user, meta_path)
     end
 
     def import_search_tweets_from_directory(user, meta_path)
       user_file = user_file_dir(meta_path)
       search_tweets = build_search_tweets_from_json_export(File.read(user_file))
       search_tweets.each { |st| save_imported_search_tweet(st, user) }
+    end
+
+    def import_redis_do_subscriptions(user, meta_path)
+      Carto::RedisExportService.new.restore_redis_do_subscriptions_from_json_export(
+        redis_user_file(meta_path),
+        user
+      )
     end
 
     private

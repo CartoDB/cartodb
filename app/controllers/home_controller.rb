@@ -41,7 +41,8 @@ class HomeController < ApplicationController
   end
 
   def app_diagnosis
-    return head(400) if Cartodb.config[:cartodb_com_hosted] == false
+    return head(:not_found) if Cartodb.config[:cartodb_com_hosted] == false ||
+                               Cartodb.config[:diagnosis_page_disabled] == true
 
     @diagnosis = [
       diagnosis_output('Configuration') { configuration_diagnosis },

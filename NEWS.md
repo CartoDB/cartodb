@@ -45,6 +45,7 @@ Development
 - Allow importing datasets with exhausted map quota [#16320](https://github.com/CartoDB/cartodb/pull/16320)
 - Fix empty ArcGIS imports [#16322](https://github.com/CartoDB/cartodb/pull/16322)
 - Add setting to disable diagnosis page [#16324](https://github.com/CartoDB/cartodb/pull/16324)
+- Fix wrong layer schema when creating a map from a shared dataset [#16323](https://github.com/CartoDB/cartodb/pull/16323)
 
 4.45.0 (2021-04-14)
 -------------------

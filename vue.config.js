@@ -19,6 +19,18 @@ module.exports = {
     performance: {
       maxEntrypointSize: 2048000,
       maxAssetSize: 2048000
+    },
+    module: {
+      rules: [
+        {
+          test: /\.vue$/,
+          use: [
+            {
+              loader: 'vue-svg-inline-loader'
+            }
+          ]
+        }
+      ]
     }
   },
   css: {

@@ -59,10 +59,16 @@ export default {
   data () {
     return {
       map: null,
-      showMap: false,
+      showMap: true,
       variable: null,
       geomType: null,
-      initialViewState: null,
+      initialViewState: {
+        zoom: 1,
+        latitude: 0,
+        longitude: 0,
+        bearing: 0,
+        pitch: 0
+      },
       centered: false
     };
   },
@@ -156,6 +162,7 @@ export default {
 
     deck = new Deck({
       canvas: 'deck-canvas',
+      initialViewState: this.initialViewState,
       onViewStateChange: ({ viewState }) => {
         this.syncMapboxViewState(viewState);
       },

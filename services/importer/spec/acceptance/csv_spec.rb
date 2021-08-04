@@ -374,7 +374,19 @@ describe 'csv regression tests' do
     runner = runner_with_fixture('wrong_date.csv', nil, true)
     runner.run
 
+    byebug
     runner.results.first.success?.should eq true
+  end
+
+  it 'auto guessing should work in csv columns if one field is causing troubles' do
+    runner = runner_with_fixture('wrong_date_auto_guessing.csv', nil, true)
+    runner.run
+
+    result = runner.results.first
+    @user.in_database[%Q{
+    SELECT *
+    from #{result.schema}.#{result.table_name}
+    }].first.fetch(:age).class.should eq (Integer)
   end
 
   def sample_for(job)

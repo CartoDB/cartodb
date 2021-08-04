@@ -382,10 +382,12 @@ describe 'csv regression tests' do
     runner.run
 
     result = runner.results.first
-    @user.in_database[%{
-    SELECT *
-    from #{result.schema}.#{result.table_name}
-    }].first.fetch(:age).class.should eq Integer
+    age = @user.in_database[%{
+      SELECT *
+      from #{result.schema}.#{result.table_name}
+      }].first.fetch(:age)
+
+    age.class.should eq Integer
   end
 
   def sample_for(job)

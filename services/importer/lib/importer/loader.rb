@@ -389,11 +389,11 @@ module CartoDB
       end
 
       def try_fix_invalid_field(filepath, command_output)
-        line = command_output.split("line")[1].split(':')[0].split(',')[0].delete(' ').to_i - 1
-        column = command_output.split("column")[1].split(':')[0].split(',')[0].delete(' ')
+        line = command_output.split('line')[1].split(':')[0].split(',')[0].delete(' ').to_i - 1
+        column = command_output.split('column')[1].split(':')[0].split(',')[0].delete(' ')
         csv_content = CSV.read(filepath, headers: true)
-        csv_content[line][column] = '"' + csv_content[line][column] + '"'
-        File.open(filepath, "w") {|file| file.puts csv_content.to_s }
+        csv_content[line][column] = "\"#{csv_content[line][column]}\""
+        File.open(filepath, 'w') { |file| file.puts csv_content.to_s }
       end
     end
   end

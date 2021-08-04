@@ -374,7 +374,6 @@ describe 'csv regression tests' do
     runner = runner_with_fixture('wrong_date.csv', nil, true)
     runner.run
 
-    byebug
     runner.results.first.success?.should eq true
   end
 
@@ -383,14 +382,14 @@ describe 'csv regression tests' do
     runner.run
 
     result = runner.results.first
-    @user.in_database[%Q{
+    @user.in_database[%{
     SELECT *
     from #{result.schema}.#{result.table_name}
-    }].first.fetch(:age).class.should eq (Integer)
+    }].first.fetch(:age).class.should eq Integer
   end
 
   def sample_for(job)
-    job.db[%Q{
+    job.db[%{
       SELECT *
       FROM #{job.qualified_table_name}
     }].first

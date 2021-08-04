@@ -44,6 +44,7 @@ Development
 - Use Google Maps provider if the base layer is Google [#16314](https://github.com/CartoDB/cartodb/pull/16314)
 - Allow importing datasets with exhausted map quota [#16320](https://github.com/CartoDB/cartodb/pull/16320)
 - Fix empty ArcGIS imports [#16322](https://github.com/CartoDB/cartodb/pull/16322)
+- Fix auto guessing when a csv field is wrong [#16326](https://github.com/CartoDB/cartodb/pull/16326)
 
 4.45.0 (2021-04-14)
 -------------------

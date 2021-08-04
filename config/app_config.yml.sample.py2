@@ -789,6 +789,7 @@ defaults: &defaults
       enabled: true
       prefix_namespace: 'dbdirect:'
       hash_key: 'ips'
+  diagnosis_page_disabled: false
 
 development:
   <<: *defaults

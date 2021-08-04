@@ -161,53 +161,61 @@ describe Carto::Analysis do
     include Carto::Factories::Visualizations
 
     context 'with regular user' do
-      before do
-        @user = create(:carto_user, factory_bot_context: { only_db_setup: true })
-        @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
-        @layer = @visualization.data_layers.first
-      end
+      let(:user) { create(:carto_user, factory_bot_context: { only_db_setup: true }) }
+      let(:visualization_objects) { create_full_visualization(user) }
+      let(:layer) { visualization_objects[3].data_layers.first }
+      let(:table_name) { visualization_objects[1].name }
 
       it 'copies the layer query' do
-        @layer.options[:query] = 'SELECT * FROM wadus'
-        analysis = Carto::Analysis.source_analysis_for_layer(@layer, 0)
-        analysis.analysis_node.params[:query].should eq 'SELECT * FROM wadus'
+        layer.options[:query] = 'SELECT * FROM wadus'
+        analysis = described_class.source_analysis_for_layer(layer, 0)
+
+        expect(analysis.analysis_node.params[:query].should).to eq('SELECT * FROM wadus')
       end
 
       it 'copies the layer table_name prepending "public"' do
-        @layer.options[:table_name] = 'tt11'
-        analysis = Carto::Analysis.source_analysis_for_layer(@layer, 0)
-        analysis.analysis_node.options[:table_name].should eq 'public.tt11'
+        layer.options[:table_name] = table_name
+        analysis = described_class.source_analysis_for_layer(layer, 0)
+
+        expect(analysis.analysis_node.options[:table_name]).to eq("public.#{table_name}")
       end
 
       it 'prepends "public" to table_name' do
-        @layer.options.merge!(table_name: 'tt11', user_name: 'juan')
-        analysis = Carto::Analysis.source_analysis_for_layer(@layer, 0)
-        analysis.analysis_node.options[:table_name].should eq 'public.tt11'
+        layer.options.merge!(table_name: table_name, user_name: 'juan')
+        analysis = described_class.source_analysis_for_layer(layer, 0)
+
+        expect(analysis.analysis_node.options[:table_name]).to eq("public.#{table_name}")
       end
     end
 
     context 'with organization user' do
       let(:organization_owner) { create(:carto_user, factory_bot_context: { only_db_setup: true }) }
       let(:organization) { create(:organization, :with_owner, owner: organization_owner) }
-      let(:visualization) { create_full_visualization(organization.owner)[3] }
-      let(:layer) { visualization.data_layers.first }
+      let(:visualization_objects) { create_full_visualization(organization.owner) }
+      let(:layer) { visualization_objects[3].data_layers.first }
+      let(:table_name) { visualization_objects[1].name }
 
       it 'copies the layer query' do
         layer.options[:query] = 'SELECT * FROM wadus'
-        analysis = Carto::Analysis.source_analysis_for_layer(layer, 0)
-        analysis.analysis_node.params[:query].should eq 'SELECT * FROM wadus'
+        analysis = described_class.source_analysis_for_layer(layer, 0)
+
+        expect(analysis.analysis_node.params[:query]).to eq('SELECT * FROM wadus')
       end
 
       it 'always qualifies table_name in organizations' do
-        layer.options.merge!(table_name: 'tt33', user_name: organization.owner.username)
-        analysis = Carto::Analysis.source_analysis_for_layer(layer, 0)
-        analysis.analysis_node.options[:table_name].should eq "#{organization.owner.username}.tt33"
+        layer.options.merge!(table_name: table_name, user_name: organization_owner.username)
+        analysis = described_class.source_analysis_for_layer(layer, 0)
+
+        expect(analysis.analysis_node.options[:table_name]).to eq("#{organization_owner.username}.#{table_name}")
       end
 
       it 'uses default SQL query if missing' do
-        layer.options.merge!(table_name: 'tt33', user_name: organization.owner.username, query: '')
-        analysis = Carto::Analysis.source_analysis_for_layer(layer, 0)
-        analysis.analysis_node.params[:query].should eq "SELECT * FROM #{organization.owner.username}.tt33"
+        layer.options.merge!(table_name: table_name, user_name: organization_owner.username, query: '')
+        analysis = described_class.source_analysis_for_layer(layer, 0)
+
+        expect(analysis.analysis_node.params[:query]).to(
+          eq("SELECT * FROM #{organization_owner.username}.#{table_name}")
+        )
       end
     end
   end

@@ -246,7 +246,7 @@
     "build": "NODE_ENV=production webpack --progress --config webpack/v4/webpack.prod.config.js && npm run build:do-catalog",
     "build:dev": "NODE_ENV=development webpack --progress --config webpack/v4/webpack.dev.config.js",
     "build:static": "NODE_ENV=production webpack --progress --config webpack/static-pages/webpack.prod.config.js",
-    "build:do-catalog": "NODE_ENV=production vue-cli-service build --watch --target lib --name do-catalog --formats umd-min --no-clean --inline-vue lib/assets/javascripts/do-catalog/main.js",
+    "build:do-catalog": "NODE_ENV=production vue-cli-service build --target lib --name do-catalog --formats umd-min --no-clean --inline-vue lib/assets/javascripts/do-catalog/main.js",
     "build:do-catalog:dev": "NODE_ENV=development vue-cli-service build --watch --target lib --name do-catalog --no-clean --inline-vue lib/assets/javascripts/do-catalog/main.js",
     "carto-node": "NODE_ENV=production webpack --progress --config webpack/carto-node/webpack.config.js",
     "dev": "NODE_ENV=development webpack --progress --watch --config webpack/v4/webpack.dev.config.js",

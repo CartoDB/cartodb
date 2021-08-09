@@ -201,6 +201,10 @@ module.exports = {
           rootDir('node_modules/@carto/toolkit-core'),
           rootDir('node_modules/@carto/toolkit-custom-storage'),
           rootDir('node_modules/vue-i18n/'),
+          rootDir('node_modules/@deck.gl/core'),
+          rootDir('node_modules/@loaders.gl/core'),
+          rootDir('node_modules/@loaders.gl/loader-utils'),
+          rootDir('node_modules/@loaders.gl/worker-utils'),
           rootDir('node_modules/@carto/viewer')
         ],
         exclude: [

@@ -292,7 +292,7 @@ module CartoDB
       # Sometimes we could try to recover from a known failure
       def try_fallback(append_mode)
         if ogr2ogr.invalid_dates?
-          job.log "Fallback: Autoguessing problem, trying to disable the problematic column"
+          job.log 'Fallback: Autoguessing problem, trying to disable the problematic column'
           @job.fallback_executed = "date"
           ogr2ogr.overwrite = true
           ogr2ogr.csv_guessing = true
@@ -390,7 +390,7 @@ module CartoDB
 
       def disable_autoguessing_on_wrong_column(filepath, command_output)
         line = /(?<=, line )\d+(?=,)/.match(command_output).to_s.to_i - 1
-        column = /(?<=, column )[a-zA-Z]+(?=:)/.match(command_output).to_s.strip()
+        column = /(?<=, column )[a-zA-Z]+(?=:)/.match(command_output).to_s.strip
         csv_content = CSV.read(filepath, headers: true)
         csv_content[line][column] = "\"#{csv_content[line][column]}\""
         File.open(filepath, 'w') { |file| file.puts csv_content.to_s }

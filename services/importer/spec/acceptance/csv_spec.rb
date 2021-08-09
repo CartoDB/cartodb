@@ -377,7 +377,7 @@ describe 'csv regression tests' do
     runner.results.first.success?.should eq true
   end
 
-  it 'should autoguess columns type correctly when the CSV contains invalid field values' do
+  it 'autoguesses columns type correctly when the CSV contains invalid field values' do
     runner = runner_with_fixture('wrong_date_auto_guessing.csv', nil, true)
     runner.run
 

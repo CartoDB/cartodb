@@ -292,12 +292,12 @@ module CartoDB
       # Sometimes we could try to recover from a known failure
       def try_fallback(append_mode)
         if ogr2ogr.invalid_dates?
-          job.log "Fallback: Disabling autoguessing because there are wrong dates in the source file"
+          job.log "Fallback: Autoguessing problem, trying to disable the problematic column"
           @job.fallback_executed = "date"
           ogr2ogr.overwrite = true
           ogr2ogr.csv_guessing = true
           ogr2ogr.quoted_fields_guessing = false
-          try_fix_invalid_field(ogr2ogr.filepath, ogr2ogr.command_output)
+          disable_autoguessing_on_wrong_column(ogr2ogr.filepath, ogr2ogr.command_output)
           ogr2ogr.run(append_mode)
         elsif ogr2ogr.encoding_error?
           job.log "Fallback: There is an encoding problem, trying with ISO-8859-1"
@@ -388,9 +388,9 @@ module CartoDB
         error =~ /canceling statement due to statement timeout/i
       end
 
-      def try_fix_invalid_field(filepath, command_output)
-        line = command_output.split('line')[1].split(':')[0].split(',')[0].delete(' ').to_i - 1
-        column = command_output.split('column')[1].split(':')[0].split(',')[0].delete(' ')
+      def disable_autoguessing_on_wrong_column(filepath, command_output)
+        line = /(?<=, line )\d+(?=,)/.match(command_output).to_s.to_i - 1
+        column = /(?<=, column )[a-zA-Z]+(?=:)/.match(command_output).to_s.strip()
         csv_content = CSV.read(filepath, headers: true)
         csv_content[line][column] = "\"#{csv_content[line][column]}\""
         File.open(filepath, 'w') { |file| file.puts csv_content.to_s }

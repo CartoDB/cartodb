@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const path = require('path');
 const { http_path_prefix } = require(`./config/grunt_${process.env.NODE_ENV}.json`);
 const { version } = require('./package.json');
@@ -31,16 +32,18 @@ module.exports = {
           ]
         }
       ]
-    }
+    },
+    plugins: [
+      new webpack.DefinePlugin({
+        __ASSETS_DIR__: JSON.stringify(`${http_path_prefix}/assets/${version}`)
+      })
+    ]
   },
   css: {
-    extract: false,
+    extract: true,
     loaderOptions: {
       scss: {
-        data: `
-          @import 'do-catalog/main.scss';
-          $assetsDir: "${http_path_prefix}/assets/${version}";
-        `
+        data: "@import 'do-catalog/main.scss';"
       }
     }
   },

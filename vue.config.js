@@ -40,7 +40,7 @@ module.exports = {
     ]
   },
   css: {
-    extract: true,
+    extract: false,
     loaderOptions: {
       scss: {
         data: "@import 'do-catalog/main.scss';"

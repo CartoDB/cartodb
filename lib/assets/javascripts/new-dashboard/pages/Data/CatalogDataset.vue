@@ -41,6 +41,7 @@
                 :class="{ 'disabled': loading }"
                 :to="{ name: 'spatial-data-catalog' }"
               >
+                <img class="catalogDetail__catalog--icon" svg-inline src="../../assets/icons/common/back-long.svg"/>
                 {{ $t('Catalog.name') }}
               </router-link>
             </div>
@@ -339,6 +340,17 @@ input::-ms-clear {
     padding-bottom: 24px;
     margin-bottom: 24px;
     background-color: $color-primary;
+
+    .back-link {
+      display: flex;
+      align-items: center;
+      & > svg {
+        width: 20px;
+        height: 10px;
+        fill: currentColor;
+        outline: none;
+      }
+    }
 
     a {
       color: white;

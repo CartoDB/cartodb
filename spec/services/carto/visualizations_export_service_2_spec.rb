@@ -745,6 +745,7 @@ describe Carto::VisualizationsExportService2 do
             password: 'postgres'
           }
         }
+        DbCartoConnectors::PostgreSQLProvider.any_instance.stubs(:check_connection).returns(true)
         connection = create(:db_connection, connection_data.merge(user: @user))
         exported_user = create(:carto_user, username: base_visualization_export[:user][:username])
         create(:db_connection, connection_data.merge(user: exported_user))
@@ -1060,6 +1061,7 @@ describe Carto::VisualizationsExportService2 do
       end
 
       it 'exports sync connections' do
+        DbCartoConnectors::PostgreSQLProvider.any_instance.stubs(:check_connection).returns(true)
         connection = create(
           :db_connection,
           user: @user, name: 'AWS', connector: 'postgres',

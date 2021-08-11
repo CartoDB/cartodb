@@ -55,11 +55,14 @@
 <script>
 
 import { mapState } from 'vuex';
-import exportedScssVars from 'new-dashboard/styles/helpers/_assetsDir.scss';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import SubscriptionRequestSuccess from './SubscriptionRequestSuccess.vue';
 import BigQueryAccessParameters from './BigQueryAccessParameters.vue';
 import OtherAccessParameters from './OtherAccessParameters.vue';
+
+/* global __ASSETS_DIR__:false */
+// __ASSETS_DIR__ is injected via Webpack
+const assetsDir = __ASSETS_DIR__;
 
 const PLATFORMS = {
   'bigquery': {
@@ -118,7 +121,7 @@ export default {
     logo () {
       let logo = '';
       if (this.currentAccessPlatform) {
-        logo = `${exportedScssVars.assetsDir && exportedScssVars.assetsDir.replace(/\"/g, '')}/images/layout/platforms/${this.currentAccessPlatform}.svg`;
+        logo = `${assetsDir && assetsDir.replace(/\"/g, '')}/images/layout/platforms/${this.currentAccessPlatform}.svg`;
       }
       return logo;
     },

@@ -31,7 +31,7 @@
       </div>
     </section>
 
-    <section v-if="!loading" class="catalogDetail" :class="{ 'container grid': !publicWebsite, 'u-flex u-flex__justify--center website-header': publicWebsite }">
+    <section v-if="!loading" :style="{ display: isCartoWorkspace ? 'none' : ''}" class="catalogDetail" :class="{ 'container grid': !publicWebsite, 'u-flex u-flex__justify--center website-header': publicWebsite }">
       <div class="grid-cell" :class="{ 'grid-cell--col12': !publicWebsite || responsive, 'grid-cell--col10': publicWebsite && !responsive }">
         <transition name="fade">
           <div>
@@ -41,6 +41,7 @@
                 :class="{ 'disabled': loading }"
                 :to="{ name: 'spatial-data-catalog' }"
               >
+                <img class="catalogDetail__catalog--icon" svg-inline src="../../assets/icons/common/back-long.svg"/>
                 {{ $t('Catalog.name') }}
               </router-link>
             </div>
@@ -57,7 +58,7 @@
     </section>
 
     <section v-if="!loading" class="catalogDetail" :class="{ 'container grid': !publicWebsite, 'u-flex u-flex__justify--center': publicWebsite }">
-      <div class="grid-cell" :class="{ 'grid-cell--col12': !publicWebsite || responsive, 'grid-cell--col10': publicWebsite && !responsive }">
+      <div class="grid-cell" :class="{ 'grid-cell--col12': !publicWebsite || responsive || isCartoWorkspace, 'grid-cell--col10': publicWebsite && !responsive && !isCartoWorkspace }">
         <transition name="fade">
           <div :class="{ 'u-pb--120': responsive }">
             <div class="grid grid-cell u-flex__justify--center">
@@ -92,7 +93,8 @@ import SubscriptionAccess from 'new-dashboard/components/Subscriptions/Subscript
 export default {
   name: 'CatalogDataset',
   props: {
-    publicWebsite: Boolean
+    publicWebsite: Boolean,
+    isCartoWorkspace: Boolean
   },
   components: {
     Page,
@@ -339,14 +341,24 @@ input::-ms-clear {
     margin-bottom: 24px;
     background-color: $color-primary;
 
+    .back-link {
+      display: flex;
+      align-items: center;
+      & > svg {
+        width: 20px;
+        height: 10px;
+        fill: currentColor;
+        outline: none;
+      }
+    }
+
     a {
       color: white;
     }
   }
 }
 
-.back-link:before {
-  content: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMjItN0gtMnYyNGgyNHoiLz48cGF0aCBkPSJNNS4yOTMuMjkzbDEuNDE0IDEuNDE0TDQuNDE0IDRIMjB2Mkg0LjQxNGwyLjI5MyAyLjI5My0xLjQxNCAxLjQxNEwuNTg2IDV6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==);
+.back-link > svg {
   margin-right: 12px;
 }
 </style>

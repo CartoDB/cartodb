@@ -44,7 +44,8 @@ module.exports = {
       __ASSETS_VERSION__: JSON.stringify(version),
       __ASSETS_PATH__: JSON.stringify(`${http_path_prefix}/assets/${version}`),
       __KEPLERGL_BASE_URL__: JSON.stringify('https://kepler.gl'),
-      __CARTO_MAPS_API_V2_EXTERNAL_URL_TEMPLATE__: JSON.stringify(PUBLIC_STATICS_CONFIG.CARTO_MAPS_API_V2_EXTERNAL_URL_TEMPLATE)
+      __CARTO_MAPS_API_V2_EXTERNAL_URL_TEMPLATE__: JSON.stringify(PUBLIC_STATICS_CONFIG.CARTO_MAPS_API_V2_EXTERNAL_URL_TEMPLATE),
+      __ASSETS_DIR__: JSON.stringify(`${http_path_prefix}/assets/${version}`)
     }),
 
     new MiniCssExtractPlugin({
@@ -201,6 +202,10 @@ module.exports = {
           rootDir('node_modules/@carto/toolkit-core'),
           rootDir('node_modules/@carto/toolkit-custom-storage'),
           rootDir('node_modules/vue-i18n/'),
+          rootDir('node_modules/@deck.gl/core'),
+          rootDir('node_modules/@loaders.gl/core'),
+          rootDir('node_modules/@loaders.gl/loader-utils'),
+          rootDir('node_modules/@loaders.gl/worker-utils'),
           rootDir('node_modules/@carto/viewer')
         ],
         exclude: [

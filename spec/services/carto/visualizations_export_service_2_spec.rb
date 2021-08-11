@@ -1079,6 +1079,7 @@ describe Carto::VisualizationsExportService2 do
         )
 
         export = described_class.new.export_visualization_json_hash(@table_visualization.id, @user)
+
         expect(
           JSON.parse(export[:visualization][:synchronization][:service_item_id])['connection_name']
         ).to eq(connection.name)

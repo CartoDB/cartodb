@@ -34,3 +34,8 @@
 
 //vendors
 @import 'vendors/perfect-scrollbar';
+
+// NOTE: Forcing canvas depth, since the 'deckgl-overlay' ID is not being applied to the viewer
+#deckgl-wrapper > canvas {
+  z-index: 1;
+}

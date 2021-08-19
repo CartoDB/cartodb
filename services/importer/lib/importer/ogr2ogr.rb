@@ -151,13 +151,13 @@ module CartoDB
       end
 
       attr_accessor :append_mode, :filepath, :csv_guessing, :overwrite, :encoding, :shape_encoding,
-                    :shape_coordinate_system, :memory_limit
+                    :shape_coordinate_system, :memory_limit, :quoted_fields_guessing
       attr_reader   :exit_code, :command_output
 
       private
 
       attr_writer   :exit_code, :command_output
-      attr_accessor :pg_options, :options, :table_name, :layer, :ogr2ogr_binary, :quoted_fields_guessing
+      attr_accessor :pg_options, :options, :table_name, :layer, :ogr2ogr_binary
 
       def is_csv?
         !(filepath =~ /\.csv$/i).nil?

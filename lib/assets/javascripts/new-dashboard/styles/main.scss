@@ -7,6 +7,7 @@
 // layout
 @import 'layout/cells';
 @import 'layout/dialogs';
+@import 'layout/container';
 @import 'layout/grid';
 @import 'layout/page';
 @import 'layout/section';
@@ -33,3 +34,4 @@
 
 //vendors
 @import 'vendors/perfect-scrollbar';
+@import 'vendors/deckgl';

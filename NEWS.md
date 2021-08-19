@@ -5,6 +5,7 @@ Development
 - None yet
 
 ### Features
+* Update DO Catalog dependencies and some changes to use bundle on CARTO Workspace [#16325](https://github.com/CartoDB/cartodb/pull/16325)
 * Send data to Hubspot when accessing datasets [#16313](https://github.com/CartoDB/cartodb/pull/16313)
 * Request access to datasets directly from DO Catalog [#16291](https://github.com/CartoDB/cartodb/pull/16291)
 * Adapt rake SAML parameters for the new version ruby-saml v1.12.2 [#16274](https://github.com/CartoDB/cartodb/pull/16274), [#16275](https://github.com/CartoDB/cartodb/pull/16275/)
@@ -35,6 +36,7 @@ Development
 - Avoid updating analysis nodes more than once when moving layers in Builder [#16279](https://github.com/CartoDB/cartodb/pull/16279)
 - Fix subscription/sample filter for datasets [#16254](https://github.com/CartoDB/cartodb/pull/16254)
 - Use fully qualified table name while creating a new map from a shared dataset [#16241](https://github.com/CartoDB/cartodb/pull/16241)
+- Render tileset viewer features in front of basemap [#16333](https://github.com/CartoDB/cartodb/pull/16333)
 - Add new events for DO full access [#16290](https://github.com/CartoDB/cartodb/pull/16290)
 - Bump Rubocop to v1.12.1 to fix the CI hook [#16305](https://github.com/CartoDB/cartodb/pull/16305)
 - Fix an issue that prevents API OPTIONS from succeeding because of undue CSRF check [#16292](https://github.com/CartoDB/cartodb/pull/16292)

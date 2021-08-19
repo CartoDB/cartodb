@@ -1,0 +1,4 @@
+// NOTE: Forcing canvas depth, since the 'deckgl-overlay' ID is not being applied to the tileset viewer
+#deckgl-wrapper > canvas {
+  z-index: 1;
+}

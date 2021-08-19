@@ -1,22 +1,24 @@
 <template>
   <section class="catalog-section" :class="{ 'dashboard-page': !publicWebsite }">
-    <div v-if="publicWebsite" class="website-header">
-      <h1 class="grid-cell--col10">{{ $t('DataPage.tabs.catalog') }}</h1>
-    </div>
-    <div v-else class="container grid">
-      <div class="full-width">
-        <SectionTitle class="grid-cell">
-          <template slot="icon">
-            <img src="../../assets/icons/section-title/catalog.svg" width="18" height="20" />
-          </template>
-          <template slot="title">
-            <VisualizationsTitle :defaultTitle="$t('DataPage.tabs.catalog')"/>
-          </template>
-        </SectionTitle>
+    <template v-if="!isCartoWorkspace">
+      <div v-if="publicWebsite" class="website-header">
+        <h1 class="grid-cell--col10">{{ $t('DataPage.tabs.catalog') }}</h1>
       </div>
-    </div>
+      <div v-else class="container grid">
+        <div class="full-width">
+          <SectionTitle class="grid-cell">
+            <template slot="icon">
+              <img src="../../assets/icons/section-title/catalog.svg" width="18" height="20" />
+            </template>
+            <template slot="title">
+              <VisualizationsTitle :defaultTitle="$t('DataPage.tabs.catalog')"/>
+            </template>
+          </SectionTitle>
+        </div>
+      </div>
+    </template>
     <div :class="{ 'container grid': !publicWebsite, 'u-flex u-flex__justify--center': publicWebsite }">
-      <div class="grid-cell" :class="{ 'grid-cell--col12': !publicWebsite, 'grid-cell--col10': publicWebsite }">
+      <div class="grid-cell" :class="{ 'grid-cell--col12': !publicWebsite || isCartoWorkspace , 'grid-cell--col10': publicWebsite && !isCartoWorkspace}">
         <div class="grid u-flex__justify--center">
           <div
             class="u-pr--10 grid-cell--col4 grid-cell--col12--tablet dynamic-filtering"
@@ -104,7 +106,8 @@ import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
 export default {
   name: 'CatalogPage',
   props: {
-    publicWebsite: Boolean
+    publicWebsite: Boolean,
+    isCartoWorkspace: Boolean
   },
   mixins: [icon_by_environment],
   components: {

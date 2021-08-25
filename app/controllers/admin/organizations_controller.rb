@@ -131,7 +131,7 @@ class Admin::OrganizationsController < Admin::AdminController
 
   def regenerate_all_api_keys
     valid_password_confirmation
-    @organization.users.each(&:regenerate_all_api_keys)
+    @organization.users.map(&:sequel_user).each(&:regenerate_all_api_keys)
 
     redirect_to CartoDB.url(self, 'organization_settings', user: current_user),
                 flash: { success: "Users API keys regenerated successfully" }

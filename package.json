@@ -161,7 +161,7 @@
     "jstify": "0.13.0",
     "load-grunt-tasks": "3.2.0",
     "mini-css-extract-plugin": "^0.4.0",
-    "minimist": "1.2.0",
+    "minimist": "1.2.3",
     "open": "0.0.5",
     "optimize-css-assets-webpack-plugin": "^5.0.4",
     "prettysize": "0.0.3",

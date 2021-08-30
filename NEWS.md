@@ -23,6 +23,7 @@ Development
 - Use the organization user's data while editing a user from organization settings [#16280](https://github.com/CartoDB/cartodb/pull/16280)
 - Fix schema name in layers created by free users [#16307](https://github.com/CartoDB/cartodb/pull/16307)
 - Limit start parameter of Dropbox connector [#16264](https://github.com/CartoDB/cartodb/pull/16264)
+- Fix deck.gl dependency conflicts [#16339](https://github.com/CartoDB/cartodb/pull/16339)
 - Migrate Redis DO subscription information in inter-cloud migrations [#16315](https://github.com/CartoDB/cartodb/pull/16315)
 - OauthApps restricted by default [#16304](https://github.com/CartoDB/cartodb/pull/16304)
 - Support staging hostname in the catalog [#16258](https://github.com/CartoDB/cartodb/pull/16258)

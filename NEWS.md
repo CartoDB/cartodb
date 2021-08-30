@@ -5,6 +5,7 @@ Development
 - None yet
 
 ### Features
+* Upgrade to deck.gl 8.5.6 [16338](https://github.com/CartoDB/cartodb/pull/16338)
 * Update DO Catalog dependencies and some changes to use bundle on CARTO Workspace [#16325](https://github.com/CartoDB/cartodb/pull/16325)
 * Send data to Hubspot when accessing datasets [#16313](https://github.com/CartoDB/cartodb/pull/16313)
 * Request access to datasets directly from DO Catalog [#16291](https://github.com/CartoDB/cartodb/pull/16291)

@@ -86,11 +86,13 @@ module Carto::UserCommons
     @oauths ||= CartoDB::OAuths.new(self)
   end
 
+  # NOTE: This criterion should be equivalent to the one used in Central for 'active' and 'locked'
+  #       https://github.com/CartoDB/cartodb-central/blob/48cea80941bb481659aeab5ee26beba970576756/app/models/user.rb#L348-L350
   def unverified?
     (active? || locked?) &&
-    email_verification_token.present? &&
-    email_verification_sent_at.present? &&
-    email_verification_sent_at < 1.hour.ago && !oauth_signin?
+      email_verification_token.present? &&
+      email_verification_sent_at.present? &&
+      email_verification_sent_at < 7.days.ago && !oauth_signin?
   end
 
   def remove_logo?

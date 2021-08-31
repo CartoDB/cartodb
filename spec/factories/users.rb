@@ -48,7 +48,7 @@ FactoryBot.define do
 
     trait :unverified do
       email_verification_token   { 'aaa' }
-      email_verification_sent_at { Time.current - 2.hours }
+      email_verification_sent_at { Time.current - 8.days }
     end
 
     trait :valid do

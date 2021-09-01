@@ -50,6 +50,7 @@ Development
 - Fix wrong layer schema when creating a map from a shared dataset [#16323](https://github.com/CartoDB/cartodb/pull/16323)
 - Fix auto guessing when a csv field is wrong [#16326](https://github.com/CartoDB/cartodb/pull/16326)
 - Fix regenerating API Keys for a whole organization [#16336](https://github.com/CartoDB/cartodb/pull/16336)
+- Fix default_public API Key generation [#16340](https://github.com/CartoDB/cartodb/pull/16340)
 
 4.45.0 (2021-04-14)
 -------------------

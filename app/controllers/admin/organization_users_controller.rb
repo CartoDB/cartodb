@@ -82,6 +82,13 @@ class Admin::OrganizationUsersController < Admin::AdminController
     end
     raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
 
+    if Cartodb::Central.api_sync_enabled?
+      response = central_new_organization_user_validation(@user)
+      unless response['valid']
+        raise Sequel::ValidationFailed.new("Validation failed: #{response['error']}")
+      end
+    end
+
     @user.save(raise_on_failure: true)
     @user.create_in_central
     common_data_url = CartoDB::Visualization::CommonDataService.build_url(self)

@@ -84,7 +84,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
     if Cartodb::Central.api_sync_enabled?
       response = central_new_organization_user_validation(@user)
-      unless response['valid']
+      if !response['valid']
         raise Sequel::ValidationFailed.new("Validation failed: #{response['error']}")
       end
     end

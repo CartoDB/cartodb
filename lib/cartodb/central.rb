@@ -24,10 +24,8 @@ module Cartodb
       !api_sync_enabled?
     end
 
-    class <<self
-
+    class << self
       alias login_redirection_enabled? api_sync_enabled?
-
     end
 
     def initialize
@@ -91,6 +89,15 @@ module Cartodb
 
     def get_organization_user(organization_name, username)
       send_request("api/organizations/#{ organization_name }/users/#{ username }", nil, :get, [200])
+    end
+
+    def validate_new_organization_user(username:, email:)
+      send_request(
+        'api/organizations/users/validate_new',
+        { user: { username: username, email: email } },
+        :post,
+        [200, 400]
+      )
     end
 
     def create_organization_user(organization_name, user_attributes)

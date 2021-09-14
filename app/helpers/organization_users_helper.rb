@@ -50,6 +50,10 @@ module OrganizationUsersHelper
     hardened_params.symbolize_keys
   end
 
+  def central_new_organization_user_validation(user)
+    Cartodb::Central.new.validate_new_organization_user(username: user.username, email: user.email)
+  end
+
   # This is not run at model validation flow because we might want to override this rules.
   # owner parameter allows validation before actual value setting
   def soft_limits_validation(user, params_to_update, owner = user.organization.owner)

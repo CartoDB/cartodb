@@ -5,6 +5,7 @@ Development
 - None yet
 
 ### Features
+* Upgrade to deck.gl 8.5.6 [16338](https://github.com/CartoDB/cartodb/pull/16338)
 * Update DO Catalog dependencies and some changes to use bundle on CARTO Workspace [#16325](https://github.com/CartoDB/cartodb/pull/16325)
 * Send data to Hubspot when accessing datasets [#16313](https://github.com/CartoDB/cartodb/pull/16313)
 * Request access to datasets directly from DO Catalog [#16291](https://github.com/CartoDB/cartodb/pull/16291)
@@ -22,6 +23,7 @@ Development
 - Use the organization user's data while editing a user from organization settings [#16280](https://github.com/CartoDB/cartodb/pull/16280)
 - Fix schema name in layers created by free users [#16307](https://github.com/CartoDB/cartodb/pull/16307)
 - Limit start parameter of Dropbox connector [#16264](https://github.com/CartoDB/cartodb/pull/16264)
+- Fix deck.gl dependency conflicts [#16339](https://github.com/CartoDB/cartodb/pull/16339)
 - Migrate Redis DO subscription information in inter-cloud migrations [#16315](https://github.com/CartoDB/cartodb/pull/16315)
 - OauthApps restricted by default [#16304](https://github.com/CartoDB/cartodb/pull/16304)
 - Support staging hostname in the catalog [#16258](https://github.com/CartoDB/cartodb/pull/16258)
@@ -33,11 +35,13 @@ Development
 - Avoid updating the same layer more than once when reordering widgets in Builder [#16303](https://github.com/CartoDB/cartodb/pull/16303)
 - Add endpoint to update DO subscriptions and manage status of full access requests [#16277](https://github.com/CartoDB/cartodb/pull/16277)
 - Add new fields `full_access_[aws|azure]_info` to DO subscriptions [#16278](https://github.com/CartoDB/cartodb/pull/16278)
+- Fix verification process for active users [#16337](https://github.com/CartoDB/cartodb/pull/16337)
 - Avoid updating analysis nodes more than once when moving layers in Builder [#16279](https://github.com/CartoDB/cartodb/pull/16279)
 - Fix subscription/sample filter for datasets [#16254](https://github.com/CartoDB/cartodb/pull/16254)
 - Use fully qualified table name while creating a new map from a shared dataset [#16241](https://github.com/CartoDB/cartodb/pull/16241)
 - Render tileset viewer features in front of basemap [#16333](https://github.com/CartoDB/cartodb/pull/16333)
 - Add new events for DO full access [#16290](https://github.com/CartoDB/cartodb/pull/16290)
+- Add username/email validation when a organization user is created [#16341](https://github.com/CartoDB/cartodb/pull/16341)
 - Bump Rubocop to v1.12.1 to fix the CI hook [#16305](https://github.com/CartoDB/cartodb/pull/16305)
 - Fix an issue that prevents API OPTIONS from succeeding because of undue CSRF check [#16292](https://github.com/CartoDB/cartodb/pull/16292)
 - Fix a regression test and add some warnings to source code [#16297](https://github.com/CartoDB/cartodb/pull/16297)

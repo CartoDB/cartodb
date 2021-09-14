@@ -663,7 +663,7 @@ module Carto
 
     def valid_user?(new_user_attributes = {})
       new_user_attributes ||= {}
-      chuser.engine_enabled = new_user_attributes[:engine_enabled] if new_user_attributes[:engine_enabled].present?
+      user.engine_enabled = new_user_attributes[:engine_enabled] if new_user_attributes[:engine_enabled].present?
       user.state = new_user_attributes[:state] if new_user_attributes[:state].present?
 
       # This is not avalidation per-se, since we don't want to remove api keys when a user is disabled

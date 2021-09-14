@@ -144,6 +144,10 @@ class Admin::PagesController < Admin::AdminController
       @website             = website_url(@viewed_user.website)
       @website_clean       = @website ? @website.gsub(/https?:\/\//, "") : ""
 
+      if current_user.username == @viewed_user.username
+        @region = Cartodb.get_config(:bigquery_region)
+      end
+
       if eligible_for_redirect?(@viewed_user)
         # redirect username.host.ext => org-name.host.ext/u/username
         redirect_to CartoDB.base_url(@viewed_user.organization.name, @viewed_user.username) <<

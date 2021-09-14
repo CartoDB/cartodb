@@ -48,6 +48,13 @@
         </li>
         <% end %>
 
+        <% if @region %>
+        <li class="PublicUserProfile-detail">
+          <i class="CDB-IconFont CDB-IconFont-globe CDB-IconFont--withLabel"></i>
+          <%= @region %>
+        </li>
+        <% end %>
+
         <li class="PublicUserProfile-detail">
           <i class="CDB-IconFont CDB-IconFont-calendar CDB-IconFont--withLabel"></i>
           Member since <%= @viewed_user.created_at.strftime("%B %Y") %>

@@ -31,6 +31,9 @@
         <% } else if (role === 'builder') { %>
           <span class="UserRoleIndicator Builder CDB-Text CDB-Size-small is-semibold u-altTextColor"><%= _t('profile.views.form.builder') %></span>
           <p class="CDB-Text CDB-Size-small u-altTextColor u-tSpace"><%= _t('profile.views.form.write_access') %></p>
+          <% if (region) { %>
+            <p class="CDB-Text CDB-Size-small u-altTextColor u-tSpace"><i class="CDB-IconFont CDB-IconFont-globe CDB-IconFont--withLabel"></i> <%= region %> </p>
+          <% } %>
         <% } else { %>
           <!-- for custom role names (via gears) -->
           <span class="UserRoleIndicator Builder CDB-Text CDB-Size-small is-semibold u-altTextColor"><%= role %></span>

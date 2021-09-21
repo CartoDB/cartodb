@@ -662,6 +662,7 @@ module Carto
     end
 
     def valid_user?(new_user_attributes = {})
+      new_user_attributes ||= {}
       user.engine_enabled = new_user_attributes[:engine_enabled] if new_user_attributes[:engine_enabled].present?
       user.state = new_user_attributes[:state] if new_user_attributes[:state].present?
 

@@ -664,7 +664,7 @@ module CartoDB
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
           # WARNING: Do not forget about updating dependencies in cartodb-platform and carto-postgres-artifacts
-          cdb_extension_target_version = '0.37.1'
+          cdb_extension_target_version = '0.37.2'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|

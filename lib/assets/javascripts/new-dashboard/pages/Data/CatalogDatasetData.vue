@@ -8,6 +8,7 @@
             <a
               v-if="variables && variables.length > 0"
               @click="scrollToVariables()"
+              id="viewDatasetVariables"
               class="is-small"
               >View {{ numberColumns }} variables list</a
             >
@@ -86,6 +87,7 @@
         v-if="variables && variables.length > 0"
         class="grid-cell--col12 u-mt--60"
         ref="variablesSection"
+        id="variablesSection"
       >
         <div class="u-flex u-flex__align--center u-flex__justify--between">
           <h2 class="grid-cell title is-caption is-txtMainTextColor">

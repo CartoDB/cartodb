@@ -13,6 +13,7 @@ Development
 * Bump ruby-saml to v1.12.2 [#16273](https://github.com/CartoDB/cartodb/pull/16273)
 * Bump cartodb-common to v1.1.2
 * Include DB connections, all parameters for Oauth connections, and the relationship between synchronizations and connections, in User migrations [#16287](https://github.com/CartoDB/cartodb/pull/16287)
+* Upgrade to CARTO Viewer v1.0.8 [16347](https://github.com/CartoDB/cartodb/pull/16347)
 
 ### Bug fixes / enhancements
 - Add "element" param to DO-Catalog entry function [#16343](https://github.com/CartoDB/cartodb/pull/16343)

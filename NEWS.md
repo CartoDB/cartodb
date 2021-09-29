@@ -59,6 +59,7 @@ Development
 - Fix auto guessing when a csv field is wrong [#16326](https://github.com/CartoDB/cartodb/pull/16326)
 - Fix regenerating API Keys for a whole organization [#16336](https://github.com/CartoDB/cartodb/pull/16336)
 - Fix API Keys propagation to Redis function [#16340](https://github.com/CartoDB/cartodb/pull/16340)
+- Fix scrolling on widget's sidebar in builder [#16350](https://github.com/CartoDB/cartodb/pull/16350)
 
 4.45.0 (2021-04-14)
 -------------------

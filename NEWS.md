@@ -13,8 +13,11 @@ Development
 * Bump ruby-saml to v1.12.2 [#16273](https://github.com/CartoDB/cartodb/pull/16273)
 * Bump cartodb-common to v1.1.2
 * Include DB connections, all parameters for Oauth connections, and the relationship between synchronizations and connections, in User migrations [#16287](https://github.com/CartoDB/cartodb/pull/16287)
+* Upgrade to CARTO Viewer v1.0.8 [16347](https://github.com/CartoDB/cartodb/pull/16347)
 
 ### Bug fixes / enhancements
+- Add "element" param to DO-Catalog entry function [#16343](https://github.com/CartoDB/cartodb/pull/16343)
+- Add new DO Catalog route for internal usage [#16342](https://github.com/CartoDB/cartodb/pull/16342)
 - Disable email validation in DO Premium Subscriptions [#16309](https://github.com/CartoDB/cartodb/pull/16309)
 - Hide sharing tab from viewer in on-premises [#16299](https://github.com/CartoDB/cartodb/pull/16299)
 - Remove all references to Spatial Data Catalog and Kepler GL maps in on-premises [#16293](https://github.com/CartoDB/cartodb/pull/16293)
@@ -54,6 +57,7 @@ Development
 - Fix wrong layer schema when creating a map from a shared dataset [#16323](https://github.com/CartoDB/cartodb/pull/16323)
 - Fix auto guessing when a csv field is wrong [#16326](https://github.com/CartoDB/cartodb/pull/16326)
 - Fix regenerating API Keys for a whole organization [#16336](https://github.com/CartoDB/cartodb/pull/16336)
+- Fix API Keys propagation to Redis function [#16340](https://github.com/CartoDB/cartodb/pull/16340)
 
 4.45.0 (2021-04-14)
 -------------------

@@ -114,6 +114,7 @@
                 "use_case": "Use case",
                 "phone": "Phone Number",
                 "user_type": "User type",
+                "database_location": "Database location",
                 "viewer": "VIEWER",
                 "read_only": "Read-only access for datasets and maps",
                 "builder": "BUILDER",

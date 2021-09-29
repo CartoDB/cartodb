@@ -32,7 +32,12 @@
           <span class="UserRoleIndicator Builder CDB-Text CDB-Size-small is-semibold u-altTextColor"><%= _t('profile.views.form.builder') %></span>
           <p class="CDB-Text CDB-Size-small u-altTextColor u-tSpace"><%= _t('profile.views.form.write_access') %></p>
           <% if (region) { %>
-            <p class="CDB-Text CDB-Size-small u-altTextColor u-tSpace"><i class="CDB-IconFont CDB-IconFont-globe CDB-IconFont--withLabel"></i> <%= region %> </p>
+            <div class="FormAccount-rowData FormAccount-userRole">
+              <div class="FormAccount-databaseLocation">
+                <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.database_location') %></label>
+              </div>
+              <p class="FormAccount-databaseLocationText"><%= region %> </p>
+            </div>
           <% } %>
         <% } else { %>
           <!-- for custom role names (via gears) -->

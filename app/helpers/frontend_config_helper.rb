@@ -6,7 +6,7 @@ module FrontendConfigHelper
 
   def frontend_config_hash(user = current_user)
     config = {
-      region:                     Cartodb.get_config(:bigquery_region),
+      region:                     Cartodb.get_config(:bigquery_region) ? Cartodb.get_config(:bigquery_region).upcase : nil,
       app_assets_base_url:        app_assets_base_url,
       maps_api_template:          maps_api_template,
       maps_api_v2_template:       maps_api_v2_template,

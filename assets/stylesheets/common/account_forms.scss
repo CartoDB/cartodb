@@ -506,7 +506,16 @@ $sLabel-width: 140px;
   flex-direction: column;
   align-items: baseline;
   justify-content: space-between;
-  margin-top: 20px;
+}
+
+.FormAccount-databaseLocation {
+  margin-top: 24px;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.FormAccount-databaseLocationText {
+  font-size: 13px;
 }
 
 .FormAccount-avatarPreview {

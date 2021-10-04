@@ -1,4 +1,9 @@
 {
+  "Carto3Release": {
+    "title": "New release",
+    "message": "We just launched a new version of CARTO, providing a fully-cloud native experience. Sign up for an account and {link}!",
+    "link": "try it today"
+  },
   "MapCard": {
     "shared": {
       "LINK": "Link",

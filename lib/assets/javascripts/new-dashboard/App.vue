@@ -1,12 +1,13 @@
 <template>
   <div id="app">
     <header class="header" :class="{ 'has-user-notification': isNotificationVisible }">
+      <NotificationCarto3Release v-if="isCarto3ReleaseNotificationVisible" @onClose="closeCarto3Release" />
       <NotificationWarning v-if="isNotificationVisible" :htmlBody=user.notification />
       <NavigationBar
         :user="user"
         :baseUrl="baseUrl"
         :notificationsCount="notificationsCount"
-        :isNotificationVisible=isNotificationVisible
+        :isNotificationVisible="isNotificationVisible || isCarto3ReleaseNotificationVisible"
         :isFirstTimeInDashboard="isFirstTimeInDashboard"
         bundleType="dashboard"/>
     </header>
@@ -21,6 +22,7 @@
 
 <script>
 import NavigationBar from 'new-dashboard/components/NavigationBar/NavigationBar';
+import NotificationCarto3Release from 'new-dashboard/components/NotificationCarto3Release';
 import NotificationWarning from 'new-dashboard/components/NotificationWarning';
 import Footer from 'new-dashboard/components/Footer';
 import BackgroundPollingView from './components/Backbone/BackgroundPollingView.vue';
@@ -31,13 +33,23 @@ export default {
   name: 'App',
   components: {
     NavigationBar,
+    NotificationCarto3Release,
     NotificationWarning,
     BackgroundPollingView,
     Footer,
     MamufasImportView
   },
+  data: () => ({
+    isCarto3ReleaseNotificationVisible: window.localStorage.getItem('carto3ReleaseVisible') !== 'false'
+  }),
   created () {
     sendMetric(MetricsTypes.VISITED_PRIVATE_PAGE, { page: 'dashboard' });
+  },
+  methods: {
+    closeCarto3Release () {
+      window.localStorage.setItem('carto3ReleaseVisible', false);
+      this.isCarto3ReleaseNotificationVisible = false;
+    }
   },
   computed: {
     user () {

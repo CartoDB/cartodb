@@ -1,6 +1,17 @@
 <template>
   <div class="navbar-dropdown" :class="{ 'is-open': open }">
     <ul class="navbar-dropdown-container">
+      <li class="navbar-dropdown-new-platform u-flex u-flex__align--center u-flex__justify--between u-mb--24">
+        <div class="navbar-dropdown-userInfo">
+          <p class="text is-semibold is-txtPrimary">{{$t('UserDropdown.carto3.title')}}</p>
+          <p class="text is-small u-mt--4">{{$t('UserDropdown.carto3.message')}}</p>
+        </div>
+        <div class="">
+          <a href="https://app.carto.com" target="_blank">
+            <img src="../../assets/icons/common/open-in-new.svg" />
+          </a>
+        </div>
+      </li>
       <li class="navbar-dropdown-profile">
         <div class="avatar-container">
           <img :src="userModel.avatar_url">
@@ -112,6 +123,16 @@ export default {
     visibility: visible;
     opacity: 1;
     pointer-events: initial;
+  }
+}
+
+.navbar-dropdown-new-platform {
+  background: rgba($blue--500, 0.08);
+  border-radius: 4px;
+  padding: 16px;
+
+  & .is-txtPrimary {
+    color: #024d9e
   }
 }
 

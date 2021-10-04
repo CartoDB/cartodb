@@ -367,6 +367,10 @@
     "privacy": "Privacy"
   },
   "UserDropdown": {
+    "carto3": {
+      "title": "New CARTO Platform",
+      "message": "Go to the latest version of CARTO"
+    },
     "settings": "Settings",
     "organizationSettings": "Your organization",
     "apiKeys": "API Keys",

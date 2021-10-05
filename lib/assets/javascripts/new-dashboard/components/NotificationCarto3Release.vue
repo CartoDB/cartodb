@@ -1,6 +1,6 @@
 <template>
   <div class="notification">
-    <span class="u-flex u-pl--64 u-pr--24">
+    <span class="u-flex">
       <img src="../assets/icons/common/new-releases.svg" />
       <div class="u-flex u-flex__align--center">
         <span class="is-bold u-ml--8 u-mr--8">
@@ -51,7 +51,7 @@ export default {
   width: 100%;
   height: $notification-warning__height;
   max-height: $notification-warning__height;
-  padding: 16px;
+  padding: 16px 24px 16px 64px;
   background-color: $notification__bg-color;
   color: $text__color;
   font-size: 14px;

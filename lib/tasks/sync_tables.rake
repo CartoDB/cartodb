@@ -229,4 +229,82 @@ namespace :cartodb do
       puts "#{number_of_pending_syncs} syncs could not be modified. . Please try again later."
     end
   end
+
+  desc 'Migrate legacy sync tables to new connections'
+  task :migrate_legacy_sync_tables_to_new_connections, [:username, :synchronization_ids] => :environment do |_task, args|
+
+    # NOTE: Managing user
+    user = Carto::User.find_by(username: args['username'])
+    if user.blank?
+      puts "ERROR: Missing user with username '#{args[:username]}'"
+      next
+    end
+
+    # NOTE: Managing synchronizations
+    sync_ids = Array(args[:synchronization_ids])
+    synchronizations = user.synchronizations user.synchronizations.where(id: synchronization_ids)
+
+    if synchronization_ids.empty?
+      puts "INFO: No synchronizations were provided, so all '#{user.username}' synchronizations will be analyzed"
+    else
+      synchronizations = sync_ids.where(id: sync_ids)
+
+      if synchronizations.count != sync_ids.count
+        puts "ERROR: #{sync_ids.count} synchronization/s provided, but only #{synchronizations.count} found"
+        next
+      end
+      puts "INFO: List of #{synchronizations.count} synchronization/s provided"
+    end
+
+    # NOTE: Looking for legacy synchronizations
+    legacy_syncs = synchronizations.where(url: nil).select do |sync|
+      data = JSON.parse(sync.service_item_id)
+      data['provider'].present? && data['connection'].present? && data['connection_id'].blank?
+    end
+
+    puts "INFO: #{legacy_syncs.count} legacy synchronization/s were found"
+
+    # NOTE: Finding/creating required connections
+    connection_groups = legacy_syncs.group_by do |sync|
+      data = JSON.parse(sync.service_item_id)
+      [data['provider'], data['connection']]
+    end
+
+    puts "INFO: #{connection_groups.count} unique connections needed"
+
+    connection_manager = Carto::ConnectionManager.new(user)
+    syncs_with_connection = connection_groups.map.with_index do |((provider, connection_info), syncs), index|
+      puts "INFO: Connection #{index} - [#{provider}] #{connection_info}"
+
+      connection = connection_manager.find_or_create_db_connection(provider, connection_info)
+      puts "INFO: Connection found/created [#{connection.id}]"
+
+      { connection: connection, syncs: syncs }
+    rescue StandardError => exception
+      puts "WARNING: Error finding/creating connection #{index} - #{exception.message}"
+      puts "INFO: Skipping #{syncs.count} synchronizations - Sample sync [#{syncs.first.id}]"
+
+      { connection: nil, syncs: [] }
+    end
+
+    # NOTE: Updating and synchronizations
+    syncs_with_connection.each.with_index do |data, index|
+      puts "INFO: Updating #{data[:syncs].count} for connection #{index}"
+      next if data[:connection].nil?
+
+      ActiveRecord::Base.transaction do
+        data[:syncs].each do |sync|
+          service_item_id = JSON.parse(sync.service_item_id).except('connection')
+          service_item_id['connection_id'] = data[:connection].id
+
+          sync.update!(service_item_id: service_item_id)
+        end
+      end
+    rescue StandardError => exception
+      puts "WARNING: Error updating synchronizations for connection #{index} - #{exception.message}"
+      puts "INFO: Skipping updating #{syncs.count} synchronizations - Sample sync [#{data[:syncs].first.id}]"
+    end
+  rescue StandardError => exception
+    puts "ERROR: Something went wrong while migrating legacy synchronizations | #{exception.inspect}"
+  end
 end

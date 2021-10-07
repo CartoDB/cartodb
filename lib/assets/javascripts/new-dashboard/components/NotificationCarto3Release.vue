@@ -10,7 +10,7 @@
           class="text"
           v-html="
             $t('Carto3Release.message', {
-              link: `<a href='https://app.carto.com' target='_blank'>${$t('Carto3Release.link')}</a>`,
+              link: `<a href='https://app.carto.com/signup' target='_blank'>${$t('Carto3Release.link')}</a>`,
             })
           "
         >

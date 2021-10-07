@@ -32,8 +32,8 @@ import { sendMetric, MetricsTypes } from 'new-dashboard/core/metrics';
 const notificationIsVisible = (date) => {
   if (date) {
     const today = new Date().getTime();
-    const duration = 30 * 24 * 60 * 60 * 1000;
-    const future = parseInt(date) + duration;
+    const oneMonth = 30 * 24 * 60 * 60 * 1000;
+    const future = parseInt(date) + oneMonth;
     return today > future;
   }
   return true;

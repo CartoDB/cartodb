@@ -1,6 +1,6 @@
 <template>
   <div class="notification">
-    <span class="u-flex">
+    <span class="u-flex u-flex__align--center">
       <img src="../assets/icons/common/new-releases.svg" />
       <div class="u-flex u-flex__align--center">
         <span class="is-bold u-ml--8 u-mr--8">

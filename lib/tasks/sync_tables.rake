@@ -231,7 +231,7 @@ namespace :cartodb do
   end
 
   desc 'Migrate legacy sync tables to new connections'
-  task :migrate_legacy_sync_tables_to_new_connections, [:username, :synchronization_ids] => :environment do |_task, args|
+  task :migrate_legacy_sync_tables_to_new_connections, [:username, :synchronization_ids, :flexible_password] => :environment do |_task, args|
 
     # NOTE: Managing user
     user = Carto::User.find_by(username: args['username'])
@@ -271,15 +271,37 @@ namespace :cartodb do
     end
 
     puts "INFO: #{connection_groups.count} unique connections needed"
+    if args['flexible_password']
+      puts "INFO: Password parameter will be omitted while looking for existent connections"
+    end
 
     connection_manager = Carto::ConnectionManager.new(user)
     syncs_with_connection = connection_groups.map.with_index do |((provider, connection_info), syncs), index|
       puts "INFO: Connection #{index} - [#{provider}] #{connection_info}"
 
-      connection = connection_manager.find_or_create_db_connection(provider, connection_info)
-      puts "INFO: Connection found/created [#{connection.id}]"
+      connections = user.db_connections
+      connection_info.each do |key, value|
+        next if key == 'password' && args['flexible_password']
+        connections = connections.where("parameters->>'#{key}' = ?", value)
+      end
+      connection = connections.find_by(connector: data['provider'])
 
-      { connection: connection, syncs: syncs }
+      if connection.present?
+        puts "INFO: Connection found [#{connection.id}]"
+      else
+        connection = connection_manager.create_db_connection(
+          "#{provider} [#{SecureRandom.hex(6)}]",
+          provider,
+          connection_info
+        )
+        puts "INFO: Connection created [#{connection.id}]"
+      end
+
+      {
+        connection: connection,
+        syncs: syncs,
+        password_changed: connection_info['password'] != JSON.parse(connection.service_item_id)['password']
+      }
     rescue StandardError => exception
       puts "WARNING: Error finding/creating connection #{index} - #{exception.message}"
       puts "INFO: Skipping #{syncs.count} synchronizations - Sample sync [#{syncs.first.id}]"
@@ -299,6 +321,16 @@ namespace :cartodb do
 
           sync.update!(service_item_id: service_item_id)
         end
+      end
+
+      # NOTE: Queuing synchronizations
+      next unless data['password_changed']
+
+      data[:syncs].each do |sync|
+        next if sync.state != 'failure' || sync.retried_times < CartoDB::Synchronization::Member::MAX_RETRIES
+
+        puts "INFO: Queueing failed sync [#{sync.id}]"
+        CartoDB::Synchronization::Member.new(sync).enqueue
       end
     rescue StandardError => exception
       puts "WARNING: Error updating synchronizations for connection #{index} - #{exception.message}"

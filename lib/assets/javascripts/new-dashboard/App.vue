@@ -29,6 +29,16 @@ import BackgroundPollingView from './components/Backbone/BackgroundPollingView.v
 import MamufasImportView from './components/Backbone/MamufasImportView.vue';
 import { sendMetric, MetricsTypes } from 'new-dashboard/core/metrics';
 
+const notificationIsVisible = (date) => {
+  if (date) {
+    const today = new Date().getTime();
+    const duration = 30 * 24 * 60 * 60 * 1000;
+    const future = parseInt(date) + duration;
+    return today > future;
+  }
+  return true;
+};
+
 export default {
   name: 'App',
   components: {
@@ -40,23 +50,29 @@ export default {
     MamufasImportView
   },
   data: () => ({
-    isCarto3ReleaseNotificationVisible: window.localStorage.getItem('carto3ReleaseVisible') !== 'false'
+    displayCarto3ReleaseNotification: notificationIsVisible(window.localStorage.getItem('carto3ReleaseVisible'))
   }),
   created () {
     sendMetric(MetricsTypes.VISITED_PRIVATE_PAGE, { page: 'dashboard' });
   },
   methods: {
     closeCarto3Release () {
-      window.localStorage.setItem('carto3ReleaseVisible', false);
-      this.isCarto3ReleaseNotificationVisible = false;
+      window.localStorage.setItem('carto3ReleaseVisible', new Date().getTime());
+      this.displayCarto3ReleaseNotification = false;
     }
   },
   computed: {
     user () {
       return this.$store.state.user;
     },
+    isEnterprise () {
+      return this.$store.state.user && this.$store.state.user.is_enterprise;
+    },
     isNotificationVisible () {
       return !!this.$store.getters['user/isNotificationVisible'];
+    },
+    isCarto3ReleaseNotificationVisible () {
+      return this.isEnterprise && this.displayCarto3ReleaseNotification;
     },
     baseUrl () {
       return this.$store.state.user.base_url;

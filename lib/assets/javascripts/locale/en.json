@@ -92,7 +92,8 @@
                     "notifications": {
                         "enabled": "On",
                         "disabled": "Off",
-                        "do_subscriptions":"Emails from Data Observatory"
+                        "do_subscriptions": "Emails from Data Observatory",
+                        "imports": "Emails from Imports"
                     }
                 }
             }

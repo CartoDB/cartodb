@@ -7,7 +7,8 @@ module Carto
     validate  :valid_notification
 
     NOTIFICATION_DO_SUBSCRIPTIONS = 'do_subscriptions'.freeze
-    VALID_NOTIFICATIONS = [NOTIFICATION_DO_SUBSCRIPTIONS].freeze
+    NOTIFICATION_IMPORTS = 'imports'.freeze
+    VALID_NOTIFICATIONS = [NOTIFICATION_DO_SUBSCRIPTIONS, NOTIFICATION_IMPORTS].freeze
 
     def self.new_do_subscriptions(user_id)
       Carto::UserEmailNotification.create!(

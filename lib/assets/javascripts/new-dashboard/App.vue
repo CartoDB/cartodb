@@ -11,7 +11,9 @@
         :isFirstTimeInDashboard="isFirstTimeInDashboard"
         bundleType="dashboard"/>
     </header>
-    <router-view/>
+    <div :class="{'with-notification': isNotificationVisible || isCarto3ReleaseNotificationVisible}">
+      <router-view/>
+    </div>
 
     <Footer :user="user"/>
     <BackgroundPollingView ref="backgroundPollingView" :routeType="$route.name"/>
@@ -123,6 +125,10 @@ export default {
   &.has-user-notification {
     padding-top: $header__height + $notification-warning__height;
   }
+}
+
+.with-notification {
+  margin-top: 48px;
 }
 
 </style>

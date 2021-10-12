@@ -18,6 +18,7 @@ Development
 * Show user's database location in profile [16349](https://github.com/CartoDB/cartodb/pull/16349)
 
 ### Bug fixes / enhancements
+- Add marginTop to Page when notification is displayed [#16355](https://github.com/CartoDB/cartodb/pull/16355)
 - Add "element" param to DO-Catalog entry function [#16343](https://github.com/CartoDB/cartodb/pull/16343)
 - Add new DO Catalog route for internal usage [#16342](https://github.com/CartoDB/cartodb/pull/16342)
 - Disable email validation in DO Premium Subscriptions [#16309](https://github.com/CartoDB/cartodb/pull/16309)

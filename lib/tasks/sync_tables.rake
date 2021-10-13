@@ -229,4 +229,115 @@ namespace :cartodb do
       puts "#{number_of_pending_syncs} syncs could not be modified. . Please try again later."
     end
   end
+
+  desc 'Migrate legacy sync tables to new connections'
+  task :migrate_legacy_sync_tables_to_new_connections, [:username, :synchronization_ids, :flexible_password] => :environment do |_task, args|
+
+    # NOTE: Managing user
+    user = Carto::User.find_by(username: args[:username])
+    if user.blank?
+      puts "> ERROR: Missing user with username '#{args[:username]}'"
+      next
+    end
+
+    # NOTE: Managing synchronizations
+    sync_ids = (args[:synchronization_ids].try(:split, ' ') || []).uniq
+    synchronizations = user.synchronizations
+
+    if sync_ids.empty?
+      puts "> INFO: No synchronizations were provided, so all '#{user.username}' synchronizations will be analyzed"
+    else
+      synchronizations = synchronizations.where(id: sync_ids)
+
+      if synchronizations.count != sync_ids.count
+        puts "> ERROR: #{sync_ids.count} synchronization/s provided, but only #{synchronizations.count} found"
+        next
+      end
+      puts "> INFO: List of #{synchronizations.count} synchronization/s provided"
+    end
+
+    # NOTE: Looking for legacy synchronizations
+    legacy_syncs = synchronizations.where(url: ['', nil]).select do |sync|
+      data = JSON.parse(sync.service_item_id)
+      data['provider'].present? && data['connection'].present? && data['connection_id'].blank?
+    end
+
+    puts "> INFO: #{legacy_syncs.count} legacy synchronization/s were found"
+    next if legacy_syncs.count.zero?
+
+    # NOTE: Finding/creating required connections
+    connection_groups = legacy_syncs.group_by do |sync|
+      data = JSON.parse(sync.service_item_id)
+      [data['provider'], data['connection']]
+    end
+
+    puts "> INFO: #{connection_groups.count} unique connections needed"
+    if args[:flexible_password] == 'true'
+      puts "> INFO: Password parameter will be omitted while looking for existent connections"
+    end
+
+    connection_manager = Carto::ConnectionManager.new(user)
+    syncs_with_connection = connection_groups.map.with_index do |((provider, connection_info), syncs), index|
+      puts "> INFO: Connection #{index} - [#{provider}] #{connection_info}"
+
+      connections = user.db_connections
+      connection_info.each do |key, value|
+        next if key == 'password' && args[:flexible_password] == 'true'
+        connections = connections.where("parameters->>'#{key}' = ?", value)
+      end
+      connection = connections.find_by(connector: provider)
+
+      if connection.present?
+        puts "> INFO: Connection found [#{connection.id}]"
+      else
+        connection = connection_manager.create_db_connection(
+          name: "#{provider} [#{SecureRandom.hex(6)}]",
+          provider: provider,
+          parameters: connection_info
+        )
+        puts "> INFO: Connection created [#{connection.id}]"
+      end
+
+      {
+        connection: connection,
+        syncs: syncs,
+        password_changed: connection_info['password'] != connection.parameters['password']
+      }
+    rescue StandardError => exception
+      puts "> WARNING: Error finding/creating connection #{index} - #{exception.message}"
+      puts "> INFO: Skipping #{syncs.count} synchronization/s - Sample sync [#{syncs.first.id}]"
+
+      { connection: nil, syncs: [] }
+    end
+
+    # NOTE: Updating and synchronizations
+    syncs_with_connection.each.with_index do |data, index|
+      next if data[:connection].nil?
+
+      puts "> INFO: Linking #{data[:syncs].count} synchronization/s to connection #{index}"
+      ActiveRecord::Base.transaction do
+        data[:syncs].each do |sync|
+          service_item_id = JSON.parse(sync.service_item_id).except('connection')
+          service_item_id['connection_id'] = data[:connection].id
+
+          sync.update!(service_item_id: service_item_id.to_json)
+        end
+      end
+
+      # NOTE: Queuing synchronizations
+      next unless data[:password_changed]
+
+      data[:syncs].each do |sync|
+        next if sync.state != 'failure' || sync.retried_times < CartoDB::Synchronization::Member::MAX_RETRIES
+
+        puts "> INFO: Queueing failed sync [#{sync.id}]"
+        CartoDB::Synchronization::Member.new(sync).enqueue
+      end
+    rescue StandardError => exception
+      puts "> WARNING: Error updating synchronizations for connection #{index} - #{exception.message}"
+      puts "> INFO: Skipping updating #{syncs.count} synchronization/s - Sample sync [#{data[:syncs].first.id}]"
+    end
+  rescue StandardError => exception
+    puts "> ERROR: Something went wrong while migrating legacy synchronizations | #{exception.inspect}"
+  end
 end

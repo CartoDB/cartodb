@@ -5,6 +5,7 @@ Development
 - None yet
 
 ### Features
+* Display notifications about the new CARTO platform release [16352](https://github.com/CartoDB/cartodb/pull/16352)
 * Upgrade to deck.gl 8.5.6 [16338](https://github.com/CartoDB/cartodb/pull/16338)
 * Update DO Catalog dependencies and some changes to use bundle on CARTO Workspace [#16325](https://github.com/CartoDB/cartodb/pull/16325)
 * Send data to Hubspot when accessing datasets [#16313](https://github.com/CartoDB/cartodb/pull/16313)
@@ -18,6 +19,7 @@ Development
 * Setting to enable/disable import notifications [16354](https://github.com/CartoDB/cartodb/pull/16354)
 
 ### Bug fixes / enhancements
+- Add marginTop to Page when notification is displayed [#16355](https://github.com/CartoDB/cartodb/pull/16355)
 - Add "element" param to DO-Catalog entry function [#16343](https://github.com/CartoDB/cartodb/pull/16343)
 - Add new DO Catalog route for internal usage [#16342](https://github.com/CartoDB/cartodb/pull/16342)
 - Disable email validation in DO Premium Subscriptions [#16309](https://github.com/CartoDB/cartodb/pull/16309)

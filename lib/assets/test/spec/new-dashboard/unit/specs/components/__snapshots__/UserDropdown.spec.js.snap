@@ -3,6 +3,13 @@
 exports[`UserDropdown.vue should render dropdown closed 1`] = `
 <div class="navbar-dropdown is-open">
   <ul class="navbar-dropdown-container">
+    <li class="navbar-dropdown-new-platform u-flex u-flex__align--center u-flex__justify--between u-mb--24">
+      <div class="navbar-dropdown-userInfo">
+        <p class="text is-semibold is-txtPrimary">UserDropdown.carto3.title</p>
+        <p class="text is-small u-mt--4">UserDropdown.carto3.message</p>
+      </div>
+      <div><a href="https://app.carto.com" target="_blank"><img src="../../assets/icons/common/open-in-new.svg"></a></div>
+    </li>
     <li class="navbar-dropdown-profile">
       <div class="avatar-container"><img src="//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png"></div>
       <div class="navbar-dropdown-userInfo">
@@ -42,6 +49,13 @@ exports[`UserDropdown.vue should render dropdown closed 1`] = `
 exports[`UserDropdown.vue should render dropdown open with notifications badge 1`] = `
 <div class="navbar-dropdown">
   <ul class="navbar-dropdown-container">
+    <li class="navbar-dropdown-new-platform u-flex u-flex__align--center u-flex__justify--between u-mb--24">
+      <div class="navbar-dropdown-userInfo">
+        <p class="text is-semibold is-txtPrimary">UserDropdown.carto3.title</p>
+        <p class="text is-small u-mt--4">UserDropdown.carto3.message</p>
+      </div>
+      <div><a href="https://app.carto.com" target="_blank"><img src="../../assets/icons/common/open-in-new.svg"></a></div>
+    </li>
     <li class="navbar-dropdown-profile">
       <div class="avatar-container"><img src="//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png"></div>
       <div class="navbar-dropdown-userInfo">
@@ -80,6 +94,13 @@ exports[`UserDropdown.vue should render dropdown open with notifications badge 1
 exports[`UserDropdown.vue should render organization link if user is org_admin 1`] = `
 <div class="navbar-dropdown is-open">
   <ul class="navbar-dropdown-container">
+    <li class="navbar-dropdown-new-platform u-flex u-flex__align--center u-flex__justify--between u-mb--24">
+      <div class="navbar-dropdown-userInfo">
+        <p class="text is-semibold is-txtPrimary">UserDropdown.carto3.title</p>
+        <p class="text is-small u-mt--4">UserDropdown.carto3.message</p>
+      </div>
+      <div><a href="https://app.carto.com" target="_blank"><img src="../../assets/icons/common/open-in-new.svg"></a></div>
+    </li>
     <li class="navbar-dropdown-profile">
       <div class="avatar-container"><img src="//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png"></div>
       <div class="navbar-dropdown-userInfo">

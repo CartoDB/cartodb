@@ -16,6 +16,7 @@ Development
 * Include DB connections, all parameters for Oauth connections, and the relationship between synchronizations and connections, in User migrations [#16287](https://github.com/CartoDB/cartodb/pull/16287)
 * Upgrade to CARTO Viewer v1.0.8 [16347](https://github.com/CartoDB/cartodb/pull/16347)
 * Show user's database location in profile [16349](https://github.com/CartoDB/cartodb/pull/16349)
+* Setting to enable/disable import notifications [16354](https://github.com/CartoDB/cartodb/pull/16354)
 
 ### Bug fixes / enhancements
 - Add marginTop to Page when notification is displayed [#16355](https://github.com/CartoDB/cartodb/pull/16355)

@@ -191,6 +191,8 @@ module Resque
 
         def self.perform(user_id, imported_tables, total_tables, first_imported_table, first_table, errors, filenames)
           u = ::User.where(id: user_id).first
+          return unless u.carto_user.email_notification_enabled?(Carto::UserEmailNotification::NOTIFICATION_IMPORTS)
+
           ImportMailer.data_import_finished(u, imported_tables, total_tables, first_imported_table, first_table, errors,
                                             filenames).deliver_now
         end

@@ -279,7 +279,7 @@ module CartoDB
 
         def state
           service_name = service_name_for_user(DATASOURCE_NAME, @user)
-          CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', service_name)
+          CALLBACK_STATE_DATA_PLACEHOLDER.sub('service', service_name).sub('user', @user.username)
         end
       end
     end

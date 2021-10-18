@@ -67,6 +67,7 @@ Development
 - Fix scrolling on widget's sidebar in builder [#16350](https://github.com/CartoDB/cartodb/pull/16350)
 - Fix Auth URL generation while establishing a connection with Google Drive [#16357](https://github.com/CartoDB/cartodb/pull/16357)
 - Fix adding license metadata to a dataset [#16356](https://github.com/CartoDB/cartodb/pull/16356)
+- Fix notifications when organization seats limit is reached [#16359](https://github.com/CartoDB/cartodb/pull/16359)
 
 4.45.0 (2021-04-14)
 -------------------

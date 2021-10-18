@@ -65,6 +65,7 @@ Development
 - Fix regenerating API Keys for a whole organization [#16336](https://github.com/CartoDB/cartodb/pull/16336)
 - Fix API Keys propagation to Redis function [#16340](https://github.com/CartoDB/cartodb/pull/16340)
 - Fix scrolling on widget's sidebar in builder [#16350](https://github.com/CartoDB/cartodb/pull/16350)
+- Fix Auth URL generation while establishing a connection with Google Drive [#16357](https://github.com/CartoDB/cartodb/pull/16357)
 
 4.45.0 (2021-04-14)
 -------------------

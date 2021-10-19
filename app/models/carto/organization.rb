@@ -140,7 +140,7 @@ module Carto
     end
 
     def notify_if_seat_limit_reached
-      ::Resque.enqueue(::Resque::OrganizationJobs::Mail::SeatLimitReached, id) if will_reach_seat_limit?
+      ::Resque.enqueue(::Resque::OrganizationJobs::Mail::SeatLimitReached, id) if reached_seats_limit?
     end
 
     def database_name
@@ -249,8 +249,8 @@ module Carto
       assets.map { |asset| Carto::Asset.find(asset.id) }.map(&:destroy).all?
     end
 
-    def will_reach_seat_limit?
-      remaining_seats <= 1
+    def reached_seats_limit?
+      remaining_seats < 1
     end
 
     def authentication_methods_available

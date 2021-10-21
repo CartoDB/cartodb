@@ -289,9 +289,9 @@ module CartoDB
           end
         end
       rescue StandardError => e
-        CartoDB.report_exception(
-          e,
-          'Error updating schema of user analyses while moving to own schema',
+        Rails.logger.error(
+          exception: e,
+          message: 'Error updating schema of user analyses while moving to own schema',
           user: @user.username
         )
       end

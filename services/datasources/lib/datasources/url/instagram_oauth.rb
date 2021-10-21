@@ -30,7 +30,7 @@ module CartoDB
           raise ServiceDisabledError.new(DATASOURCE_NAME, @user.username) unless @user.has_feature_flag?('instagram_import')
 
           service_name = service_name_for_user(DATASOURCE_NAME, @user)
-          placeholder = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', service_name)
+          placeholder = CALLBACK_STATE_DATA_PLACEHOLDER.sub('service', service_name).sub('user', @user.username)
           @callback_url = "#{config.fetch('callback_url')}?state=#{placeholder}"
 
           self.filter   = []

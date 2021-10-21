@@ -77,8 +77,8 @@ module CartoDB
         def get_auth_url(use_callback_flow = true)
           if use_callback_flow
             service_name = service_name_for_user(DATASOURCE_NAME, @user)
-            @client.state = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username)
-                                                           .sub('service', service_name)
+            @client.state = CALLBACK_STATE_DATA_PLACEHOLDER.sub('service', service_name)
+                                                           .sub('user', @user.username)
           else
             @client.redirect_uri = REDIRECT_URI
           end

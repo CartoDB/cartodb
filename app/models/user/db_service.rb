@@ -283,7 +283,7 @@ module CartoDB
             visualization.analyses.each do |analysis|
               analysis.update_table_name(
                 "#{SCHEMA_PUBLIC}.#{table.name}",
-                table.fully_qualified_name
+                "\"#{@user.database_schema}\".#{table.name}"
               )
             end
           end

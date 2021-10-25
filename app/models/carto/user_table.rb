@@ -163,10 +163,6 @@ module Carto
       is_owner?(other_user) ? name : fully_qualified_name
     end
 
-    def fully_qualified_name
-      "\"#{user.database_schema}\".#{name}"
-    end
-
     def private?
       privacy == PRIVACY_PRIVATE
     end
@@ -260,6 +256,10 @@ module Carto
 
     def set_default_table_privacy
       self.privacy ||= default_privacy_value
+    end
+
+    def fully_qualified_name
+      "\"#{user.database_schema}\".#{name}"
     end
 
     def visualization_readable_by?(user)

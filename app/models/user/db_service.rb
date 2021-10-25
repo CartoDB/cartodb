@@ -277,6 +277,25 @@ module CartoDB
         end
       end
 
+      def update_analyses_schema
+        @user.carto_user.tables.each do |table|
+          table.dependent_visualizations.each do |visualization|
+            visualization.analyses.each do |analysis|
+              analysis.update_table_name(
+                "#{SCHEMA_PUBLIC}.#{table.name}",
+                "\"#{@user.database_schema}\".#{table.name}"
+              )
+            end
+          end
+        end
+      rescue StandardError => e
+        Rails.logger.error(
+          exception: e,
+          message: 'Error updating schema of user analyses while moving to own schema',
+          user: @user.username
+        )
+      end
+
       def create_importer_schema
         create_schema('cdb_importer')
       end
@@ -1193,6 +1212,7 @@ module CartoDB
 
           create_public_db_user
           set_database_search_path
+          update_analyses_schema
         end
       rescue StandardError => e
         # Undo metadata changes if process fails

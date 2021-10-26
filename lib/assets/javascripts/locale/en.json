@@ -2367,7 +2367,7 @@
                     "upgrade": "Upgrade your account"
                 },
                 "org": {
-                    "body": "Increase your layer limit by contacting the account's administrator.",
+                    "body": "Ask your account's administrator to contact CARTO Support in order to increase the layer limit for your organization.",
                     "upgrade": "Contact admin"
                 },
                 "org-admin": {

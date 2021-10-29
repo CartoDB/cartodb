@@ -48,7 +48,7 @@ module Carto
             if response_body.key?(:limit_message)
               # Send message to support-internal
               ReporterMailer::named_maps_near_the_limit(response_body[:limit_message]).deliver_now
-              # Delete 50 named maps
+              # Delete 100 named maps
               clean_user_named_maps
             end
             response_body
@@ -113,7 +113,7 @@ module Carto
       end
 
       def clean_user_named_maps
-        tables = Carto::UserTable.where(user_id: user.id, privacy: 0).limit(50).order('updated_at')
+        tables = Carto::UserTable.where(user_id: user.id, privacy: 0).limit(100).order('updated_at')
         named_maps_ids = tables.map { |t| "tpl_#{t.visualization.id.tr('-', '_')}" }
 
         named_maps_ids.each do |id|

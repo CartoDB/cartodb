@@ -8,4 +8,8 @@ class ReporterMailer < ActionMailer::Base
 
     mail to: mail_to, subject: @subject
   end
+
+  def named_maps_near_the_limit(message)
+    mail to: 'support-internal@cartodb.com', subject: message
+  end
 end

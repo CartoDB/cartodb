@@ -44,7 +44,14 @@ module Carto
 
           response_code = response.code
           if response_code.to_s.match?(/^2/)
-            ::JSON.parse(response.response_body).deep_symbolize_keys
+            response_body = ::JSON.parse(response.response_body).deep_symbolize_keys
+            if response_body.key?(:limit_message)
+              # Send message to support-internal
+              ReporterMailer::named_maps_near_the_limit(response_body[:limit_message]).deliver_now
+              # Delete 50 named maps
+              clean_user_named_maps
+            end
+            response_body
           elsif response_code != 409 # Ignore when max number of templates is reached
             log_response(response, 'create')
           end
@@ -101,6 +108,23 @@ module Carto
             destroy(retries: retries + 1)
           else
             log_response(response, 'destroy') unless response.code == 404
+          end
+        end
+      end
+
+      def clean_user_named_maps
+        tables = Carto::UserTable.where(user_id: user.id, privacy: 0).limit(50).order('updated_at')
+        named_maps_ids = tables.map { |t| "tpl_#{t.visualization.id.tr('-', '_')}" }
+
+        named_maps_ids.each do |id|
+          url = url(template_name: id)
+          response = http_client.delete(url, request_params)
+          response_code_string = response.code.to_s
+          if (response_code_string.match?(/^5/) || response.code == 429)
+            sleep(RETRY_TIME_SECONDS)
+            http_client.delete(url, request_params)
+          else
+            log_response(response, 'clean_user_named_maps') unless response.code == 404
           end
         end
       end

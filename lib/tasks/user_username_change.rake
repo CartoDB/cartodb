@@ -40,8 +40,10 @@ namespace :cartodb do
         end
 
         # Fix public maps
-        Carto::Visualization.where(type: 'derived', privacy: 'public', user: user.carto_user).each { |visualization|
-          visualization.create_mapcap!
+        Carto::Visualization.where(type: 'derived', user: user.carto_user).each { |visualization|
+          if visualization.published?
+            visualization.create_mapcap!
+          end
         }
       end
   end

@@ -70,6 +70,7 @@ Development
 - Fix Auth URL generation while establishing a connection with Google Drive [#16357](https://github.com/CartoDB/cartodb/pull/16357)
 - Fix adding license metadata to a dataset [#16356](https://github.com/CartoDB/cartodb/pull/16356)
 - Fix notifications when organization seats limit is reached [#16359](https://github.com/CartoDB/cartodb/pull/16359)
+- Fix privacy dropdown when editing a map [#16367](https://github.com/CartoDB/cartodb/pull/16367)
 - Add a new rake to update a user username [#16370](https://github.com/CartoDB/cartodb/pull/16370)
 
 4.45.0 (2021-04-14)

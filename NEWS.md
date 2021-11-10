@@ -32,6 +32,7 @@ Development
 - Fix schema name in layers created by free users [#16307](https://github.com/CartoDB/cartodb/pull/16307)
 - Limit start parameter of Dropbox connector [#16264](https://github.com/CartoDB/cartodb/pull/16264)
 - Fix messages about layer limit being reached [#16360](https://github.com/CartoDB/cartodb/pull/16360)
+- Fix 404.html page [#16369](https://github.com/CartoDB/cartodb/pull/16369)
 - Fix deck.gl dependency conflicts [#16339](https://github.com/CartoDB/cartodb/pull/16339)
 - Migrate Redis DO subscription information in inter-cloud migrations [#16315](https://github.com/CartoDB/cartodb/pull/16315)
 - OauthApps restricted by default [#16304](https://github.com/CartoDB/cartodb/pull/16304)
@@ -71,6 +72,8 @@ Development
 - Fix Auth URL generation while establishing a connection with Google Drive [#16357](https://github.com/CartoDB/cartodb/pull/16357)
 - Fix adding license metadata to a dataset [#16356](https://github.com/CartoDB/cartodb/pull/16356)
 - Fix notifications when organization seats limit is reached [#16359](https://github.com/CartoDB/cartodb/pull/16359)
+- Fix privacy dropdown when user is editing a map [#16367](https://github.com/CartoDB/cartodb/pull/16367)
+- Add a new rake to update a user username [#16370](https://github.com/CartoDB/cartodb/pull/16370)
 
 4.45.0 (2021-04-14)
 -------------------

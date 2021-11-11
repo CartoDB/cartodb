@@ -84,7 +84,7 @@ module CartodbCentralSynchronizable
            salesforce_datasource_enabled geocoder_provider
            isolines_provider routing_provider engine_enabled builder_enabled
            mapzen_routing_quota mapzen_routing_block_price no_map_logo auth_github_enabled
-           password_expiration_in_d inherit_owner_ffs)
+           password_expiration_in_d inherit_owner_ffs random_saml_username)
       when :update
         %i(seats viewer_seats quota_in_bytes display_name description website
            discus_shortname twitter_username geocoding_quota map_views_quota
@@ -96,7 +96,7 @@ module CartodbCentralSynchronizable
            salesforce_datasource_enabled geocoder_provider
            isolines_provider routing_provider engine_enabled builder_enabled
            mapzen_routing_quota mapzen_routing_block_price no_map_logo auth_github_enabled
-           password_expiration_in_d inherit_owner_ffs)
+           password_expiration_in_d inherit_owner_ffs random_saml_username)
       end
     elsif user?
       %i(account_type admin org_admin crypted_password database_host
@@ -129,7 +129,7 @@ module CartodbCentralSynchronizable
       when :update
         allowed_attributes = %i(seats viewer_seats display_name description website discus_shortname twitter_username
                                 auth_username_password_enabled auth_google_enabled password_expiration_in_d
-                                inherit_owner_ffs)
+                                inherit_owner_ffs random_saml_username)
         attributes.symbolize_keys.slice(*allowed_attributes).merge(name: name)
       end
     elsif user?

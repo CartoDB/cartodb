@@ -12,6 +12,7 @@ module Carto
       HTTP_REQUEST_TIMEOUT_SECONDS = 60
       RETRY_TIME_SECONDS = 2
       MAX_RETRY_ATTEMPTS = 3
+      MAX_NAMED_MAPS_TO_CLEAN = 100
 
       attr_accessor :user, :visualization
 
@@ -46,10 +47,12 @@ module Carto
           if response_code.to_s.match?(/^2/)
             response_body = ::JSON.parse(response.response_body).deep_symbolize_keys
             if response_body.key?(:limit_message)
-              # Send message to support-internal
-              ReporterMailer::named_maps_near_the_limit(response_body[:limit_message]).deliver_now
-              # Delete 100 named maps
-              clean_user_named_maps
+              # Send message to support and clean some named_maps
+              ReporterMailer.named_maps_near_the_limit(response_body[:limit_message]).deliver_now
+              tables = Carto::UserTable.where(user_id: user.id, privacy: 0).limit(MAX_NAMED_MAPS_TO_CLEAN).order('updated_at')
+              named_maps_ids = tables.map { |t| "tpl_#{t.visualization.id.tr('-', '_')}" }
+              urls = named_maps_ids.map { |id| url(template_name: id)}
+              ::Resque.enqueue(::Resque::UserJobs::NamedMapsLimitsJobs::CleanNamedMaps, {urls: urls, request_params: request_params})
             end
             response_body
           elsif response_code != 409 # Ignore when max number of templates is reached
@@ -97,7 +100,6 @@ module Carto
       def destroy(retries: 0)
         stats_aggregator.timing('carto-named-maps-api.destroy') do
           url = url(template_name: @named_map_template.name)
-
           response = http_client.delete(url, request_params)
 
           response_code_string = response.code.to_s
@@ -108,23 +110,6 @@ module Carto
             destroy(retries: retries + 1)
           else
             log_response(response, 'destroy') unless response.code == 404
-          end
-        end
-      end
-
-      def clean_user_named_maps
-        tables = Carto::UserTable.where(user_id: user.id, privacy: 0).limit(100).order('updated_at')
-        named_maps_ids = tables.map { |t| "tpl_#{t.visualization.id.tr('-', '_')}" }
-
-        named_maps_ids.each do |id|
-          url = url(template_name: id)
-          response = http_client.delete(url, request_params)
-          response_code_string = response.code.to_s
-          if (response_code_string.match?(/^5/) || response.code == 429)
-            sleep(RETRY_TIME_SECONDS)
-            http_client.delete(url, request_params)
-          else
-            log_response(response, 'clean_user_named_maps') unless response.code == 404
           end
         end
       end

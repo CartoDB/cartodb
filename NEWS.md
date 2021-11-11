@@ -22,6 +22,7 @@ Development
 - Add marginTop to Page when notification is displayed [#16355](https://github.com/CartoDB/cartodb/pull/16355)
 - Add "element" param to DO-Catalog entry function [#16343](https://github.com/CartoDB/cartodb/pull/16343)
 - Add new DO Catalog route for internal usage [#16342](https://github.com/CartoDB/cartodb/pull/16342)
+- Improve info for :update_user command  [#16363](https://github.com/CartoDB/cartodb/pull/16363)
 - Disable email validation in DO Premium Subscriptions [#16309](https://github.com/CartoDB/cartodb/pull/16309)
 - Hide sharing tab from viewer in on-premises [#16299](https://github.com/CartoDB/cartodb/pull/16299)
 - Remove all references to Spatial Data Catalog and Kepler GL maps in on-premises [#16293](https://github.com/CartoDB/cartodb/pull/16293)
@@ -31,6 +32,7 @@ Development
 - Fix schema name in layers created by free users [#16307](https://github.com/CartoDB/cartodb/pull/16307)
 - Limit start parameter of Dropbox connector [#16264](https://github.com/CartoDB/cartodb/pull/16264)
 - Fix messages about layer limit being reached [#16360](https://github.com/CartoDB/cartodb/pull/16360)
+- Fix 404.html page [#16369](https://github.com/CartoDB/cartodb/pull/16369)
 - Fix deck.gl dependency conflicts [#16339](https://github.com/CartoDB/cartodb/pull/16339)
 - Migrate Redis DO subscription information in inter-cloud migrations [#16315](https://github.com/CartoDB/cartodb/pull/16315)
 - OauthApps restricted by default [#16304](https://github.com/CartoDB/cartodb/pull/16304)
@@ -72,6 +74,8 @@ Development
 - Fix notifications when organization seats limit is reached [#16359](https://github.com/CartoDB/cartodb/pull/16359)
 - Notify Support when a user is reaching the named maps limit [#16368](https://github.com/CartoDB/cartodb/pull/16368)
 - Remove old named maps when a user is reaching the named maps limit [#16368](https://github.com/CartoDB/cartodb/pull/16368)
+- Fix privacy dropdown when user is editing a map [#16367](https://github.com/CartoDB/cartodb/pull/16367)
+- Add a new rake to update a user username [#16370](https://github.com/CartoDB/cartodb/pull/16370)
 
 4.45.0 (2021-04-14)
 -------------------

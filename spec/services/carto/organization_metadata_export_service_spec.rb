@@ -367,6 +367,7 @@ describe Carto::OrganizationMetadataExportService do
         mapzen_routing_block_price: nil,
         builder_enabled: true,
         auth_saml_configuration: {},
+        random_saml_username: false,
         no_map_logo: false,
         password_expiration_in_d: 365,
         inherit_owner_ffs: false,

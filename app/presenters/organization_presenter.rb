@@ -52,7 +52,8 @@ class OrganizationPresenter < BasePresenter
       twitter_username: twitter_username,
       seats: seats,
       avatar_url: avatar_url,
-      password_expiration_in_d: password_expiration_in_d
+      password_expiration_in_d: password_expiration_in_d,
+      random_saml_username: random_saml_username
     }
   end
 

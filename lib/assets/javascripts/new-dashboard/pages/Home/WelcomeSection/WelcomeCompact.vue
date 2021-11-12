@@ -40,7 +40,7 @@ export default {
       return this.$store.getters['user/canCreateMaps'];
     },
     randomSAMLUsernames () {
-      return this.$props.organization.random_saml_username;
+      return (this.$props.organization || {}).random_saml_username;
     }
   },
   methods: {

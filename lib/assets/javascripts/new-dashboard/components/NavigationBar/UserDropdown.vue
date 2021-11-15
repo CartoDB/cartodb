@@ -17,8 +17,8 @@
           <img :src="userModel.avatar_url">
         </div>
         <div class="navbar-dropdown-userInfo">
-          <p class="text is-semibold is-caption">{{userModel.username}}</p>
-          <p class="text is-small">{{userModel.email}}</p>
+          <p class="text is-semibold is-caption">{{(userModel.organization || {}).random_saml_username ? userModel.email : userModel.username}}</p>
+          <p v-if="!(userModel.organization || {}).random_saml_username" class="text is-small">{{userModel.email}}</p>
         </div>
       </li>
       <li class="navbar-dropdown-iconLink">

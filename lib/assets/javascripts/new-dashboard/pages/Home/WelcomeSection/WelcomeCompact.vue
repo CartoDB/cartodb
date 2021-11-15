@@ -1,7 +1,7 @@
 <template>
   <section class="welcome-compact">
     <div class="container welcome-compact__content">
-      <div class="welcome-compact__greeting title is-caption">{{ greeting }}</div>
+      <div v-if="!randomSAMLUsernames" class="welcome-compact__greeting title is-caption">{{ greeting }}</div>
       <div class="welcome-compact__actions">
         <OnboardingButton :isFirstTimeViewingDashboard="false"></OnboardingButton>
         <button @click="onNewMapClicked" class="button is-primary button--ghost" :disabled="!canCreateMaps">{{ $t(`HomePage.WelcomeSection.actions.createMap`) }}</button>
@@ -26,7 +26,8 @@ export default {
     OnboardingButton
   },
   props: {
-    name: String
+    name: String,
+    organization: Object
   },
   computed: {
     greeting () {
@@ -37,6 +38,9 @@ export default {
     },
     canCreateMaps () {
       return this.$store.getters['user/canCreateMaps'];
+    },
+    randomSAMLUsernames () {
+      return (this.$props.organization || {}).random_saml_username;
     }
   },
   methods: {

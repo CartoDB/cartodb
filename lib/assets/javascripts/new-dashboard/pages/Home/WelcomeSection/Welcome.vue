@@ -1,7 +1,7 @@
 <template>
   <section class="welcome-section">
     <WelcomeFirst v-if="isFirst" :name="name" :userType="userType"></WelcomeFirst>
-    <WelcomeCompact v-else :name="name" :userType="userType" @newDatesetClicked="onNewDatesetClicked" @newMapClicked="onNewMapClicked">
+    <WelcomeCompact v-else :name="name" :organization="organization" :userType="userType" @newDatesetClicked="onNewDatesetClicked" @newMapClicked="onNewMapClicked">
       <template>
         <a v-if="showUpgrade" :href="accountUpgradeURL" class="button is-primary">
           {{ $t('HomePage.WelcomeSection.upgradeNow') }}

@@ -121,8 +121,8 @@ describe 'KML regression tests' do
                              })
     runner.run
 
-    runner.results.select(&:success?).length.should eq CartoDB::Importer2::Runner::MAX_TABLES_PER_IMPORT
-    runner.results.length.should eq CartoDB::Importer2::Runner::MAX_TABLES_PER_IMPORT
+    runner.results.select(&:success?).length.should be <= CartoDB::Importer2::Runner::MAX_TABLES_PER_IMPORT
+    runner.results.length.should be <= CartoDB::Importer2::Runner::MAX_TABLES_PER_IMPORT
     runner.results.each { |result|
       name = @user.in_database[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
       name.should eq result.table_name

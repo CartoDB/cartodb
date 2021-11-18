@@ -88,6 +88,21 @@
 
         <div class="FormAccount-row">
           <div class="FormAccount-rowLabel">
+            <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Random SAML Usernames</label>
+          </div>
+          <div class="FormAccount-rowData">
+            <div class="Toggler">
+              <%= f.check_box :random_saml_username, :id => "random_saml_username" %>
+              <%= label_tag(:random_saml_username, '') %>
+            </div>
+            <div class="u-flex u-lSpace--xl">
+              <p class="CDB-Text CDB-Size-small u-altTextColor">Generate random usernames for new SAML users.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="FormAccount-row">
+          <div class="FormAccount-rowLabel">
             <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Password Expiration</label>
           </div>
 

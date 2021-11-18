@@ -82,8 +82,8 @@ describe 'rar regression tests' do
     )
     runner.run
 
-    runner.results.count(&:success?).should eq Runner::MAX_TABLES_PER_IMPORT
-    runner.results.length.should eq Runner::MAX_TABLES_PER_IMPORT
+    runner.results.count(&:success?).should be <= Runner::MAX_TABLES_PER_IMPORT
+    runner.results.length.should be <= Runner::MAX_TABLES_PER_IMPORT
     runner.results.each do |result|
       name = @user.in_database["SELECT * FROM pg_class WHERE relname='#{result.table_name}'"].first[:relname]
       name.should eq result.table_name

@@ -159,6 +159,7 @@ class Admin::OrganizationsController < Admin::AdminController
     @organization.auth_github_enabled = attributes[:auth_github_enabled]
     @organization.strong_passwords_enabled = attributes[:strong_passwords_enabled]
     @organization.password_expiration_in_d = attributes[:password_expiration_in_d]
+    @organization.random_saml_username = attributes[:random_saml_username]
     @organization.update_in_central
     @organization.save(raise_on_failure: true)
 

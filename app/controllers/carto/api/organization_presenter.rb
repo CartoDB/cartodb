@@ -35,8 +35,8 @@ module Carto
           mapzen_routing_block_price: @organization.mapzen_routing_block_price,
           geocoder_provider:          @organization.geocoder_provider,
           isolines_provider:          @organization.isolines_provider,
-          routing_provider: @organization.routing_provider,
-          map_views_quota: @organization.map_views_quota,
+          routing_provider:           @organization.routing_provider,
+          map_views_quota:            @organization.map_views_quota,
           twitter_datasource_quota:   @organization.twitter_datasource_quota,
           map_view_block_price:       @organization.map_view_block_price,
           geocoding_block_price:      @organization.geocoding_block_price,
@@ -49,7 +49,8 @@ module Carto
           admin_email:                @organization.admin_email,
           avatar_url:                 @organization.avatar_url,
           user_count:                 @organization.users.count,
-          password_expiration_in_d:   @organization.password_expiration_in_d
+          password_expiration_in_d:   @organization.password_expiration_in_d,
+          random_saml_username:       @organization.random_saml_username
         }
       end
 

@@ -108,6 +108,10 @@ module CartoDB
       email.strip.split('@')[0].gsub(/[^A-Za-z0-9-]/, '-').downcase
     end
 
+    def self.random_saml_username
+      SecureRandom.hex
+    end
+
     def user
       @user
     end

@@ -186,10 +186,17 @@ class SessionsController < ApplicationController
       return
     end
 
-    saml_email = warden.env['warden.options'][:saml_email]
-    username = CartoDB::UserAccountCreator.email_to_username(saml_email)
-    unique_username = Carto::UsernameProposer.find_unique(username)
     organization_id = warden.env['warden.options'][:organization_id]
+    organization = Carto::Organization.find(organization_id)
+    saml_email = warden.env['warden.options'][:saml_email]
+
+    if organization.random_saml_username
+      username = CartoDB::UserAccountCreator.random_saml_username
+    else
+      username = CartoDB::UserAccountCreator.email_to_username(saml_email)
+    end
+
+    unique_username = Carto::UsernameProposer.find_unique(username)
 
     create_user(
       username: unique_username,

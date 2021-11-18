@@ -24,7 +24,7 @@ module Carto
       :auth_google_enabled, :location, :here_isolines_quota, :here_isolines_block_price, :strong_passwords_enabled,
       :salesforce_datasource_enabled, :viewer_seats, :geocoder_provider, :isolines_provider, :routing_provider,
       :auth_github_enabled, :engine_enabled, :mapzen_routing_quota, :mapzen_routing_block_price, :builder_enabled,
-      :auth_saml_configuration, :no_map_logo, :password_expiration_in_d, :inherit_owner_ffs
+      :auth_saml_configuration, :no_map_logo, :password_expiration_in_d, :inherit_owner_ffs, :random_saml_username
     ].freeze
 
     def compatible_version?(version)

@@ -25,6 +25,7 @@ Development
 - Add new DO Catalog route for internal usage [#16342](https://github.com/CartoDB/cartodb/pull/16342)
 - Improve info for :update_user command  [#16363](https://github.com/CartoDB/cartodb/pull/16363)
 - Disable email validation in DO Premium Subscriptions [#16309](https://github.com/CartoDB/cartodb/pull/16309)
+- Invalidate sessions on 'session_salt' issue [#16376](https://github.com/CartoDB/cartodb/pull/16376)
 - Hide sharing tab from viewer in on-premises [#16299](https://github.com/CartoDB/cartodb/pull/16299)
 - Remove all references to Spatial Data Catalog and Kepler GL maps in on-premises [#16293](https://github.com/CartoDB/cartodb/pull/16293)
 - Increase hard-limit of MAX_TABLES_PER_IMPORT [#16374](https://github.com/CartoDB/cartodb/pull/16374)

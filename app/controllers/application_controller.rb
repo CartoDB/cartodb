@@ -81,6 +81,7 @@ class ApplicationController < ActionController::Base
     @current_viewer
   rescue Carto::ExpiredSessionError => e
     request.reset_session
+    current_user.try(:invalidate_all_sessions!)
     not_authorized(e)
   end
 

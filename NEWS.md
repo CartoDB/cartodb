@@ -27,6 +27,7 @@ Development
 - Disable email validation in DO Premium Subscriptions [#16309](https://github.com/CartoDB/cartodb/pull/16309)
 - Invalidate sessions on 'session_salt' issue [#16376](https://github.com/CartoDB/cartodb/pull/16376)
 - Hide sharing tab from viewer in on-premises [#16299](https://github.com/CartoDB/cartodb/pull/16299)
+- Add timeout for SQL API exports [#16377](https://github.com/CartoDB/cartodb/pull/16377)
 - Remove all references to Spatial Data Catalog and Kepler GL maps in on-premises [#16293](https://github.com/CartoDB/cartodb/pull/16293)
 - Increase hard-limit of MAX_TABLES_PER_IMPORT [#16374](https://github.com/CartoDB/cartodb/pull/16374)
 - Guard code for vizjson users [#16267](https://github.com/CartoDB/cartodb/pull/16267)

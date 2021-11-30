@@ -51,6 +51,7 @@ Development
 - Fix verification process for active users [#16337](https://github.com/CartoDB/cartodb/pull/16337)
 - Avoid updating analysis nodes more than once when moving layers in Builder [#16279](https://github.com/CartoDB/cartodb/pull/16279)
 - Fix subscription/sample filter for datasets [#16254](https://github.com/CartoDB/cartodb/pull/16254)
+- Fix form to search dataset when generating a new API key [#16378](https://github.com/CartoDB/cartodb/pull/16378)
 - Use fully qualified table name while creating a new map from a shared dataset [#16241](https://github.com/CartoDB/cartodb/pull/16241)
 - Render tileset viewer features in front of basemap [#16333](https://github.com/CartoDB/cartodb/pull/16333)
 - Rake task to migrate legacy synchronizations [#16353](https://github.com/CartoDB/cartodb/pull/16353)

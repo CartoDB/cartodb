@@ -13,6 +13,8 @@ end
 
 module Carto
   class UserTable < ActiveRecord::Base
+    attr_accessor :skip_destroy_dependent_visualizations
+
     PRIVACY_PRIVATE = 0
     PRIVACY_PUBLIC = 1
     PRIVACY_LINK = 2
@@ -68,7 +70,7 @@ module Carto
     before_destroy :ensure_not_viewer
     before_destroy :cache_dependent_visualizations, unless: :destroyed?
     before_destroy :backup_visualizations, unless: :destroyed?
-    after_destroy :destroy_dependent_visualizations
+    after_destroy :destroy_dependent_visualizations, unless: :skip_destroy_dependent_visualizations
     after_destroy :service_after_destroy
 
     def geometry_types

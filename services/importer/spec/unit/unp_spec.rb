@@ -5,30 +5,18 @@ include CartoDB::Importer2
 
 module FileUtils
   class Entry_
+
     def copy_file(dest)
-      Open3.capture2('cp', path(), dest)
+      Open3.capture2('cp', path, dest)
     end
+
   end
 end
 
 describe Unp do
   describe '#run' do
     it 'extracts the contents of the file' do
-      # zipfile   = file_factory
-
-      dir = '/var/tmp/bogus'
-      filename = 'bogus.zip'
-      zipfile = "#{dir}/#{filename}"
-
-      FileUtils.rm(zipfile) if File.exists?(zipfile)
-      FileUtils.rm_r(dir)   if File.exists?(dir)
-      FileUtils.mkdir_p(dir)
-  
-      new_dir = File.expand_path("../fixtures/#{filename}", File.dirname(__FILE__))
-
-
-      FileUtils.cp(new_dir, zipfile)
-
+      zipfile   = file_factory
       unp       = Unp.new
 
       unp.run(zipfile)

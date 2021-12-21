@@ -217,7 +217,8 @@ describe Unp do
     end
 
     it 'raises if unp is not found' do
-      Open3.expects('capture3').with('which unp').returns [0, 0, 1]
+      Open3.stub(:capture3).and_return([0, 0, 1])
+
       unp = Unp.new
 
       expect { unp.command_for('wadus') }.to raise_error InstallError

@@ -14,7 +14,7 @@ jobs:
       - name: Rubocop linter
         uses: reviewdog/action-rubocop@v1
         with:
-          rubocop_version: 1.12.1
+          rubocop_version: 1.12.0
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-check
           level: error

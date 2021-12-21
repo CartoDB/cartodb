@@ -10,7 +10,7 @@ jobs:
         uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.5
+          ruby-version: 2.5.7
       - run: 'gem install activesupport -v 6.1.4.4'
       - name: Rubocop linter
         uses: reviewdog/action-rubocop@v1

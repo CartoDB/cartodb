@@ -4,7 +4,7 @@ require_relative '../../lib/importer/unp'
 include CartoDB::Importer2
 
 module FileUtils
-  class Entry_
+  class Entry_ # rubocop:disable ClassAndModuleCamelCase
 
     def copy_file(dest)
       Open3.capture2('cp', path, dest)

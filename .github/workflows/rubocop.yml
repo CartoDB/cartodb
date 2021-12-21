@@ -11,6 +11,7 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.5
+      - run: 'gem install activesupport -v 6.1.4.4'
       - name: Rubocop linter
         uses: reviewdog/action-rubocop@v1
         with:

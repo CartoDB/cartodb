@@ -117,7 +117,6 @@ group :test, :development do
 end
 
 group :development, :test do
-  gem 'activesupport', '4.2.11.3'
   gem 'byebug'
   gem 'pry-byebug', '3.9.0'
   gem 'rack'

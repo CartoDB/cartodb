@@ -13,6 +13,7 @@ end
 
 module Carto
   class UserTable < ActiveRecord::Base
+    
     attr_accessor :skip_destroy_dependent_visualizations
 
     PRIVACY_PRIVATE = 0

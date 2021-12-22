@@ -40,7 +40,7 @@ Development
 - Migrate Redis DO subscription information in inter-cloud migrations [#16315](https://github.com/CartoDB/cartodb/pull/16315)
 - OauthApps restricted by default [#16304](https://github.com/CartoDB/cartodb/pull/16304)
 - Support staging hostname in the catalog [#16258](https://github.com/CartoDB/cartodb/pull/16258)
-- Add custom redirection on `developers.carto.com/login` [#]()
+- Add custom redirection on `developers.carto.com/login` [#16383](https://github.com/CartoDB/cartodb/pull/16383)
 - Fix user migration export/import logs [#16298](https://github.com/CartoDB/cartodb/pull/16298)
 - Fix race condition when DO subscriptions are created [#16311](https://github.com/CartoDB/cartodb/pull/16311)
 - Allow the usage of WMTS URLs with parameters to create custom basemaps [#16271](https://github.com/CartoDB/cartodb/pull/16271)

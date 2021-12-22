@@ -20,6 +20,7 @@ Development
 * Setting to enable/disable random username generation on SAML authentication process [16372](https://github.com/CartoDB/cartodb/pull/16372)
 
 ### Bug fixes / enhancements
+- Fix rubocop integration [#16382](https://github.com/CartoDB/cartodb/pull/16382)
 - Add marginTop to Page when notification is displayed [#16355](https://github.com/CartoDB/cartodb/pull/16355)
 - Add "element" param to DO-Catalog entry function [#16343](https://github.com/CartoDB/cartodb/pull/16343)
 - Add new DO Catalog route for internal usage [#16342](https://github.com/CartoDB/cartodb/pull/16342)

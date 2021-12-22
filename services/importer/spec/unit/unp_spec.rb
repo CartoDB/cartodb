@@ -5,9 +5,11 @@ include CartoDB::Importer2
 
 module FileUtils
   class Entry_ # rubocop:disable ClassAndModuleCamelCase, DepartmentName
+
     def copy_file(dest)
       Open3.capture2('cp', path, dest)
     end
+
   end
 end
 
@@ -225,7 +227,7 @@ describe Unp do
     end
 
     it 'raises if unp is not found' do
-      Open3.stubs('capture3').with('which unp').returns [0, 0, 1]
+      Open3.expects('capture3').with('which unp').returns [0, 0, 1]
       unp = Unp.new
 
       expect { unp.command_for('wadus') }.to raise_error InstallError

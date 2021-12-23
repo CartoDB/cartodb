@@ -67,8 +67,8 @@ module Resque
         @queue = :users
 
         def self.perform(options = {})
-          run_action(options, @queue, lambda { |options|
-            options.symbolize_keys[:urls].each { |url| delete(url, options.symbolize_keys[:request_params]) }
+          run_action(options, @queue, lambda { |job_options|
+            job_options.symbolize_keys[:urls].each { |url| delete(url, job_options.symbolize_keys[:request_params]) }
           })
         end
 

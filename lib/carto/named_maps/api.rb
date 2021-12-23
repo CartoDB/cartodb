@@ -50,8 +50,8 @@ module Carto
               # Send message to support and clean some named_maps
               ReporterMailer.named_maps_near_the_limit(response_body[:limit_message]).deliver_now
               tables = Carto::UserTable.where(user_id: user.id, privacy: 0)
-                .limit(MAX_NAMED_MAPS_TO_CLEAN)
-                .order('updated_at')
+                                       .limit(MAX_NAMED_MAPS_TO_CLEAN)
+                                       .order('updated_at')
               named_maps_ids = tables.map { |t| "tpl_#{t.visualization.id.tr('-', '_')}" }
               urls = named_maps_ids.map { |id| url(template_name: id) }
               ::Resque.enqueue(

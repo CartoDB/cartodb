@@ -39,6 +39,7 @@ class SessionsController < ApplicationController
   before_filter :load_organization
   before_filter :initialize_oauth_config
   before_filter :api_authorization_required, only: :show
+  before_action :custom_redirect, only: :new
   after_action  :set_last_mfa_activity, only: [:multifactor_authentication, :multifactor_authentication_verify_code]
 
   PLEASE_LOGIN = 'Please, log in to continue using CARTO.'.freeze
@@ -315,6 +316,12 @@ class SessionsController < ApplicationController
   end
 
   private
+
+  # HACK: CARTO internals custom redirection
+  #   https://app.shortcut.com/cartoteam/story/198852/update-developers-carto-com-login-redirection-to-carto-com-signin
+  def custom_redirect
+    redirect_to('https://carto.com/signin/') if CartoDB.extract_subdomain(request) == 'developers'
+  end
 
   def mfa_request?
     params[:code].presence || params[:skip].presence

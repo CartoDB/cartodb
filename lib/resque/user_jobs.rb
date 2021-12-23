@@ -60,6 +60,7 @@ module Resque
 
     module NamedMapsLimitsJobs
       class CleanNamedMaps < BaseJob
+
         RETRY_TIME_SECONDS = 2
         MAX_RETRY_ATTEMPTS = 3
 
@@ -76,9 +77,9 @@ module Resque
           response = http_client.delete(url, request_params.symbolize_keys)
 
           response_code_string = response.code.to_s
-          if response_code_string.start_with?("2")
+          if response_code_string.start_with?('2')
             response.response_body
-          elsif (response_code_string.start_with?("5") || response.code == 429) && retries < MAX_RETRY_ATTEMPTS
+          elsif (response_code_string.start_with?('5') || response.code == 429) && retries < MAX_RETRY_ATTEMPTS
             sleep(RETRY_TIME_SECONDS**retries)
             delete(url, request_params, retries: retries + 1)
           end

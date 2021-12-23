@@ -49,10 +49,15 @@ module Carto
             if response_body.key?(:limit_message)
               # Send message to support and clean some named_maps
               ReporterMailer.named_maps_near_the_limit(response_body[:limit_message]).deliver_now
-              tables = Carto::UserTable.where(user_id: user.id, privacy: 0).limit(MAX_NAMED_MAPS_TO_CLEAN).order('updated_at')
+              tables = Carto::UserTable.where(user_id: user.id, privacy: 0)
+                .limit(MAX_NAMED_MAPS_TO_CLEAN)
+                .order('updated_at')
               named_maps_ids = tables.map { |t| "tpl_#{t.visualization.id.tr('-', '_')}" }
-              urls = named_maps_ids.map { |id| url(template_name: id)}
-              ::Resque.enqueue(::Resque::UserJobs::NamedMapsLimitsJobs::CleanNamedMaps, {urls: urls, request_params: request_params})
+              urls = named_maps_ids.map { |id| url(template_name: id) }
+              ::Resque.enqueue(
+                ::Resque::UserJobs::NamedMapsLimitsJobs::CleanNamedMaps,
+                { urls: urls, request_params: request_params }
+              )
             end
             response_body
           elsif response_code != 409 # Ignore when max number of templates is reached

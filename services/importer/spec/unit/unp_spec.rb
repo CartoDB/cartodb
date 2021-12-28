@@ -3,6 +3,16 @@ require_relative '../../lib/importer/unp'
 
 include CartoDB::Importer2
 
+module FileUtils
+  class Entry_ # rubocop:disable ClassAndModuleCamelCase, DepartmentName
+
+    def copy_file(dest)
+      Open3.capture2('cp', path, dest)
+    end
+
+  end
+end
+
 describe Unp do
   describe '#run' do
     it 'extracts the contents of the file' do
@@ -352,7 +362,8 @@ describe Unp do
     FileUtils.rm_r(dir)   if File.exists?(dir)
     FileUtils.mkdir_p(dir)
 
-    FileUtils.cp(File.join(File.dirname(__FILE__), "../fixtures/#{filename}"), zipfile)
+    new_dir = File.expand_path("../fixtures/#{filename}", File.dirname(__FILE__))
+    FileUtils.cp(new_dir, zipfile)
 
     zipfile
   end

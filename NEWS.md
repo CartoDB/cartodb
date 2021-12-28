@@ -20,6 +20,7 @@ Development
 * Setting to enable/disable random username generation on SAML authentication process [16372](https://github.com/CartoDB/cartodb/pull/16372)
 
 ### Bug fixes / enhancements
+- Fix rubocop integration [#16382](https://github.com/CartoDB/cartodb/pull/16382)
 - Add marginTop to Page when notification is displayed [#16355](https://github.com/CartoDB/cartodb/pull/16355)
 - Add "element" param to DO-Catalog entry function [#16343](https://github.com/CartoDB/cartodb/pull/16343)
 - Add new DO Catalog route for internal usage [#16342](https://github.com/CartoDB/cartodb/pull/16342)
@@ -41,6 +42,7 @@ Development
 - Migrate Redis DO subscription information in inter-cloud migrations [#16315](https://github.com/CartoDB/cartodb/pull/16315)
 - OauthApps restricted by default [#16304](https://github.com/CartoDB/cartodb/pull/16304)
 - Support staging hostname in the catalog [#16258](https://github.com/CartoDB/cartodb/pull/16258)
+- Add custom redirection on `developers.carto.com/login` [#16383](https://github.com/CartoDB/cartodb/pull/16383)
 - Fix user migration export/import logs [#16298](https://github.com/CartoDB/cartodb/pull/16298)
 - Fix race condition when DO subscriptions are created [#16311](https://github.com/CartoDB/cartodb/pull/16311)
 - Allow the usage of WMTS URLs with parameters to create custom basemaps [#16271](https://github.com/CartoDB/cartodb/pull/16271)
@@ -52,6 +54,7 @@ Development
 - Fix verification process for active users [#16337](https://github.com/CartoDB/cartodb/pull/16337)
 - Avoid updating analysis nodes more than once when moving layers in Builder [#16279](https://github.com/CartoDB/cartodb/pull/16279)
 - Fix subscription/sample filter for datasets [#16254](https://github.com/CartoDB/cartodb/pull/16254)
+- Fix form to search dataset when generating a new API key [#16378](https://github.com/CartoDB/cartodb/pull/16378)
 - Use fully qualified table name while creating a new map from a shared dataset [#16241](https://github.com/CartoDB/cartodb/pull/16241)
 - Render tileset viewer features in front of basemap [#16333](https://github.com/CartoDB/cartodb/pull/16333)
 - Rake task to migrate legacy synchronizations [#16353](https://github.com/CartoDB/cartodb/pull/16353)

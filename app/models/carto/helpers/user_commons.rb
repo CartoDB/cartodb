@@ -42,7 +42,7 @@ module Carto::UserCommons
                           salesforce_datasource_enabled builder_enabled geocoder_provider isolines_provider
                           routing_provider engine_enabled mapzen_routing_quota
                           mapzen_routing_block_price soft_mapzen_routing_limit no_map_logo org_admin
-                          user_render_timeout database_render_timeout frontend_version asset_host
+                          user_render_timeout database_render_timeout export_timeout frontend_version asset_host
                           state rate_limit_id public_map_quota regular_api_key_quota
                           maintenance_mode private_map_quota public_dataset_quota]
 

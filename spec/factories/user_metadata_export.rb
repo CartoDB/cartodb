@@ -31,6 +31,7 @@ class UserMetadataExportFactory
         user_timeout: 300_000,
         database_render_timeout: 0,
         user_render_timeout: 0,
+        export_timeout: 0,
         upgraded_at: nil,
         map_view_block_price: nil,
         geocoding_quota: 0,

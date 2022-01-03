@@ -50,7 +50,7 @@ module Carto
       mobile_gis_extension mobile_max_open_users mobile_max_private_users
       viewer salesforce_datasource_enabled builder_enabled geocoder_provider isolines_provider routing_provider
       github_user_id engine_enabled mapzen_routing_quota mapzen_routing_block_price soft_mapzen_routing_limit
-      no_map_logo org_admin last_name user_render_timeout database_render_timeout frontend_version
+      no_map_logo org_admin last_name user_render_timeout database_render_timeout export_timeout frontend_version
       asset_host state company phone industry job_role password_reset_token password_reset_sent_at maintenance_mode
       company_employees use_case private_map_quota session_salt public_dataset_quota
       email_verification_token email_verification_sent_at

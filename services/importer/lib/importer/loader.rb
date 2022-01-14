@@ -10,6 +10,7 @@ require_relative './georeferencer'
 require_relative '../importer/post_import_handler'
 require_relative './geometry_fixer'
 require_relative './typecaster'
+require_relative './arcgis_autoguessing'
 
 require_relative '../../../../lib/cartodb/stats/importer'
 
@@ -92,13 +93,13 @@ module CartoDB
         run_ogr2ogr(append_mode=true)
       end
 
-      def streamed_run_finish(post_import_handler_instance=nil)
+      def streamed_run_finish(post_import_handler_instance=nil, datasource_name)
         @post_import_handler = post_import_handler_instance
 
-        post_ogr2ogr_tasks
+        post_ogr2ogr_tasks(datasource_name)
       end
 
-      def post_ogr2ogr_tasks
+      def post_ogr2ogr_tasks(datasource_name)
         georeferencer.mark_as_from_geojson_with_transform if post_import_handler.has_transform_geojson_geom_column?
 
         job.log 'Georeferencing...'
@@ -116,6 +117,14 @@ module CartoDB
             log_warning(exception: e, message: 'Could not fix geometries during import')
             job.log "Error fixing geometries during import, skipped (#{e.message})"
           end
+        end
+
+        # If autoguessing is enabled, we try it on arcgis data
+        if datasource_name == 'arcgis' && options[:ogr2ogr_csv_guessing]
+          job.log 'Autoguessing ArcGIS data types...'
+          file = File.open @source_file.fullpath
+          file_content = JSON.load file
+          ArcGISAutoguessing.new(job.db, SCHEMA, job.table_name, file_content['fields']).run
         end
       rescue StandardError => e
         raise CartoDB::Datasources::InvalidInputDataError.new(e.to_s, ERRORS_MAP[CartoDB::Datasources::InvalidInputDataError]) unless statement_timeout?(e.to_s)
@@ -244,7 +253,7 @@ module CartoDB
 
       attr_accessor   :source_file, :options
 
-
+      
       private
 
       attr_writer     :ogr2ogr, :georeferencer

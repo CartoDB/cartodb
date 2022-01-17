@@ -18,6 +18,7 @@ Development
 * Show user's database location in profile [16349](https://github.com/CartoDB/cartodb/pull/16349)
 * Setting to enable/disable import notifications [16354](https://github.com/CartoDB/cartodb/pull/16354)
 * Setting to enable/disable random username generation on SAML authentication process [16372](https://github.com/CartoDB/cartodb/pull/16372)
+* Add type guessing capabilities to the ArcGIS connector [#16385](https://github.com/CartoDB/cartodb/pull/16385)
 
 ### Bug fixes / enhancements
 - Fix rubocop integration [#16382](https://github.com/CartoDB/cartodb/pull/16382)

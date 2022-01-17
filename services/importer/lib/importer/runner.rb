@@ -230,7 +230,7 @@ module CartoDB
           loader.streamed_run_continue(downloader.source_file) if got_data
         end while got_data
 
-        loader.streamed_run_finish(@post_import_handler)
+        loader.streamed_run_finish(@post_import_handler, @downloader.datasource.class::DATASOURCE_NAME)
       end
 
       def file_based_loader_run(job, loader)

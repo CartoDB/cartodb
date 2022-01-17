@@ -202,7 +202,7 @@ SQL API
 
   .. code-block:: bash
 
-    git clone git://github.com/CartoDB/CartoDB-SQL-API.git
+    git clone https://github.com/CartoDB/CartoDB-SQL-API.git
     cd CartoDB-SQL-API
 
 * Install npm dependencies
@@ -232,7 +232,7 @@ MAPS API
 
   .. code-block:: bash
 
-    git clone git://github.com/CartoDB/Windshaft-cartodb.git
+    git clone https://github.com/CartoDB/Windshaft-cartodb.git
     cd Windshaft-cartodb
 
 * Install yarn dependencies

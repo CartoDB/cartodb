@@ -4,7 +4,7 @@
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
-    "url": "git://github.com/CartoDB/cartodb.git"
+    "url": "https://github.com/CartoDB/cartodb.git"
   },
   "author": {
     "name": "CARTO",
@@ -65,7 +65,7 @@
     "moment": "2.18.1",
     "moment-timezone": "^0.5.13",
     "node-polyglot": "1.0.0",
-    "perfect-scrollbar": "git://github.com/CartoDB/perfect-scrollbar.git#master",
+    "perfect-scrollbar": "https://github.com/CartoDB/perfect-scrollbar.git#master",
     "postcss": "5.0.19",
     "postcss-scss": "0.4.0",
     "postcss-strip-inline-comments": "0.1.5",

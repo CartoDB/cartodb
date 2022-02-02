@@ -73,7 +73,7 @@ module CartoDB
         public_datasets = visualizations.select do |v|
           v.type == Carto::Visualization::TYPE_CANONICAL && v.privacy != Carto::Visualization::PRIVACY_PRIVATE
         end
-        return if public_datasets.zero?
+        return if public_datasets.count.zero?
 
         quota_checker = CartoDB::QuotaChecker.new(data_import.user)
         return unless quota_checker.will_be_over_public_dataset_quota?(public_datasets.count)

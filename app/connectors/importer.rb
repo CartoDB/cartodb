@@ -73,11 +73,13 @@ module CartoDB
         public_datasets = visualizations.select do |v|
           v.type == Carto::Visualization::TYPE_CANONICAL && v.privacy != Carto::Visualization::PRIVACY_PRIVATE
         end
-        quota_checker = CartoDB::QuotaChecker.new(data_import.user)
         if public_datasets.count == 0 then
           return
         end
+
+        quota_checker = CartoDB::QuotaChecker.new(data_import.user)
         return unless quota_checker.will_be_over_public_dataset_quota?(public_datasets.count)
+
         log('Results would set dataset overquota')
         raise CartoDB::Importer2::PublicDatasetQuotaExceededError.new
       end

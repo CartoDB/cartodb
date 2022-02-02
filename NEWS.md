@@ -68,6 +68,7 @@ Development
 - Fix search in _Filter by Column Value_ analysis [#16310](https://github.com/CartoDB/cartodb/pull/16310)
 - Use Google Maps provider if the base layer is Google [#16314](https://github.com/CartoDB/cartodb/pull/16314)
 - Allow importing datasets with exhausted map quota [#16320](https://github.com/CartoDB/cartodb/pull/16320)
+- Allow importing private datasets with exhausted public datasets quota [#16389](https://github.com/CartoDB/cartodb/pull/16389)
 - Fix empty ArcGIS imports [#16322](https://github.com/CartoDB/cartodb/pull/16322)
 - Fix data overwrite when a user is promoted to admin [#16351](https://github.com/CartoDB/cartodb/pull/16351)
 - Update analysis schema when a user is promoted to organization owner [#16358](https://github.com/CartoDB/cartodb/pull/16358)

@@ -724,7 +724,7 @@ describe CartoDB::Connector::Importer do
         data_source: filepath,
         updated_at: Time.now.utc,
         append: false,
-        create_visualization: true
+        create_visualization: true,
         privacy: (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
       )
       @data_import.values[:data_source] = filepath

@@ -715,7 +715,7 @@ describe CartoDB::Connector::Importer do
       @user.save
     end
 
-    it 'fails to import a visualization export if public dataset quota is exceeded' do
+    it 'fails to import a public visualization export if public dataset quota is exceeded' do
       filepath = "#{Rails.root}/services/importer/spec/fixtures/public_visualization_export_with_csv_table.carto"
       @user.public_dataset_quota = 0
       @user.save
@@ -725,6 +725,7 @@ describe CartoDB::Connector::Importer do
         updated_at: Time.now.utc,
         append: false,
         create_visualization: true
+        privacy: (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
       )
       @data_import.values[:data_source] = filepath
 

@@ -18,6 +18,7 @@ Development
 * Show user's database location in profile [16349](https://github.com/CartoDB/cartodb/pull/16349)
 * Setting to enable/disable import notifications [16354](https://github.com/CartoDB/cartodb/pull/16354)
 * Setting to enable/disable random username generation on SAML authentication process [16372](https://github.com/CartoDB/cartodb/pull/16372)
+* Add type guessing capabilities to the ArcGIS connector [#16385](https://github.com/CartoDB/cartodb/pull/16385)
 
 ### Bug fixes / enhancements
 - Fix rubocop integration [#16382](https://github.com/CartoDB/cartodb/pull/16382)
@@ -83,6 +84,8 @@ Development
 - Remove old named maps when a user is reaching the named maps limit [#16368](https://github.com/CartoDB/cartodb/pull/16368)
 - Fix privacy dropdown when user is editing a map [#16367](https://github.com/CartoDB/cartodb/pull/16367)
 - Add a new rake to update a user username [#16370](https://github.com/CartoDB/cartodb/pull/16370)
+- Add a check before destroying user tables in order to avoid deleting dependent maps [#16381](https://github.com/CartoDB/cartodb/pull/16381)
+- Fix duplicated attributions in datasets [#16384](https://github.com/CartoDB/cartodb/pull/16384)
 
 4.45.0 (2021-04-14)
 -------------------

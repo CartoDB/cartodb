@@ -10,6 +10,7 @@ require_relative './georeferencer'
 require_relative '../importer/post_import_handler'
 require_relative './geometry_fixer'
 require_relative './typecaster'
+require_relative './arcgis_autoguessing'
 
 require_relative '../../../../lib/cartodb/stats/importer'
 
@@ -92,13 +93,13 @@ module CartoDB
         run_ogr2ogr(append_mode=true)
       end
 
-      def streamed_run_finish(post_import_handler_instance=nil)
+      def streamed_run_finish(post_import_handler_instance = nil, datasource_name = nil)
         @post_import_handler = post_import_handler_instance
 
-        post_ogr2ogr_tasks
+        post_ogr2ogr_tasks(datasource_name)
       end
 
-      def post_ogr2ogr_tasks
+      def post_ogr2ogr_tasks(datasource_name = nil)
         georeferencer.mark_as_from_geojson_with_transform if post_import_handler.has_transform_geojson_geom_column?
 
         job.log 'Georeferencing...'
@@ -107,19 +108,25 @@ module CartoDB
 
         if post_import_handler.has_fix_geometries_task?
           job.log 'Fixing geometry...'
-          # At this point the_geom column is renamed
-          begin
-            GeometryFixer.new(job.db, job.table_name, SCHEMA, 'the_geom', job).run
-          rescue StandardError => e
-            raise e unless statement_timeout?(e.to_s)
-            # Ignore timeouts in query batcher
-            log_warning(exception: e, message: 'Could not fix geometries during import')
-            job.log "Error fixing geometries during import, skipped (#{e.message})"
-          end
+          fix_geometries(job)
         end
+
+        # If autoguessing is enabled, we try it on arcgis data
+        autoguessing_on_arcgis_import if datasource_name == 'arcgis' && options[:ogr2ogr_csv_guessing]
       rescue StandardError => e
         raise CartoDB::Datasources::InvalidInputDataError.new(e.to_s, ERRORS_MAP[CartoDB::Datasources::InvalidInputDataError]) unless statement_timeout?(e.to_s)
         raise StatementTimeoutError.new(e.to_s, ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError])
+      end
+
+      def fix_geometries(job)
+        # At this point the_geom column is renamed
+        GeometryFixer.new(job.db, job.table_name, SCHEMA, 'the_geom', job).run
+      rescue StandardError => e
+        raise e unless statement_timeout?(e.to_s)
+
+        # Ignore timeouts in query batcher
+        log_warning(exception: e, message: 'Could not fix geometries during import')
+        job.log "Error fixing geometries during import, skipped (#{e.message})"
       end
 
       def normalize
@@ -394,6 +401,13 @@ module CartoDB
         csv_content = CSV.read(filepath, headers: true)
         csv_content[line][column] = "\"#{csv_content[line][column]}\""
         File.open(filepath, 'w') { |file| file.puts csv_content.to_s }
+      end
+
+      def autoguessing_on_arcgis_import
+        job.log 'Autoguessing ArcGIS data types...'
+        file = File.read(@source_file.fullpath)
+        file_content = JSON.parse(file)
+        ArcGISAutoguessing.new(job.db, SCHEMA, job.table_name, file_content['fields']).run
       end
     end
   end

@@ -80,6 +80,8 @@ Development
 - Fix Auth URL generation while establishing a connection with Google Drive [#16357](https://github.com/CartoDB/cartodb/pull/16357)
 - Fix adding license metadata to a dataset [#16356](https://github.com/CartoDB/cartodb/pull/16356)
 - Fix notifications when organization seats limit is reached [#16359](https://github.com/CartoDB/cartodb/pull/16359)
+- Notify Support when a user is reaching the named maps limit [#16368](https://github.com/CartoDB/cartodb/pull/16368)
+- Remove old named maps when a user is reaching the named maps limit [#16368](https://github.com/CartoDB/cartodb/pull/16368)
 - Fix privacy dropdown when user is editing a map [#16367](https://github.com/CartoDB/cartodb/pull/16367)
 - Add a new rake to update a user username [#16370](https://github.com/CartoDB/cartodb/pull/16370)
 - Add a check before destroying user tables in order to avoid deleting dependent maps [#16381](https://github.com/CartoDB/cartodb/pull/16381)

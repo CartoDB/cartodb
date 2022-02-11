@@ -32,7 +32,7 @@
 import { mapState } from 'vuex';
 import mapboxgl from 'mapbox-gl';
 import { Deck } from '@deck.gl/core';
-import { CartoBQTilerLayer, BASEMAP } from '@deck.gl/carto';
+import { CartoLayer, BASEMAP, MAP_TYPES, API_VERSIONS } from '@deck.gl/carto';
 
 import { generateColorStyleProps, resetColorStyleProps } from './map-styles/colorStyles';
 import { getQuantiles, formatNumber, capitalize, compare } from './map-styles/utils';
@@ -201,9 +201,11 @@ export default {
     },
     renderLayer () {
       const layers = [
-        new CartoBQTilerLayer({
+        new CartoLayer({
           data: this.tilesetSampleId,
+          type: MAP_TYPES.TILESET,
           credentials: {
+            apiVersion: API_VERSIONS.V2,
             username: this.username || 'public',
             apiKey: 'default_public',
             ...(this.mapUrl && { mapsUrl: this.mapUrl })

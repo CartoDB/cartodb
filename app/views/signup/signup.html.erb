@@ -33,7 +33,7 @@
 
             <%= form_for @user, url: CartoDB.url(self, 'signup_organization_user'),  html: { class: "js-Loading-form" } do |f| %>
 
-              <input type="hidden" value="<%= params[:invitation_token] %>" id="invitation_token" name="invitation_token" />
+              <input type="hidden" value="<%= params[:invitation_token] || @invitation_token %>" id="invitation_token" name="invitation_token" />
 
               <div class="Sessions-fieldsGroup">
                 <% if @organization.auth_username_password_enabled || duplicated_username_prompt? %>

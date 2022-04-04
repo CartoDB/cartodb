@@ -120,8 +120,8 @@ export default {
   },
   mounted () {
     this.markPopupAsRead('popups.newPlatform');
-    //this.markPopupAsRead('feedback.popupWasShown');
-    //this.markPopupAsRead('popups.directDBConnection');
+    // this.markPopupAsRead('feedback.popupWasShown');
+    // this.markPopupAsRead('popups.directDBConnection');
   },
   computed: {
     hasDBFFActive () {

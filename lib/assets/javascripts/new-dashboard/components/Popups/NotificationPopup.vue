@@ -7,9 +7,9 @@
         {{ title }}
       </p>
 
-      <template v-for="paragraph in message">
-        <p class="notification__paragraph text is-small" v-if="messageHasHTML" v-html="paragraph"></p>
-        <p class="notification__paragraph text is-small" v-else>{{ paragraph }}</p>
+      <template v-for="(paragraph, index) in message">
+        <p class="notification__paragraph text is-small" v-if="messageHasHTML" v-html="paragraph" :key="index"></p>
+        <p class="notification__paragraph text is-small" v-else :key="index">{{ paragraph }}</p>
       </template>
     </div>
   </a>

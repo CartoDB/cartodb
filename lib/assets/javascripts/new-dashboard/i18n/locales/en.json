@@ -557,6 +557,13 @@
     "maps": "0 maps | {maps} map | {maps} maps",
     "datasets": "0 datasets | {datasets} dataset | {datasets} datasets"
   },
+  "NewPlatformMessage": {
+    "title": "New version of the CARTO Platform",
+    "message": [
+      "To start using the latest version of our platform, please create your account <a href='https://carto.com/signup' target='_blank'>here</a>. We will then align it to your current subscription plan.",
+      "If you need help migrating your data to the new version of CARTO, reach out to our <a href='mailto:enterprise-support@carto.com'>Support team</a>."
+    ]
+  },
   "FeedbackMessage": {
     "title": "Let us know what you think.",
     "message": "Missing something? Should we be doing something differently?"

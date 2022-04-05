@@ -70,7 +70,7 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown close
     <div class="navbar-user">
       <div class="navbar-avatar" style="background-image: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
       <userdropdown-stub baseurl="" usermodel="[object Object]"></userdropdown-stub>
-      <notificationpopup-stub title="FeedbackMessage.title" message="FeedbackMessage.message" class="notification-popup"></notificationpopup-stub>
+      <!---->
     </div> <span class="navbar-searchClose"><img svg-inline="" src="../../assets/icons/navbar/close.svg"></span>
   </div>
 </nav>

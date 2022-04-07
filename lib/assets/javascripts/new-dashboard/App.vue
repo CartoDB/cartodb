@@ -74,7 +74,9 @@ export default {
       return !!this.$store.getters['user/isNotificationVisible'];
     },
     isCarto3ReleaseNotificationVisible () {
-      return this.isEnterprise && this.displayCarto3ReleaseNotification;
+      // HACK: Disabling notification
+      return false;
+      // return this.isEnterprise && this.displayCarto3ReleaseNotification;
     },
     baseUrl () {
       return this.$store.state.user.base_url;

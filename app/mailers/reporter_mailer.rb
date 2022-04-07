@@ -8,4 +8,11 @@ class ReporterMailer < ActionMailer::Base
 
     mail to: mail_to, subject: @subject
   end
+
+  def named_maps_near_the_limit(message)
+    mail_to = Cartodb.get_config(:mailer, 'support_email')
+    mail_from = Cartodb.get_config(:mailer, 'internal_notifications_email')
+
+    mail from: mail_from, to: mail_to, subject: message if mail_to && mail_from
+  end
 end

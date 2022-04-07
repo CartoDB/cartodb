@@ -12,6 +12,7 @@ module Carto
       HTTP_REQUEST_TIMEOUT_SECONDS = 60
       RETRY_TIME_SECONDS = 2
       MAX_RETRY_ATTEMPTS = 3
+      MAX_NAMED_MAPS_TO_CLEAN = 100
 
       attr_accessor :user, :visualization
 
@@ -44,7 +45,21 @@ module Carto
 
           response_code = response.code
           if response_code.to_s.match?(/^2/)
-            ::JSON.parse(response.response_body).deep_symbolize_keys
+            response_body = ::JSON.parse(response.response_body).deep_symbolize_keys
+            if response_body.key?(:limit_message)
+              # Send message to support and clean some named_maps
+              ReporterMailer.named_maps_near_the_limit(response_body[:limit_message]).deliver_now
+              tables = Carto::UserTable.where(user_id: user.id, privacy: 0)
+                                       .limit(MAX_NAMED_MAPS_TO_CLEAN)
+                                       .order('updated_at')
+              named_maps_ids = tables.map { |t| "tpl_#{t.visualization.id.tr('-', '_')}" }
+              urls = named_maps_ids.map { |id| url(template_name: id) }
+              ::Resque.enqueue(
+                ::Resque::UserJobs::NamedMapsLimitsJobs::CleanNamedMaps,
+                { urls: urls, request_params: request_params }
+              )
+            end
+            response_body
           elsif response_code != 409 # Ignore when max number of templates is reached
             log_response(response, 'create')
           end
@@ -90,7 +105,6 @@ module Carto
       def destroy(retries: 0)
         stats_aggregator.timing('carto-named-maps-api.destroy') do
           url = url(template_name: @named_map_template.name)
-
           response = http_client.delete(url, request_params)
 
           response_code_string = response.code.to_s

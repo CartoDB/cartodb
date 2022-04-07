@@ -7,11 +7,10 @@
         {{ title }}
       </p>
 
-      <p class="notification__paragraph text is-small" v-if="messageHasHTML" v-html="message"></p>
-
-      <p class="notification__paragraph text is-small" v-if="!messageHasHTML">
-        {{ message }}
-      </p>
+      <template v-for="(paragraph, index) in message">
+        <p class="notification__paragraph text is-small" v-if="messageHasHTML" v-html="paragraph" :key="index"></p>
+        <p class="notification__paragraph text is-small" v-else :key="index">{{ paragraph }}</p>
+      </template>
     </div>
   </a>
 </template>
@@ -21,7 +20,7 @@ export default {
   name: 'NotificationPopup',
   props: {
     title: String,
-    message: String,
+    message: Array,
     messageHasHTML: {
       type: Boolean,
       default: false

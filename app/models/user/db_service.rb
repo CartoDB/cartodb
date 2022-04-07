@@ -1212,7 +1212,6 @@ module CartoDB
 
           create_public_db_user
           set_database_search_path
-          update_analyses_schema
         end
       rescue StandardError => e
         # Undo metadata changes if process fails

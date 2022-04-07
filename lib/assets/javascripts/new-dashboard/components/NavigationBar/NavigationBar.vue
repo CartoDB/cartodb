@@ -39,11 +39,19 @@
         <UserDropdown :userModel="user" :notificationsCount="notificationsCount" :open="isDropdownOpen" :baseUrl="baseUrl" v-click-outside="closeDropdown" @linkClick="closeDropdown" />
 
         <NotificationPopup
+          v-if="!popupWasShown('popups.newPlatform') && isEnterprise"
+          class="notification-popup"
+          :title="$t('NewPlatformMessage.title')"
+          :message="$t('NewPlatformMessage.message')"
+          :messageHasHTML="true"
+          @click.native.stop.prevent="toggleDropdown"/>
+
+        <!-- <NotificationPopup
           v-if="!popupWasShown('feedback.popupWasShown')"
           class="notification-popup"
           :title="$t('FeedbackMessage.title')"
           :message="$t('FeedbackMessage.message')"
-          @click.native.stop.prevent="toggleDropdown"/>
+          @click.native.stop.prevent="toggleDropdown"/> -->
 
         <!-- <NotificationPopup
           v-if="!popupWasShown('popups.DataObservatorySamples') && !isOnPremise"
@@ -111,8 +119,9 @@ export default {
     };
   },
   mounted () {
-    this.markPopupAsRead('feedback.popupWasShown');
-    this.markPopupAsRead('popups.directDBConnection');
+    this.markPopupAsRead('popups.newPlatform');
+    // this.markPopupAsRead('feedback.popupWasShown');
+    // this.markPopupAsRead('popups.directDBConnection');
   },
   computed: {
     hasDBFFActive () {
@@ -132,6 +141,9 @@ export default {
         !this.isFirstTimeInDashboard &&
         !this.hasDropdownOpenedForFirstTime &&
         !this.popupWasShown;
+    },
+    isEnterprise () {
+      return this.$props.user && this.$props.user.is_enterprise;
     }
   },
   methods: {

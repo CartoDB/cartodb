@@ -27,6 +27,7 @@ Development
 - Add "element" param to DO-Catalog entry function [#16343](https://github.com/CartoDB/cartodb/pull/16343)
 - Add new DO Catalog route for internal usage [#16342](https://github.com/CartoDB/cartodb/pull/16342)
 - Propagate 'invitation_token' when there is an error signing-up with Google [#16391](https://github.com/CartoDB/cartodb/pull/16391)
+- Reverse analysis selection order on new widget form [#16412](https://github.com/CartoDB/cartodb/pull/16412)
 - Improve info for :update_user command  [#16363](https://github.com/CartoDB/cartodb/pull/16363)
 - Disable email validation in DO Premium Subscriptions [#16309](https://github.com/CartoDB/cartodb/pull/16309)
 - Invalidate sessions on 'session_salt' issue [#16376](https://github.com/CartoDB/cartodb/pull/16376)

@@ -134,7 +134,7 @@
     "fs-extra": "2.0.0",
     "git-rev": "0.2.1",
     "glob": "7.1.1",
-    "grunt": "1.0.1",
+    "grunt": "1.5.2",
     "grunt-available-tasks": "0.6.3",
     "grunt-aws": "0.6.2",
     "grunt-browserify": "5.0.0",

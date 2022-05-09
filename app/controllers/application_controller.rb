@@ -416,7 +416,7 @@ class ApplicationController < ActionController::Base
     return true if user_agent.nil?
 
     banned_regex = [
-      /msie [0-9]\./, /safari\/[0-4][0-2][0-2]/, /opera\/[0-8].[0-7]/, /firefox\/[0-2].[0-5]/
+      /msie [0-9]\./, /safari\/[0-4][0-2][0-2]/, /opera\/[0-8].[0-7]/, /firefox\/[0-2]\.[0-5]/
     ]
 
     if banned_regex.map { |re| user_agent.match(re) }.compact.first

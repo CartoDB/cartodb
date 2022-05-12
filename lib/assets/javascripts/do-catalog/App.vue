@@ -1,6 +1,7 @@
 <template>
   <div class="do-catalog">
     <router-view></router-view>
+    <div id="tooltip-portal"></div>
   </div>
 </template>
 

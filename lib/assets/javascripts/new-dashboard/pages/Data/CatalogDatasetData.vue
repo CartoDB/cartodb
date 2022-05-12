@@ -98,16 +98,24 @@
 
         <ul class="u-mt--24 text f12 is-small is-txtMainTextColor">
           <li class="grid title is-txtMidGrey header-row">
-            <div class="grid-cell grid-cell--col4">Column Name</div>
+            <div class="grid-cell" :class="cssColumnName" >Column Name</div>
             <div
-              class="grid-cell grid-cell--col7 grid-cell--col6--tablet grid-cell--col5--mobile"
+              class="grid-cell"
+              :class="cssColumnDescription"
             >
               Description
             </div>
             <div
-              class="grid-cell grid-cell--col1 grid-cell--col2--tablet grid-cell--col3--mobile"
+              class="grid-cell"
+              :class="cssColumnType"
             >
               Type
+            </div>
+            <div
+              class="grid-cell grid-cell--col2 grid-cell--col3--tablet grid-cell--col3--mobile"
+              v-if="showId"
+            >
+              ID
             </div>
           </li>
 
@@ -116,18 +124,33 @@
             v-for="variable in variables"
             :key="variable.slug"
           >
-            <div class="grid-cell grid-cell--col4 is-semibold name-cell">
+            <div :class="cssColumnName" class="grid-cell is-semibold name-cell">
               {{ variable.column_name }}
             </div>
             <div
-              class="grid-cell grid-cell--col7 grid-cell--col6--tablet grid-cell--col5--mobile"
+              class="grid-cell"
+              :class="cssColumnDescription"
             >
               {{ variable.description }}
             </div>
             <div
-              class="grid-cell grid-cell--col1 grid-cell--col2--tablet grid-cell--col3--mobile"
+              class="grid-cell"
+              :class="cssColumnType"
             >
               {{ variable.db_type }}
+            </div>
+            <div
+              class="grid-cell grid-cell--col2 grid-cell--col3--tablet grid-cell--col3--mobile"
+              v-if="showId"
+            >
+              <Tooltip :text="copyMessage" position="bottom-left" class="text is-small u-flex u-flex__align-center">
+                <div class="u-flex u-alignCenter copy" @click="() => copyString(variable.slug)" @mouseleave="resetCopyStatus">
+                  <svg class="u-mr--8" width="20" height="20" viewBox="0 0 20 20" style="flex-shrink: 0">
+                    <path xmlns="http://www.w3.org/2000/svg" d="M15.833 2.5c.869 0 1.588.673 1.66 1.523l.007.144v11.666c0 .869-.673 1.588-1.523 1.66l-.144.007H4.167a1.672 1.672 0 0 1-1.66-1.523l-.007-.144V4.167c0-.869.673-1.588 1.523-1.66l.144-.007h11.666zm0 1.667H4.167v11.666h11.666V4.167zM7.917 7.5v5h-1.25v-5h1.25zm4.583 0c.708 0 1.25.542 1.25 1.25v2.5c0 .708-.542 1.25-1.25 1.25H9.583v-5zm0 1.25h-1.667v2.5H12.5v-2.5z" fill="#2C3032" fill-rule="evenodd" fill-opacity=".6"/>
+                  </svg>
+                  {{ variable.slug }}
+                </div>
+              </Tooltip>
             </div>
           </li>
         </ul>
@@ -139,16 +162,19 @@
 <script>
 import { mapState } from 'vuex';
 import NotAvailable from 'new-dashboard/components/Catalog/NotAvailable.vue';
+import Tooltip from 'new-dashboard/components/Tooltip/Tooltip';
 import { formURL } from 'new-dashboard/utils/catalog/form-url';
 import { sendCustomDimensions } from 'new-dashboard/utils/catalog/custom-dimensions-ga';
 
 export default {
   name: 'CatalogDatasetData',
   components: {
-    NotAvailable
+    NotAvailable,
+    Tooltip
   },
   data () {
     return {
+      isCopied: false,
       tooltip: {
         visible: false,
         isFirst: false,
@@ -180,6 +206,9 @@ export default {
       variables: state => state.catalog.variables,
       isFetching: state => state.catalog.isFetching
     }),
+    copyMessage () {
+      return this.isCopied ? 'Copied!' : 'Copy ID';
+    },
     tableKey () {
       if (this.dataset && this.dataset.summary_json) {
         if (this.dataset.summary_json.ordered_glimpses) {
@@ -214,9 +243,34 @@ export default {
     },
     isGeography () {
       return this.$route.params.entity_type === 'geography';
+    },
+    showId () {
+      return this.$route.query.showId;
+    },
+    cssColumnName () {
+      return {'grid-cell--col3': this.showId, 'grid-cell--col4': !this.showId};
+    },
+    cssColumnDescription () {
+      return {
+        'grid-cell--col6 grid-cell--col4--tablet grid-cell--col4--mobile': this.showId,
+        'grid-cell--col7 grid-cell--col6--tablet grid-cell--col5--mobile': !this.showId
+      };
+    },
+    cssColumnType () {
+      return {
+        'grid-cell--col1 grid-cell--col2--tablet grid-cell--col2--mobile': this.showId,
+        'grid-cell--col1 grid-cell--col2--tablet grid-cell--col3--mobile': !this.showId
+      };
     }
   },
   methods: {
+    async copyString (value) {
+      await navigator.clipboard.writeText(value);
+      this.isCopied = true;
+    },
+    resetCopyStatus () {
+      this.isCopied = false;
+    },
     findVariableInfo (variableName) {
       return this.variables.find(e => e.column_name === variableName);
     },
@@ -311,14 +365,6 @@ a {
   border-bottom: 2px solid $blue--100;
 }
 
-.tooltip-container {
-  position: absolute;
-  z-index: 2;
-  bottom: 100%;
-  margin-left: 32px;
-  padding-bottom: 8px;
-}
-
 .table-wrapper {
   position: relative;
 }
@@ -373,6 +419,13 @@ a {
   &:after {
     content: url('../../assets/icons/catalog/interface-alert-triangle.svg');
     margin-left: 12px;
+  }
+}
+
+.copy {
+  &:hover {
+    cursor: pointer;
+    text-decoration: underline;
   }
 }
 

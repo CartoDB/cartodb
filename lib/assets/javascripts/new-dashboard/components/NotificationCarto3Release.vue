@@ -18,13 +18,15 @@
         </span>
       </div>
     </span>
-    <button
+
+    <!-- HACK: Non-closable banner -->
+    <!-- <button
       class="notification__close-button"
       @click="close"
       aria-label="Close"
     >
       <img src="../assets/icons/common/close-black.svg" />
-    </button>
+    </button> -->
   </div>
 </template>
 

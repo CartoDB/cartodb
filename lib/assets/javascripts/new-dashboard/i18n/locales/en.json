@@ -3,7 +3,7 @@
     "title": "Try out the new CARTO platform!",
     "message": "Create your account {link}. {contact} so we can match your current plan and help you migrate your data.",
     "link": "here",
-    "contactUs": "contact us"
+    "contactUs": "Contact us"
   },
   "MapCard": {
     "shared": {

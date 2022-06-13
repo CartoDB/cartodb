@@ -52,14 +52,14 @@ export default {
     MamufasImportView
   },
   data: () => ({
-    displayCarto3ReleaseNotification: notificationIsVisible(window.localStorage.getItem('carto3ReleaseVisible'))
+    displayCarto3ReleaseNotification: notificationIsVisible(window.localStorage.getItem('carto3ReleaseVisibleV2'))
   }),
   created () {
     sendMetric(MetricsTypes.VISITED_PRIVATE_PAGE, { page: 'dashboard' });
   },
   methods: {
     closeCarto3Release () {
-      window.localStorage.setItem('carto3ReleaseVisible', new Date().getTime());
+      window.localStorage.setItem('carto3ReleaseVisibleV2', new Date().getTime());
       this.displayCarto3ReleaseNotification = false;
     }
   },
@@ -74,9 +74,7 @@ export default {
       return !!this.$store.getters['user/isNotificationVisible'];
     },
     isCarto3ReleaseNotificationVisible () {
-      // HACK: Disabling notification
-      return false;
-      // return this.isEnterprise && this.displayCarto3ReleaseNotification;
+      return this.isEnterprise && this.displayCarto3ReleaseNotification;
     },
     baseUrl () {
       return this.$store.state.user.base_url;

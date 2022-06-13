@@ -10,7 +10,8 @@
           class="text"
           v-html="
             $t('Carto3Release.message', {
-              link: `<a href='https://carto.com/blog/announcing-carto-spatial-extension-bigquery/' target='_blank'>${$t('Carto3Release.link')}</a>`,
+              link: `<a href='https://carto.com/signup' target='_blank'>${$t('Carto3Release.link')}</a>`,
+              contact: `<a href='mailto:enterprise-support@carto.com' target='_blank'>${$t('Carto3Release.contactUs')}</a>`
             })
           "
         >

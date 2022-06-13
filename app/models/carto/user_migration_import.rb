@@ -109,6 +109,7 @@ module Carto
         raise e
       rescue StandardError => e
         log.append('=== Error importing metadata. Rollback! ===')
+        log.append(e.backtrace.join("\n"))
         service.rollback_import_from_directory(package.meta_dir)
         raise e
       end

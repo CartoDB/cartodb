@@ -92,6 +92,7 @@ Development
 - Add a check before destroying user tables in order to avoid deleting dependent maps [#16381](https://github.com/CartoDB/cartodb/pull/16381)
 - Fix duplicated attributions in datasets [#16384](https://github.com/CartoDB/cartodb/pull/16384)
 - Moving assets cdn domain from global.ssl.fastly.net to libs.cartocdn.com [#16399](https://github.com/CartoDB/cartodb/pull/16399)
+- Fix error while rolling back a user migration from one cloud to another [#16421](https://github.com/CartoDB/cartodb/pull/16421)
 
 4.45.0 (2021-04-14)
 -------------------

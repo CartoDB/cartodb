@@ -370,7 +370,7 @@ steps:
         fi
   waitFor: ['upload-logs-onprem']
 
-timeout: 2100s
+timeout: 3600s
 options:
   machineType: 'E2_HIGHCPU_32'
 substitutions:

@@ -3,6 +3,9 @@ on:
   push:
     branches-ignore:
       - master
+permissions:
+  contents: read
+
 jobs:
   orm-check:
     runs-on: ubuntu-latest

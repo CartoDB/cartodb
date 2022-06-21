@@ -4,6 +4,9 @@ on:
     branches-ignore:
       - master
 
+permissions:
+  contents: read
+
 jobs:
   cartodb-news:
     runs-on: ubuntu-18.04

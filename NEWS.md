@@ -23,6 +23,7 @@ Development
 * Update banner to notify about data migrations to CARTO 3 [#16420](https://github.com/CartoDB/cartodb/pull/16420)
 
 ### Bug fixes / enhancements
+- Removing the full path from urls with filter parameters in the Spatial Data Catalog [#16426](https://github.com/CartoDB/cartodb/pull/16426)
 - Fix rubocop integration [#16382](https://github.com/CartoDB/cartodb/pull/16382)
 - Add marginTop to Page when notification is displayed [#16355](https://github.com/CartoDB/cartodb/pull/16355)
 - Add "element" param to DO-Catalog entry function [#16343](https://github.com/CartoDB/cartodb/pull/16343)

@@ -140,11 +140,7 @@ module CartoDB
         table_statements = @table_setup.generate_table_statements(schema, table_name)
 
         temporary_name = temporary_name_for(result.table_name)
-        database.transaction do
-          rename(table_name, temporary_name) if exists?(table_name)
-          drop(temporary_name) if exists?(temporary_name)
-          rename(result.table_name, table_name)
-        end
+        swap_tables(table_name, temporary_name, result)
         @table_setup.fix_oid(table_name)
         @table_setup.update_cdb_tablemetadata(table_name)
         @table_setup.run_table_statements(table_statements, @database)
@@ -388,6 +384,25 @@ module CartoDB
       end
 
       private
+
+      def swap_tables(table_name, temporary_name, result)
+        database.transaction do
+          rename(table_name, temporary_name) if exists?(table_name)
+          drop(temporary_name) if exists?(temporary_name)
+          rename(result.table_name, table_name)
+        end
+      rescue Exception => exception
+        if exception.message.include?('canceling statement due to statement timeout')
+          sleep(60) # wait 60 seconds and retry the swap
+          database.transaction do
+            rename(table_name, temporary_name) if exists?(table_name)
+            drop(temporary_name) if exists?(temporary_name)
+            rename(result.table_name, table_name)
+          end
+        else
+          raise exception
+        end
+      end
 
       def valid_cartodb_id_candidate?(user, table_name, qualified_table_name, col_name)
         return false unless column_names(user, table_name).include?(col_name)

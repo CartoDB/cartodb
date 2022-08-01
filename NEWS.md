@@ -96,6 +96,7 @@ Development
 - Moving assets cdn domain from global.ssl.fastly.net to libs.cartocdn.com [#16399](https://github.com/CartoDB/cartodb/pull/16399)
 - Fix error while rolling back a user migration from one cloud to another [#16421](https://github.com/CartoDB/cartodb/pull/16421)
 - Add retry if a timeout is thrown when swapping the tables related with a sync process [#16430](https://github.com/CartoDB/cartodb/pull/16430)
+- Add AUTODETECT_SIZE_LIMIT to ogr2ogr process when guessing CSV file column types [#16431](https://github.com/CartoDB/cartodb/pull/16431)
 
 4.45.0 (2021-04-14)
 -------------------

@@ -11,7 +11,7 @@ module CartoDB
       THE_GEOM = 'the_geom'.freeze
       OVERWRITE_ERROR = 2013
 
-      def initialize(table_name, runner, database, user, overviews_creator, synchronization_id)
+      def initialize(table_name, runner, database, user, overviews_creator, synchronization_id, logger = nil)
         @table_name   = table_name
         @runner       = runner
         @database     = database
@@ -25,6 +25,7 @@ module CartoDB
         )
         @error_code = nil
         @synchronization_id = synchronization_id
+        @logger = logger
       end
 
       def run(&tracker)
@@ -393,6 +394,18 @@ module CartoDB
         end
       rescue Exception => exception
         if exception.message.include?('canceling statement due to statement timeout')
+          # Check if the table has any lock
+          lock = user.in_database(as: :superuser).fetch(%Q{
+            SELECT pid, state, usename, query, query_start 
+            FROM pg_stat_activity 
+            WHERE pid in (
+              SELECT pid FROM pg_locks l 
+              JOIN pg_class t ON l.relation = t.oid 
+              AND t.relkind = 'r' 
+              WHERE t.relname IN ('#{table_name}')
+            );
+          }).first
+          @logger.append_and_store "Transaction timed out as the table is blocked by query #{lock[:query]}. Retrying in 60 seconds..." if @logger && lock.present?
           sleep(60) # wait 60 seconds and retry the swap
           database.transaction do
             rename(table_name, temporary_name) if exists?(table_name)

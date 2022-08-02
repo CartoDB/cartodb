@@ -396,7 +396,7 @@ module CartoDB
         if exception.message.include?('canceling statement due to statement timeout')
           # Check if the table has any lock and cancel locking queries
           locks = user.in_database(as: :superuser).fetch(%Q{
-            SELECT pid, state, usename, query, query_start 
+            SELECT pid, query 
             FROM pg_stat_activity 
             WHERE pid in (
               SELECT pid FROM pg_locks l 
@@ -407,6 +407,7 @@ module CartoDB
           }).all
           @logger.append_and_store "Transaction timed out as the table is blocked by other queries. Terminating locking queries and retrying in 60 seconds..." if @logger && locks.present?
           locks.each do |lock|
+              @logger.append_and_store "Terminating query: #{lock[:query]}" if @logger
               user.in_database(as: :superuser).execute %Q{
               SELECT pg_terminate_backend(#{lock[:pid]});
             }

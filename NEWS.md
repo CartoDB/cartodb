@@ -98,6 +98,7 @@ Development
 - Add retry if a timeout is thrown when swapping the tables related with a sync process [#16430](https://github.com/CartoDB/cartodb/pull/16430)
 - Add AUTODETECT_SIZE_LIMIT to ogr2ogr process when guessing CSV file column types [#16431](https://github.com/CartoDB/cartodb/pull/16431)
 - Log pg locks if there is any problem during a sync table import process [#16432](https://github.com/CartoDB/cartodb/pull/16432)
+- Check pg locks during sync table swap and terminate locking queries [#16433](https://github.com/CartoDB/cartodb/pull/16433)
 
 4.45.0 (2021-04-14)
 -------------------

@@ -12,10 +12,11 @@ jobs:
         with:
           ruby-version: 2.5.8
       - run: 'gem install activesupport -v 6.1.4.4'
+      - run: 'gem install rubocop-ast -v 1.17.0'
       - name: Rubocop linter
         uses: reviewdog/action-rubocop@v1
         with:
-          rubocop_version: 1.17.0
+          rubocop_version: 1.23.0
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-check
           level: error

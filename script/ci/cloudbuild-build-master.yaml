@@ -208,7 +208,7 @@ steps:
       fi
   waitFor: ['build-cartodb-onprem', 'build-cartodb', 'build-cartodb-onprem-cron']
 
-timeout: 1800s
+timeout: 3600s
 substitutions:
   _BRANCH_TAG: ${BRANCH_NAME//\//-}
   _DOCKER_IMAGE_NAME: gcr.io/cartodb-on-gcp-main-artifacts/builder

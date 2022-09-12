@@ -12,7 +12,6 @@ jobs:
         with:
           ruby-version: 2.5.8
       - run: 'gem install activesupport -v 6.1.4.4'
-      - run: 'gem install rubocop-ast -v 1.17.0'
       - name: Rubocop linter
         uses: reviewdog/action-rubocop@v1
         with:

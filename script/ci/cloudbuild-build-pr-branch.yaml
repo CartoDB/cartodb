@@ -155,7 +155,7 @@ steps:
       docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} -t ${_DOCKER_IMAGE_NAME}-onprem-cron:latest -t ${_DOCKER_IMAGE_NAME}-onprem-cron:${_BRANCH_TAG} -t ${_DOCKER_IMAGE_NAME}-onprem-cron:${SHORT_SHA} -t ${_DOCKER_IMAGE_NAME}-onprem-cron:${_BRANCH_TAG}--${SHORT_SHA}  -f Dockerfile.cron .        
   waitFor: ['build-cartodb-onprem']
 
-timeout: 2700s
+timeout: 3600s
 images:
     - ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG}--${SHORT_SHA} 
     - ${_DOCKER_IMAGE_NAME}:${_BRANCH_TAG} 

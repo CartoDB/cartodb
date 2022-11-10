@@ -23,6 +23,7 @@ Development
 * Update banner to notify about data migrations to CARTO 3 [#16420](https://github.com/CartoDB/cartodb/pull/16420)
 
 ### Bug fixes / enhancements
+- Removing the full path from urls with filter parameters in the Spatial Data Catalog [#16426](https://github.com/CartoDB/cartodb/pull/16426)
 - Fix rubocop integration [#16382](https://github.com/CartoDB/cartodb/pull/16382)
 - Add marginTop to Page when notification is displayed [#16355](https://github.com/CartoDB/cartodb/pull/16355)
 - Add "element" param to DO-Catalog entry function [#16343](https://github.com/CartoDB/cartodb/pull/16343)
@@ -95,6 +96,10 @@ Development
 - Fix duplicated attributions in datasets [#16384](https://github.com/CartoDB/cartodb/pull/16384)
 - Moving assets cdn domain from global.ssl.fastly.net to libs.cartocdn.com [#16399](https://github.com/CartoDB/cartodb/pull/16399)
 - Fix error while rolling back a user migration from one cloud to another [#16421](https://github.com/CartoDB/cartodb/pull/16421)
+- Add retry if a timeout is thrown when swapping the tables related with a sync process [#16430](https://github.com/CartoDB/cartodb/pull/16430)
+- Add AUTODETECT_SIZE_LIMIT to ogr2ogr process when guessing CSV file column types [#16431](https://github.com/CartoDB/cartodb/pull/16431)
+- Log pg locks if there is any problem during a sync table import process [#16432](https://github.com/CartoDB/cartodb/pull/16432)
+- Check pg locks during sync table swap and terminate locking queries [#16433](https://github.com/CartoDB/cartodb/pull/16433)
 
 4.45.0 (2021-04-14)
 -------------------

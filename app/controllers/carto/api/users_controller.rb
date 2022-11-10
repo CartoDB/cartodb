@@ -111,7 +111,13 @@ module Carto
         deletion_password_confirmation = params[:deletion_password_confirmation]
 
         if user.needs_password_confirmation? && !user.validate_old_password(deletion_password_confirmation)
-          render_jsonp({ message: "Error deleting user: #{PASSWORD_DOES_NOT_MATCH_MESSAGE}" }, 400) and return
+          render_jsonp({ message: "Error deleting user: #{PASSWORD_DOES_NOT_MATCH_MESSAGE}" }, 400)
+          return
+        end
+
+        if user.has_shared_entities?
+          render_jsonp({ message: "User can't be deleted because there are shared entities. Please, unshare or delete them and try again." }, 401)
+          return
         end
 
         user.destroy_account

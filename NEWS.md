@@ -37,6 +37,7 @@ Development
 - Update browser version checker to allow Firefox/100.0 [#16415](https://github.com/CartoDB/cartodb/pull/16415)
 - Update analysis schemas after giving required permissions on user promotion [#16390](https://github.com/CartoDB/cartodb/pull/16390)
 - Add timeout for SQL API exports [#16377](https://github.com/CartoDB/cartodb/pull/16377)
+- Avoid deleting a user if it has shared entities [#16424](https://github.com/CartoDB/cartodb/pull/16424)
 - Remove all references to Spatial Data Catalog and Kepler GL maps in on-premises [#16293](https://github.com/CartoDB/cartodb/pull/16293)
 - Increase hard-limit of MAX_TABLES_PER_IMPORT [#16374](https://github.com/CartoDB/cartodb/pull/16374)
 - Guard code for vizjson users [#16267](https://github.com/CartoDB/cartodb/pull/16267)

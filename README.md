@@ -1,6 +1,6 @@
 # [DEPRECATED]
 
-Hey! This content applies only to previous CARTO products
+Hey! This content applies only to previous CARTO products.
 
 Please check if it's relevant to your use case. On October 2021 we released the current version of our platform.
 You can learn more and read the latest documentation at docs.carto.com

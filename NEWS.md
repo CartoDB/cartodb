@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- None yet 
 
 ### Features
 * Display notifications about the new CARTO platform release [16352](https://github.com/CartoDB/cartodb/pull/16352)

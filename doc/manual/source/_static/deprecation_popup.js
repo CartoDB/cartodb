@@ -1,7 +1,7 @@
 function ready() {
   var div = document.createElement("div");
   div.style.position = 'absolute',
-  div.style.bottom = '0'
+  div.style.bottom = '40px'
   div.style.left = '0'
   div.style.right = '0'
   div.style.with = '100%'

@@ -438,10 +438,10 @@ describe Column do
 
     it 'can apply legacy sanitization to multiple columns' do
       LEGACY_SANITIZATION_COLS.each do |input_columns, output_columns|
-        columns = []
-        input_columns.zip(output_columns).each do |input_column, output_column|
+        columns = input_columns.dup
+        input_columns.zip(output_columns).each_with_index do |(input_column, output_column), i|
           column = Column::get_valid_column_name(input_column, Column::INITIAL_COLUMN_SANITIZATION_VERSION, columns)
-          columns << column
+          columns[i] = column
           column.should eq output_column
         end
       end
@@ -464,32 +464,41 @@ describe Column do
 
     it 'can apply v2 sanitization to multiple columns' do
       VERSION_2_SANITIZATION_COLS.each do |input_columns, output_columns|
-        columns = []
-        input_columns.zip(output_columns).each do |input_column, output_column|
+        columns = input_columns.dup
+        input_columns.zip(output_columns).each_with_index do |(input_column, output_column), i|
           column = Column::get_valid_column_name(input_column, 2, columns)
-          puts "--- ADDING COL #{column}"
-          columns << column
-          puts " >> #{columns.inspect}"
+          columns[i] = column
           column.should eq output_column
         end
       end
     end
 
-    it 'multiple column sanitization is idempotent' do
+    it 'multiple column sanitization is almost idempotent' do
+      # Note that with columns [' ', '  '] this test would not pass
       VERSION_2_SANITIZATION_COLS.each_key do |input_columns|
-        columns1 = []
-        input_columns.each do |input_column|
+        columns1 = input_columns.dup
+        input_columns.each_with_index do |input_column, i|
           column1 = Column::get_valid_column_name(input_column, 2, columns1)
-          columns1 << column1
+          columns1[i] = column1
         end
-        columns2 = []
-        columns1.each do |input_column|
+        columns2 = columns1.dup
+        columns1.each_with_index do |input_column, i|
           column2 = Column::get_valid_column_name(input_column, 2, columns2)
-          columns2 << column2
+          columns2[i] = column2
           column2.should eq input_column
         end
       end
     end
   end # .get_valid_column_name
+
+  it 'sanitization v2 never produces column names too long for PostgreSQL' do
+    long_name_invalid = 'x'*62 + 'á'
+    long_name_valid   = 'x'*62 + 'a'
+    long_name_suffixed = 'x'*61 + '_1'
+    name = Column::get_valid_column_name(long_name_invalid, 2, [long_name_valid, long_name_suffixed])
+    name.size.should be <= 63
+    name.should_not eq long_name_valid
+    name.should_not eq long_name_suffixed
+  end
 
 end # Column

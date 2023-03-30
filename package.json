@@ -104,7 +104,7 @@
     "@vue/cli-service": "^4.5.8",
     "@vue/test-utils": "^1.0.0-beta.25",
     "autoprefixer-core": "5.2.1",
-    "aws-sdk": "2.0.0-rc11",
+    "aws-sdk": "2.814.0",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.1.0",
     "babel-helper-vue-jsx-merge-props": "^2.0.3",

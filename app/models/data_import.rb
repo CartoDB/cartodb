@@ -923,7 +923,7 @@ class DataImport < Sequel::Model
                   'import_timestamp'       => Time.now,
                   'queue_server'           => `hostname`.strip,
                   'database_host'          => owner.database_host,
-                  'service_name'           => self.service_name,
+                  data_import_service_name: service_name,
                   'data_type'              => self.data_type,
                   'is_sync_import'         => sync?,
                   'import_time'            => import_time,

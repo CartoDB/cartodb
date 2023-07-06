@@ -54,11 +54,11 @@ export default {
       return [{
         color: DATASETS_COLOR,
         label: 'Datasets',
-        value: getAmountInUnit(this.datasetsSize, this.storageExponent)
+        value: getAmountInUnit(this.datasetsSize)
       }, ...(this.subscriptionsPublicSizeInBytes ? [{
         color: DATA_SUBSCRIPTIONS_COLOR,
         label: 'Public data subscriptions',
-        value: getAmountInUnit(this.subscriptionsPublicSizeInBytes, this.storageExponent)
+        value: getAmountInUnit(this.subscriptionsPublicSizeInBytes)
       }] : [])];
     },
     usedPremiumDataSubscriptions () {

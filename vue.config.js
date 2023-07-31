@@ -54,11 +54,11 @@ module.exports = {
       config.module.rule('images').use('url-loader')
         .loader('file-loader')
         .tap(options => Object.assign(options, {
-          name: '../../images/do-catalog/[name].[hash:8].[ext]'
+          name: '/images/do-catalog/[name].[hash:8].[ext]'
         }));
       config.module.rule('svg').use('file-loader')
         .tap(options => Object.assign(options, {
-          name: '../../images/do-catalog/[name].[hash:8].[ext]'
+          name: '/images/do-catalog/[name].[hash:8].[ext]'
         }));
     }
     config.externals([/^@deck.gl\/.+$/]);

@@ -61,6 +61,5 @@ module.exports = {
           name: '/images/do-catalog/[name].[hash:8].[ext]'
         }));
     }
-    config.externals([/^@deck.gl\/.+$/]);
   }
 };

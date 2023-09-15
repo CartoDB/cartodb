@@ -5,6 +5,7 @@ Development
 - None yet
 
 ### Features
+* Display GeoParquet link in Catalog [16453](https://github.com/CartoDB/cartodb/pull/16453)
 * Display notifications about the new CARTO platform release [16352](https://github.com/CartoDB/cartodb/pull/16352)
 * Upgrade to deck.gl 8.5.6 [16338](https://github.com/CartoDB/cartodb/pull/16338)
 * Update DO Catalog dependencies and some changes to use bundle on CARTO Workspace [#16325](https://github.com/CartoDB/cartodb/pull/16325)

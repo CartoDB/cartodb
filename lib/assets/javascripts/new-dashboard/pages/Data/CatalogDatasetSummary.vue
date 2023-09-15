@@ -101,6 +101,17 @@
             </router-link>
           </p>
         </li>
+        <li
+          class="u-mb--32 u-mb--12--tablet"
+          v-if="hasGeoparquetAvailable"
+        >
+          <h4 class="text is-small is-txtSoftGrey u-mb--10">
+            GeoParquet
+          </h4>
+          <p class="text is-caption">
+            <a class="underline" :href="geoparquetUrl" target="_blank">Download</a>
+          </p>
+        </li>
       </ul>
     </div>
   </div>
@@ -112,12 +123,19 @@ import { temporalAggregationName } from 'new-dashboard/utils/catalog/temporal-ag
 import { geometryTypeName } from 'new-dashboard/utils/catalog/geometry-type-name';
 import { updateFrequencyName } from 'new-dashboard/utils/catalog/update-frequency-name';
 import { sendCustomDimensions } from 'new-dashboard/utils/catalog/custom-dimensions-ga';
+import { checkGeoparquetBucket } from 'new-dashboard/utils/catalog/geoparquet';
 import CatalogMapPreview from 'new-dashboard/components/Catalog/CatalogMapPreview';
 
 export default {
   name: 'CatalogDatasetSummary',
   components: {
     CatalogMapPreview
+  },
+  data () {
+    return {
+      hasGeoparquetAvailable: false,
+      geoparquetUrl: undefined
+    };
   },
   watch: {
     dataset: {
@@ -169,10 +187,16 @@ export default {
         id: this.$route.params.entity_id,
         type: this.$route.params.entity_type
       });
+    },
+    async checkIfGeoparquetBucketExists () {
+      const { ok, url } = await checkGeoparquetBucket(this.$route.params.entity_id);
+      this.hasGeoparquetAvailable = ok;
+      this.geoparquetUrl = url;
     }
   },
   mounted () {
     this.fetchKeyVariables();
+    this.checkIfGeoparquetBucketExists();
   }
 };
 </script>

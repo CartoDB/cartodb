@@ -63,7 +63,7 @@
     "loader-utils": "https://registry.npmjs.org/loader-utils/-/loader-utils-0.2.17.tgz",
     "mapbox-gl": "^1.13.0",
     "moment": "2.18.1",
-    "moment-timezone": "^0.5.13",
+    "moment-timezone": "^0.5.35",
     "node-polyglot": "1.0.0",
     "perfect-scrollbar": "github:CartoDB/perfect-scrollbar.git#master",
     "postcss": "5.0.19",

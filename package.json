@@ -148,7 +148,7 @@
     "grunt-contrib-jasmine": "CartoDB/grunt-contrib-jasmine#headless-chrome",
     "grunt-contrib-jst": "CartoDB/grunt-contrib-jst#merge-master",
     "grunt-contrib-uglify": "2.0.x",
-    "grunt-contrib-watch": "1.0.0",
+    "grunt-contrib-watch": "1.1.0",
     "grunt-eslint": "~20.1.0",
     "grunt-exorcise": "2.1.1",
     "grunt-postcss": "0.7.2",
